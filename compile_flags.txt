@@ -1,0 +1,8 @@
+-xc
+-Wall 
+-Wextra 
+-nostdlib
+-std=gnu2x 
+-isystem ./kernel/freestnd-c-hdrs 
+-I./kernel/src/include
+-I./kernel/src
