@@ -2,6 +2,7 @@
 
 #include <limine.h>
 #include <stdint.h>
+
 #define LOG(x, ...) log(__FILE__, __func__, __LINE__, x, ##__VA_ARGS__)
 #define PANIC(x, ...) ({                                 \
     log(__FILE__, __func__, __LINE__, x, ##__VA_ARGS__); \

@@ -49,4 +49,4 @@ typedef struct [[gnu::packed]] {
 } xsdt;
 
 void acpi_init();
-void acpi_list_tables();
+sdt_header *acpi_get_entry(char *signature);

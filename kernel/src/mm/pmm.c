@@ -1,10 +1,15 @@
 #include <kernel.h>
+#include <lib/spinlock.h>
 #include <lib/string.h>
 #include <mm/pmm.h>
+
 __attribute__((used, section(".limine_requests"))) volatile struct limine_memmap_request memmap_request = {
     .id = LIMINE_MEMMAP_REQUEST,
     .revision = 0
 };
+
+spinlock pmm_lock = SPINLOCK_INIT;
+
 // final usable address
 uintptr_t lastaddr = 0;
 // total entries in the bitmap or the number of pages
@@ -78,6 +83,8 @@ void pmm_init() {
 }
 
 void *pmm_alloc(size_t count) {
+    spinlock_acquire(&pmm_lock);
+
     // for now, we will search from the start
     // yes this is slow, ill fix it later
     uint64_t found = 0;
@@ -98,9 +105,11 @@ void *pmm_alloc(size_t count) {
             }
             // get the address
             void *address = (void *)(start * PAGE_SIZE);
+            spinlock_release(&pmm_lock);
             return address;
         }
     }
+    spinlock_release(&pmm_lock);
     PANIC("pmm is unable to allocate %lu pages\n", count);
     UNREACHABLE();
 }
@@ -110,6 +119,7 @@ void *pmm_allocz(size_t count) {
     return PHYS(page);
 }
 void pmm_free(void *address, size_t count) {
+    spinlock_acquire(&pmm_lock);
     // assumes the address is in the lower half, or the physical address
     uint64_t page = (uint64_t)address;
     page /= PAGE_SIZE;
@@ -117,4 +127,5 @@ void pmm_free(void *address, size_t count) {
     for (uint64_t i = 0; i < count; i++) {
         clear(page + i);
     }
+    spinlock_release(&pmm_lock);
 }

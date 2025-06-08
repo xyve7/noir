@@ -1,6 +1,10 @@
+#include <lib/spinlock.h>
 #include <lib/string.h>
 #include <term/font.h>
 #include <term/term.h>
+
+spinlock term_lock = SPINLOCK_INIT;
+
 void fb_draw(struct limine_framebuffer *fb, size_t x, size_t y, uint32_t color) {
     volatile uint32_t *b = fb->address;
     b[y * (fb->pitch / 4) + x] = color;
@@ -25,6 +29,7 @@ void term_scroll(term_ctx *ctx) {
     size_t offset = ctx->fb->pitch * 16;
     // Gets the remaining of the framebuffer
     size_t remaining = ctx->fb->pitch * (ctx->fb->height - 16);
+
     // Copies it one line up
     memmove(fb, fb + offset, remaining);
     // Nulls the line
@@ -42,6 +47,8 @@ void term_draw_char(term_ctx *ctx, size_t x, size_t y, char ch) {
     }
 }
 void term_write_char(term_ctx *ctx, char ch) {
+    spinlock_acquire(&term_lock);
+
     if (ch == '\n') {
         if (!(ctx->col == 0 && ctx->wrapped)) {
             ctx->col = 0;
@@ -65,13 +72,6 @@ void term_write_char(term_ctx *ctx, char ch) {
         ctx->row--;
         ctx->col = 0;
     }
-}
-void term_write_string(term_ctx *ctx, const char *string) {
-    while (*string) {
-        term_write_char(ctx, *string);
-        string++;
-    }
-}
-void term_test(term_ctx *ctx) {
-    (void)ctx;
+
+    spinlock_release(&term_lock);
 }

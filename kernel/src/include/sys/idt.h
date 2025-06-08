@@ -16,4 +16,5 @@ typedef struct [[gnu::packed]] {
     uint32_t resv;
 } idt_ent;
 
+void idt_load();
 void idt_init();

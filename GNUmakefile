@@ -6,7 +6,7 @@ MAKEFLAGS += -rR
 ARCH := x86_64
 
 # Default user QEMU flags. These are appended to the QEMU command calls.
-QEMUFLAGS := -d int -m 2G -s -S -serial stdio
+QEMUFLAGS := -m 2G -s -S -smp 4 -serial stdio
 
 override IMAGE_NAME := template-$(ARCH)
 

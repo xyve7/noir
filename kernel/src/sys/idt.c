@@ -5,6 +5,22 @@
 static idt_ent idt[256];
 extern void *isrs[256];
 
+void idt_load() {
+    idt_r idtr;
+    // This is one less than the size because this value is added to the base
+    // to get the last valid byte.
+    // Some places, like the OSDEV Wiki, like to refer to this as the "size"
+    // but then in fine print be like "Oh it's actually one less than the size".
+    // I don't get why they don't call it the limit.
+    // This isn't really an issue, just a tiny nitpick.
+    // Reference: Intel SDM 3.7.10.
+    idtr.limit = sizeof(idt) - 1;
+    idtr.base = (uint64_t)idt;
+
+    // Load the IDT
+    asm("lidt %0" : : "m"(idtr));
+}
+
 void idt_init() {
     // Set every entry
     for (size_t i = 0; i < 256; i++) {
@@ -21,19 +37,7 @@ void idt_init() {
     // This is because trap gates don't disable interrupts when
     // the handler is called.
 
-    idt_r idtr;
-    // This is one less than the size because this value is added to the base
-    // to get the last valid byte.
-    // Some places, like the OSDEV Wiki, like to refer to this as the "size"
-    // but then in fine print be like "Oh it's actually one less than the size".
-    // I don't get why they don't call it the limit.
-    // This isn't really an issue, just a tiny nitpick.
-    // Reference: Intel SDM 3.7.10.
-    idtr.limit = sizeof(idt) - 1;
-    idtr.base = (uint64_t)idt;
-
-    // Load the IDT
-    asm("lidt %0" : : "m"(idtr));
+    idt_load();
 
     LOG("idt init\n");
 }

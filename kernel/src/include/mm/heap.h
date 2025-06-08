@@ -14,4 +14,5 @@ void heap_init();
 void heap_clear();
 void heap_status();
 void *kmalloc(size_t size);
+void *krealloc(void *ptr, size_t size);
 void kfree(void *ptr);

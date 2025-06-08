@@ -1,7 +1,23 @@
 #pragma once
 
+#include <lib/vec.h>
 #include <stdint.h>
 #include <sys/acpi.h>
+
+// Processor Local APIC
+#define MADT_TYPE_LOCAL_APIC 0
+// I/O APIC
+#define MADT_TYPE_IO_APIC 1
+// Interrupt Source Override
+#define MADT_TYPE_INT_SRC_OVERRIDE 2
+// I/O APIC Non-maskable Interrupt
+#define MADT_TYPE_IO_APIC_NMI 3
+// Local APIC Non-maskable Interrupt
+#define MADT_TYPE_LOCAL_APIC_NMI 4
+// Local APIC Address Override
+#define MADT_TYPE_LOCAL_APIC_ADDR_OVR 5
+// Processor Local x2APIC
+#define MADT_TYPE_LOCAL_X2APIC 9
 
 typedef struct [[gnu::packed]] {
     uint8_t type;
@@ -33,8 +49,6 @@ typedef struct [[gnu::packed]] {
 
 typedef struct [[gnu::packed]] {
     madt_entry_header header;
-    uint8_t src;
-    uint8_t reserved;
     uint16_t flags;
     uint32_t gsi;
 } madt_ioapic_nmi;
@@ -65,3 +79,13 @@ typedef struct [[gnu::packed]] {
     uint32_t lapic_address;
     uint32_t flags;
 } madt;
+
+extern vec lapics;
+extern vec ioapics;
+extern vec ioapic_overrides;
+extern vec ioapic_nmis;
+extern vec lapic_nmis;
+extern vec lapic_overrides;
+extern vec x2apics;
+
+void madt_init();

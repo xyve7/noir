@@ -1,7 +1,11 @@
 #include "mm/heap.h"
+#include "sys/irq.h"
+#include "sys/madt.h"
+#include "sys/vfs.h"
 #include <dev/serial.h>
 #include <kernel.h>
 #include <lib/printf.h>
+#include <lib/spinlock.h>
 #include <lib/string.h>
 #include <limine.h>
 #include <limits.h>
@@ -11,8 +15,12 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/acpi.h>
+#include <sys/except.h>
 #include <sys/idt.h>
+#include <sys/lapic.h>
+#include <sys/proc.h>
 #include <term/term.h>
+
 // Set the base revision to 3, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
 // See specification for further info.
@@ -31,12 +39,16 @@ __attribute__((
     section(
         ".limine_requests"
     )
-)) static volatile struct limine_framebuffer_request
-    framebuffer_request = {.id = LIMINE_FRAMEBUFFER_REQUEST, .revision = 0};
+)) static volatile struct limine_framebuffer_request framebuffer_request = {.id = LIMINE_FRAMEBUFFER_REQUEST, .revision = 0};
 
 __attribute__((used, section(".limine_requests"))) volatile struct limine_hhdm_request hhdm_request = {
     .id = LIMINE_HHDM_REQUEST,
-    .response = 0
+    .revision = 0
+};
+
+__attribute__((used, section(".limine_requests"))) static volatile struct limine_mp_request mp_request = {
+    .id = LIMINE_MP_REQUEST,
+    .revision = 0
 };
 // Finally, define the start and end markers for the Limine requests.
 // These can also be moved anywhere, to any .c file, as seen fit.
@@ -74,17 +86,23 @@ int mubsan_log(const char *format, ...) {
     va_end(print);
     return written;
 }
+
+spinlock log_lock = SPINLOCK_INIT;
+
 void log(const char *file, const char *func, uint32_t line, const char *restrict format, ...) {
     va_list serial, print;
     va_start(serial, format);
     va_start(print, format);
 
+    spinlock_acquire(&log_lock);
+
     serial_printf("%s:%s:%u: ", file, func, line);
     serial_vprintf(format, serial);
 
     printf("%s:%s:%u: ", file, func, line);
-
     vprintf(format, print);
+
+    spinlock_release(&log_lock);
 
     va_end(serial);
     va_end(print);
@@ -93,6 +111,7 @@ void log(const char *file, const char *func, uint32_t line, const char *restrict
 term_ctx term;
 void write_char(char ch) { term_write_char(&term, ch); }
 
+// ChatGPT wrote this, too lazy to write tests
 void heap_tests(void) {
     LOG("Heap tests starting...\n");
 
@@ -148,7 +167,23 @@ void heap_tests(void) {
     kfree(NULL); // should safely do nothing or handle gracefully
     LOG("PASS: kfree(NULL) did not crash\n");
 }
+void cpu_start(struct limine_mp_info *info) {
+    (void)info;
+    idt_load();
+    vmm_switch(&kernel_pm);
+    lapic_core();
 
+    uint32_t id = lapic_id();
+    LOG("lapic id: %u\n", id);
+
+    while (true) {
+        asm("sti");
+    }
+}
+void timer_handler(stack_frame *frame) {
+    proc_switch(frame);
+    lapic_eoi();
+}
 // The following will be our kernel's entry point.
 // If renaming kmain() to something else, make sure to change the
 // linker script accordingly.
@@ -166,19 +201,32 @@ void kmain(void) {
 
     // Fetch the first framebuffer.
     // Set up the terminal
-    struct limine_framebuffer *framebuffer =
-        framebuffer_request.response->framebuffers[0];
+    struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
     term = term_new(framebuffer);
 
     serial_init();
     idt_init();
+    except_init();
+    irq_init();
+    irq_register_handler(32, timer_handler);
+
     pmm_init();
     vmm_init();
-    acpi_init();
-    acpi_list_tables();
+
     heap_init();
     heap_tests();
     heap_status();
+    heap_clear(); // Clear the heap after it passes all the tests
+
+    acpi_init();
+    madt_init();
+
+    for (uint64_t i = 0; i < mp_request.response->cpu_count; i++) {
+        LOG("%lu:%lu\n", i, mp_request.response->bsp_lapic_id);
+    }
+
+    vfs_init("/");
+    vfs_create("/dev", VFS_DIR, nullptr, nullptr, nullptr, nullptr, nullptr);
 
     // We're done, just hang...
     hcf();

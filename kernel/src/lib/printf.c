@@ -1,4 +1,5 @@
 #include <lib/printf.h>
+#include <lib/spinlock.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -10,6 +11,8 @@
 // Different kinds of digits for both capital and lowercase hex
 const char digits_low[] = "0123456789abcdef";
 const char digits_upper[] = "0123456789ABCDEF";
+
+spinlock printf_lock = SPINLOCK_INIT;
 
 // Converts a long into a string
 // This uses a long, so smaller types can be safely casted
@@ -83,6 +86,8 @@ char *next_uint(uint8_t len_mod, uint8_t radix, const char *digits, va_list list
 }
 
 int vfprintf(void (*write)(char), const char *restrict format, va_list list) {
+    spinlock_acquire(&printf_lock);
+
     // Flag characters
     int written = 0;
     uint8_t len_mod = 0;
@@ -151,6 +156,8 @@ int vfprintf(void (*write)(char), const char *restrict format, va_list list) {
             written++;
         }
     }
+
+    spinlock_release(&printf_lock);
     return written;
 }
 int vprintf(const char *restrict format, va_list list) {

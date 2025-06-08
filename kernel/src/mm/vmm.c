@@ -1,3 +1,5 @@
+#include <kernel.h>
+#include <lib/spinlock.h>
 #include <mm/vmm.h>
 
 __attribute__((used, section(".limine_requests"))) volatile struct limine_executable_address_request kexaddr_request = {
@@ -5,21 +7,11 @@ __attribute__((used, section(".limine_requests"))) volatile struct limine_execut
     .revision = 0
 };
 
-#define VMM_PRESENT (1ul << 0)
-#define VMM_WRITE (1ul << 1)
-#define VMM_USER (1ul << 2)
-#define VMM_XD (1ul << 63)
-
-#define PML1(virt) ((virt >> 12) & 0x1ff)
-#define PML2(virt) ((virt >> 21) & 0x1ff)
-#define PML3(virt) ((virt >> 30) & 0x1ff)
-#define PML4(virt) ((virt >> 39) & 0x1ff)
-
-#define PHYSADDR(virt) (virt & 0x0007fffffffff000)
-
 extern uintptr_t KERNEL_TEXT_START, KERNEL_TEXT_END;
 extern uintptr_t KERNEL_RODATA_START, KERNEL_RODATA_END;
 extern uintptr_t KERNEL_DATA_START, KERNEL_DATA_END;
+
+spinlock vmm_lock = SPINLOCK_INIT;
 
 pagemap kernel_pm;
 void vmm_init() {
@@ -70,10 +62,22 @@ void vmm_init() {
     vmm_switch(&kernel_pm);
     LOG("vmm init\n");
 }
+pagemap vmm_pagemap_new() {
+    uintptr_t *kpm = (uintptr_t *)kernel_pm;
+    uintptr_t *pm = pmm_allocz(1);
+    for (size_t i = 256; i < 512; i++) {
+        pm[i] = kpm[i];
+    }
+    return (pagemap)pm;
+}
 void vmm_switch(pagemap *pm) {
+    spinlock_acquire(&vmm_lock);
     asm("mov %0, %%cr3" ::"r"(*pm));
+    spinlock_release(&vmm_lock);
 }
 void vmm_map(pagemap *pm, uintptr_t phys, uintptr_t virt, uint64_t flags) {
+    spinlock_acquire(&vmm_lock);
+
     // Get the offset of the levels
     uintptr_t pml1 = PML1(virt);
     uintptr_t pml2 = PML2(virt);
@@ -103,8 +107,12 @@ void vmm_map(pagemap *pm, uintptr_t phys, uintptr_t virt, uint64_t flags) {
 
     p = (uintptr_t *)VIRT(PHYSADDR(p[pml2]));
     p[pml1] = phys | flags;
+
+    spinlock_release(&vmm_lock);
 }
 void vmm_unmap(pagemap *pm, uintptr_t virt) {
+    spinlock_acquire(&vmm_lock);
+
     // Get the offset of the levels
     uintptr_t pml1 = PML1(virt);
     uintptr_t pml2 = PML2(virt);
@@ -129,4 +137,6 @@ void vmm_unmap(pagemap *pm, uintptr_t virt) {
 
     p = (uintptr_t *)VIRT(PHYSADDR(p[pml2]));
     p[pml1] = 0;
+
+    spinlock_release(&vmm_lock);
 }

@@ -1,5 +1,4 @@
-#include "dev/serial.h"
-#include "kernel.h"
+#include <kernel.h>
 #include <lib/printf.h>
 #include <lib/string.h>
 #include <limine.h>
@@ -38,7 +37,7 @@ void acpi_init() {
     }
 }
 
-void acpi_list_tables() {
+sdt_header *acpi_get_entry(char *signature) {
     size_t entries;
     if (is_extended) {
         entries = (xsdt_ptr->header.length - sizeof(xsdt_ptr->header)) / 8;
@@ -53,9 +52,9 @@ void acpi_list_tables() {
         } else {
             header = (sdt_header *)VIRT(rsdt_ptr->sdts[i]);
         }
-        for (size_t i = 0; i < 4; i++) {
-            write_char(header->signature[i]);
+        if (memcmp(header->signature, signature, 4) == 0) {
+            return header;
         }
-        write_char('\n');
     }
+    return nullptr;
 }

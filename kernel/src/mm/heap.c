@@ -1,4 +1,6 @@
-#include "kernel.h"
+#include <kernel.h>
+#include <lib/spinlock.h>
+#include <lib/string.h>
 #include <mm/heap.h>
 #include <mm/pmm.h>
 
@@ -13,6 +15,8 @@ size_t pages = 1;
 alloc_header *used_list = nullptr;
 alloc_header *free_list = nullptr;
 
+spinlock heap_lock = SPINLOCK_INIT;
+
 void heap_init() {
     // Initialize the memory
     base = VIRT(pmm_alloc(pages));
@@ -23,6 +27,9 @@ void *kmalloc(size_t size) {
     if (size == 0) {
         return nullptr;
     }
+
+    spinlock_acquire(&heap_lock);
+
     // We check the free list first
     alloc_header *n = free_list;
     while (n) {
@@ -39,6 +46,8 @@ void *kmalloc(size_t size) {
             n->next = used_list;
             used_list = n;
 
+            spinlock_release(&heap_lock);
+
             // Return
             return (void *)(n + 1);
         }
@@ -53,7 +62,8 @@ void *kmalloc(size_t size) {
 
     // Too much memory allocated
     if (current >= end) {
-        PANIC("out of memory");
+        spinlock_release(&heap_lock);
+        PANIC("out of memory: %ld\n", current - end);
     }
 
     // The allocation was fine
@@ -64,12 +74,16 @@ void *kmalloc(size_t size) {
     // Add to the list
     used_list = block;
 
+    spinlock_release(&heap_lock);
+
     return (void *)(block + 1);
 }
 void kfree(void *ptr) {
     if (!ptr) {
         return;
     }
+    spinlock_acquire(&heap_lock);
+
     alloc_header *block = (alloc_header *)ptr - 1;
     // Remove it from the used list
     if (block->prev) {
@@ -82,8 +96,31 @@ void kfree(void *ptr) {
     // Add it to the free list
     block->next = free_list;
     free_list = block;
-}
 
+    spinlock_release(&heap_lock);
+}
+void *krealloc(void *ptr, size_t size) {
+    if (ptr == nullptr) {
+        return kmalloc(size);
+    }
+
+    // We grab the header
+    alloc_header *block = (alloc_header *)ptr - 1;
+    // Just a sanity check, if the actual size of the header is big enough, we dont bother
+    // reallocating
+    if (block->size >= size) {
+        return ptr;
+    }
+    // It isn't lets, reallocate
+    // This also assumes that the new size is bigger
+    void *p = kmalloc(size);
+    memcpy(p, ptr, block->size);
+
+    // Free the original pointer
+    kfree(ptr);
+
+    return p;
+}
 // This function will wipe every allocation
 // This should NOT be done unless you are 100% sure that it wont cause the entire
 // system to go up in flames
