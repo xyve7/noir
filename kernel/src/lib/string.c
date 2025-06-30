@@ -154,7 +154,16 @@ char *strpbrk(const char *s, const char *accept) {
     }
     return nullptr;
 }
-
+size_t strcnt(const char *s, int ch) {
+    size_t cnt = 0;
+    while (*s) {
+        if (*s == ch) {
+            cnt++;
+        }
+        s++;
+    }
+    return cnt;
+}
 // Based off https://github.com/walac/glibc/blob/master/string/strtok.c
 // Too lazy to write this
 static char *olds;

@@ -1,11 +1,14 @@
 #pragma once
 
 #include <stdint.h>
+
+// IDT struct used to load the IDT
 typedef struct [[gnu::packed]] {
     uint16_t limit;
     uint64_t base;
 } idt_r;
 
+// IDT entry
 typedef struct [[gnu::packed]] {
     uint16_t isr0;
     uint16_t sel;
@@ -16,5 +19,7 @@ typedef struct [[gnu::packed]] {
     uint32_t resv;
 } idt_ent;
 
+// Load the IDT
 void idt_load();
+// Create the entries
 void idt_init();

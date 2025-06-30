@@ -1,16 +1,13 @@
 #pragma once
 
 #include <stdarg.h>
-#include <term/term.h>
 
-// terminal context
-extern term_ctx term;
-// this is defined elsewhere,
+// Defined elsewhere
 extern void write_char(char ch);
 
-// helper print function
+// Helper functions for printf
 int vfprintf(void (*write)(char), const char *restrict format, va_list list);
 int vprintf(const char *restrict format, va_list list);
 
-// main function
+// Formatter print to the framebuffer
 int printf(const char *restrict format, ...);

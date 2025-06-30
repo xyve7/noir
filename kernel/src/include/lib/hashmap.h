@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -20,7 +22,8 @@ typedef struct {
 } hashmap;
 
 hashmap hashmap_new();
-void hashmap_add(hashmap *self, char *key, void *value, size_t size);
-hashmap_object *hashmap_get(hashmap *self, char *key);
-bool hashmap_remove(hashmap *self, char *key);
+void hashmap_set(hashmap *self, const char *key, void *value, size_t size);
+hashmap_object *hashmap_get(hashmap *self, const char *key);
+hashmap_object *hashmap_at(hashmap *self, size_t i);
+bool hashmap_remove(hashmap *self, const char *key);
 void hashmap_free(hashmap *self);

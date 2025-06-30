@@ -1,3 +1,4 @@
+#include "cpu/cpu.h"
 #include <kernel.h>
 #include <lib/spinlock.h>
 #include <mm/vmm.h>
@@ -60,22 +61,22 @@ void vmm_init() {
         }
     }
     vmm_switch(&kernel_pm);
-    LOG("vmm init\n");
+    LOG("VMM Initalized");
 }
 pagemap vmm_pagemap_new() {
-    uintptr_t *kpm = (uintptr_t *)kernel_pm;
-    uintptr_t *pm = pmm_allocz(1);
+    uintptr_t *kpm = (uintptr_t *)VIRT(kernel_pm);
+    uintptr_t *pm = VIRT(pmm_allocz(1));
     for (size_t i = 256; i < 512; i++) {
         pm[i] = kpm[i];
     }
-    return (pagemap)pm;
+    return (pagemap)PHYS(pm);
 }
 void vmm_switch(pagemap *pm) {
-    spinlock_acquire(&vmm_lock);
     asm("mov %0, %%cr3" ::"r"(*pm));
-    spinlock_release(&vmm_lock);
 }
 void vmm_map(pagemap *pm, uintptr_t phys, uintptr_t virt, uint64_t flags) {
+    bool state = int_get_state();
+    int_disable();
     spinlock_acquire(&vmm_lock);
 
     // Get the offset of the levels
@@ -109,8 +110,11 @@ void vmm_map(pagemap *pm, uintptr_t phys, uintptr_t virt, uint64_t flags) {
     p[pml1] = phys | flags;
 
     spinlock_release(&vmm_lock);
+    int_set_state(state);
 }
 void vmm_unmap(pagemap *pm, uintptr_t virt) {
+    bool state = int_get_state();
+    int_disable();
     spinlock_acquire(&vmm_lock);
 
     // Get the offset of the levels
@@ -139,4 +143,5 @@ void vmm_unmap(pagemap *pm, uintptr_t virt) {
     p[pml1] = 0;
 
     spinlock_release(&vmm_lock);
+    int_set_state(state);
 }

@@ -22,7 +22,6 @@ xsdt *xsdt_ptr;
 void acpi_init() {
     // By default, assume rsdp
     rsdp_ptr = (void *)VIRT(rsdp_request.response->address);
-    LOG("%p\n", rsdp_ptr);
     if (rsdp_ptr->revision == 2) {
         // If the revision is 2, assume xsdp
         is_extended = true;
@@ -35,6 +34,8 @@ void acpi_init() {
     } else {
         rsdt_ptr = (rsdt *)VIRT(rsdp_ptr->rsdt_address);
     }
+
+    LOG("ACPI Initialized");
 }
 
 sdt_header *acpi_get_entry(char *signature) {

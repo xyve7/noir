@@ -12,6 +12,7 @@ size_t strlen(const char *s);
 char *strcat(char *dest, const char *src);
 
 char *strchr(const char *s, int c);
+char *strrchr(const char *s, int c);
 char *strstr(const char *s1, const char *s2);
 
 int strcmp(const char *s1, const char *s2);
@@ -27,3 +28,5 @@ char *strtok(char *s, const char *delim);
 
 size_t strspn(const char *s, const char *accept);
 char *strpbrk(const char *s1, const char *s2);
+
+size_t strcnt(const char *s, int ch);

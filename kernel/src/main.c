@@ -1,14 +1,18 @@
-#include "mm/heap.h"
-#include "sys/irq.h"
-#include "sys/madt.h"
-#include "sys/vfs.h"
+#include <cpu/cpu.h>
+#include <dev/keyboard.h>
 #include <dev/serial.h>
+#include <fs/console.h>
+#include <fs/devfs.h>
+#include <fs/framebuffer.h>
+#include <fs/tarfs.h>
+#include <fs/vfs.h>
 #include <kernel.h>
 #include <lib/printf.h>
 #include <lib/spinlock.h>
 #include <lib/string.h>
 #include <limine.h>
 #include <limits.h>
+#include <mm/heap.h>
 #include <mm/pmm.h>
 #include <mm/vmm.h>
 #include <stdbool.h>
@@ -17,9 +21,15 @@
 #include <sys/acpi.h>
 #include <sys/except.h>
 #include <sys/idt.h>
+#include <sys/ioapic.h>
+#include <sys/irq.h>
 #include <sys/lapic.h>
+#include <sys/madt.h>
+#include <sys/pit.h>
 #include <sys/proc.h>
-#include <term/term.h>
+#include <sys/ps2.h>
+#include <sys/syscall.h>
+#include <terminal/terminal.h>
 
 // Set the base revision to 3, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -46,8 +56,8 @@ __attribute__((used, section(".limine_requests"))) volatile struct limine_hhdm_r
     .revision = 0
 };
 
-__attribute__((used, section(".limine_requests"))) static volatile struct limine_mp_request mp_request = {
-    .id = LIMINE_MP_REQUEST,
+__attribute__((used, section(".limine_requests"))) volatile struct limine_module_request module_request = {
+    .id = LIMINE_MODULE_REQUEST,
     .revision = 0
 };
 // Finally, define the start and end markers for the Limine requests.
@@ -87,103 +97,96 @@ int mubsan_log(const char *format, ...) {
     return written;
 }
 
-spinlock log_lock = SPINLOCK_INIT;
+const char *log_name[] = {
+    "INFO  ", "WARN  ", "DEBUG ", "PANIC "
+};
 
-void log(const char *file, const char *func, uint32_t line, const char *restrict format, ...) {
+spinlock log_lock = SPINLOCK_INIT;
+void log(int kind, const char *file, const char *func, uint32_t line, const char *restrict format, ...) {
     va_list serial, print;
     va_start(serial, format);
     va_start(print, format);
 
+    bool state = int_get_state();
+    int_disable();
     spinlock_acquire(&log_lock);
 
-    serial_printf("%s:%s:%u: ", file, func, line);
+    serial_printf("\033[36m%s\033[39m", log_name[kind]);
+    if (kind == 2) {
+        serial_printf("%s:%s:%u: ", file, func, line);
+    }
     serial_vprintf(format, serial);
+    serial_write('\n');
 
-    printf("%s:%s:%u: ", file, func, line);
+    printf("\033[36m%s\033[39m", log_name[kind]);
+    if (kind == 2) {
+        printf("%s:%s:%u: ", file, func, line);
+    }
+
     vprintf(format, print);
+    write_char('\n');
 
     spinlock_release(&log_lock);
+    int_set_state(state);
 
     va_end(serial);
     va_end(print);
 }
 // Set up the terminal so we can render text
-term_ctx term;
-void write_char(char ch) { term_write_char(&term, ch); }
-
-// ChatGPT wrote this, too lazy to write tests
-void heap_tests(void) {
-    LOG("Heap tests starting...\n");
-
-    // Test 1: Simple allocation/free
-    void *ptr = kmalloc(64);
-    if (!ptr) {
-        LOG("FAIL: kmalloc(64) returned NULL\n");
-    } else {
-        LOG("PASS: kmalloc(64) returned %p\n", ptr);
-        kfree(ptr);
-        LOG("Freed memory at %p\n", ptr);
-    }
-
-    // Test 2: Multiple allocations/free
-    void *ptrs[5];
-    int i;
-    int all_allocated = 1;
-    for (i = 0; i < 5; i++) {
-        ptrs[i] = kmalloc(32 * (i + 1));
-        if (!ptrs[i]) {
-            LOG("FAIL: kmalloc(%d) returned NULL\n", 32 * (i + 1));
-            all_allocated = 0;
-            break;
-        } else {
-            LOG("Allocated ptr[%d] = %p\n", i, ptrs[i]);
-        }
-    }
-
-    if (all_allocated) {
-        for (i = 0; i < 5; i++) {
-            kfree(ptrs[i]);
-            LOG("Freed ptr[%d] = %p\n", i, ptrs[i]);
-        }
-        LOG("PASS: Multiple allocations and frees succeeded\n");
-    } else {
-        // Free previously allocated ptrs in case of failure
-        for (int j = 0; j < i; j++) {
-            kfree(ptrs[j]);
-            LOG("Freed ptr[%d] = %p\n", j, ptrs[j]);
-        }
-    }
-
-    // Test 3: Allocation size zero
-    ptr = kmalloc(0);
-    if (ptr != NULL) {
-        LOG("Warning: kmalloc(0) should usually return NULL or minimum size. Got %p\n", ptr);
-        kfree(ptr);
-    } else {
-        LOG("PASS: kmalloc(0) returned NULL\n");
-    }
-
-    // Test 4: Free NULL pointer
-    kfree(NULL); // should safely do nothing or handle gracefully
-    LOG("PASS: kfree(NULL) did not crash\n");
+void write_char(char ch) {
+    terminal_write((uint8_t)ch);
 }
-void cpu_start(struct limine_mp_info *info) {
-    (void)info;
-    idt_load();
-    vmm_switch(&kernel_pm);
-    lapic_core();
 
-    uint32_t id = lapic_id();
-    LOG("lapic id: %u\n", id);
-
-    while (true) {
-        asm("sti");
+bool proc_enable = false;
+void timer_handler(cpu_context *frame) {
+    if (proc_enable) {
+        proc_switch(frame);
     }
 }
-void timer_handler(stack_frame *frame) {
-    proc_switch(frame);
-    lapic_eoi();
+
+typedef struct {
+    vnode node;
+    void *memory;
+    size_t size;
+} mem_node;
+
+error mem_read(vnode *node, void *buffer, size_t offset, size_t size);
+
+vnode_ops mem_ops = {
+    .read = mem_read
+};
+
+error mem_read(vnode *node, void *buffer, size_t offset, size_t size) {
+    mem_node *n = (mem_node *)node;
+    memcpy(buffer, n->memory + offset, size);
+    return OK;
 }
+
+void load_proc() {
+    // Load the process
+    const char *process = "/home/user/admin/hello";
+
+    LOG("Loading Process: process=%s", process);
+
+    vnode *prog;
+    vfs_open(process, 0, &prog);
+
+    vinfo info;
+    vfs_info(process, &info);
+
+    void *buffer = kmalloc(info.size);
+    size_t buffer_size = info.size;
+
+    vfs_read(prog, buffer, 0, buffer_size);
+
+    proc_elf(buffer, buffer_size);
+
+    LOG("Loaded Process");
+    LOG("Scheduler Enabled, Enqueuing First Process...");
+
+    proc_enable = true;
+}
+struct limine_framebuffer *framebuffer;
 // The following will be our kernel's entry point.
 // If renaming kmain() to something else, make sure to change the
 // linker script accordingly.
@@ -201,8 +204,8 @@ void kmain(void) {
 
     // Fetch the first framebuffer.
     // Set up the terminal
-    struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
-    term = term_new(framebuffer);
+    framebuffer = framebuffer_request.response->framebuffers[0];
+    terminal_init(framebuffer->address, framebuffer->width, framebuffer->height, framebuffer->pitch);
 
     serial_init();
     idt_init();
@@ -214,20 +217,39 @@ void kmain(void) {
     vmm_init();
 
     heap_init();
-    heap_tests();
-    heap_status();
-    heap_clear(); // Clear the heap after it passes all the tests
 
     acpi_init();
     madt_init();
 
-    for (uint64_t i = 0; i < mp_request.response->cpu_count; i++) {
-        LOG("%lu:%lu\n", i, mp_request.response->bsp_lapic_id);
+    lapic_init();
+    lapic_enable();
+    ioapic_init();
+    lapic_timer_enable();
+
+    ps2_init();
+    keyboard_init();
+
+    void *tar = module_request.response->modules[0]->address;
+    size_t size = module_request.response->modules[0]->size;
+
+    mem_node *tar_buf_root = kmalloc(sizeof(mem_node));
+    tar_buf_root->node.ops = mem_ops;
+    tar_buf_root->memory = tar;
+    tar_buf_root->size = size;
+
+    vfs_init();
+    tarfs_init();
+    vfs_mount_raw((vnode *)tar_buf_root, "/", "tarfs");
+
+    // Initialize devices
+    devfs_init();
+    console_init();
+    framebuffer_init();
+
+    syscall_init();
+    proc_init();
+
+    while (true) {
+        asm("sti");
     }
-
-    vfs_init("/");
-    vfs_create("/dev", VFS_DIR, nullptr, nullptr, nullptr, nullptr, nullptr);
-
-    // We're done, just hang...
-    hcf();
 }

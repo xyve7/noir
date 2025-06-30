@@ -6,7 +6,7 @@ MAKEFLAGS += -rR
 ARCH := x86_64
 
 # Default user QEMU flags. These are appended to the QEMU command calls.
-QEMUFLAGS := -m 2G -s -S -smp 4 -serial stdio
+QEMUFLAGS := -m 2G -s -S -serial stdio
 
 override IMAGE_NAME := template-$(ARCH)
 
@@ -176,7 +176,7 @@ ifeq ($(ARCH),x86_64)
 	cp -v limine/limine-bios.sys limine/limine-bios-cd.bin limine/limine-uefi-cd.bin iso_root/boot/limine/
 	cp -v limine/BOOTX64.EFI iso_root/EFI/BOOT/
 	cp -v limine/BOOTIA32.EFI iso_root/EFI/BOOT/
-	xorriso -as mkisofs -R -r -J -b boot/limine/limine-bios-cd.bin \
+	xorriso -as mkisofs -R -r -J -b boot/limine/limine-bios-cd.bin modules/base.tar \
 		-no-emul-boot -boot-load-size 4 -boot-info-table \
 		-hfsplus -apm-block-size 2048 \
 		--efi-boot boot/limine/limine-uefi-cd.bin \

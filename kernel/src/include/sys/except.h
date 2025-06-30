@@ -3,5 +3,7 @@
 #include <cpu/cpu.h>
 #include <stdint.h>
 
+// Initialize exceptions
 void except_init();
-void except_register_handler(uint8_t vector, void (*handler)(stack_frame *));
+// Register exception handler
+void except_register_handler(uint8_t vector, void (*handler)(cpu_context *));

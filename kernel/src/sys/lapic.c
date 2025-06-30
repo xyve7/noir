@@ -1,3 +1,6 @@
+#include "sys/irq.h"
+#include "sys/pic.h"
+#include "sys/pit.h"
 #include <cpu/cpu.h>
 #include <kernel.h>
 #include <lib/spinlock.h>
@@ -11,12 +14,14 @@
 #define IA32_APIC_BASE 0x1B
 
 #define ID 0x020
+#define TPR 0x080
 #define SVR 0x0F0
 #define EOI 0x0B0
 #define TIMER 0x320
 #define LINT0 0x350
 #define LINT1 0x360
 #define TIMER_INITCNT 0x380
+#define TIMER_CURCNT 0x390
 #define TIMER_DIV 0x3E0
 
 #define SMI 0x200
@@ -28,19 +33,13 @@
 // frequently.
 volatile void *lapic;
 
-spinlock lapic_lock = SPINLOCK_INIT;
-
 // The registers are 32 bit
 // Aligned at 128 bit boundaries
 void lapic_write(volatile void *address, uint16_t reg, uint32_t value) {
-    spinlock_acquire(&lapic_lock);
     *((volatile uint32_t *)(address + reg)) = value;
-    spinlock_release(&lapic_lock);
 }
 uint32_t lapic_read(volatile void *address, uint16_t reg) {
-    spinlock_acquire(&lapic_lock);
     uint32_t v = *((volatile uint32_t *)(address + reg));
-    spinlock_release(&lapic_lock);
     return v;
 }
 void lapic_eoi() {
@@ -50,7 +49,7 @@ void lapic_eoi() {
 uint32_t lapic_id() {
     return lapic_read(lapic, ID) >> 24;
 }
-void lapic_core() {
+void lapic_enable() {
     // We map the NMI to, but we have to check which one it is
     // Generally its LINT1
     for (size_t i = 0; i < lapic_nmis.len; i++) {
@@ -73,13 +72,35 @@ void lapic_core() {
         }
     }
 
+    // The PIC is chained to LINT0
+    // So basically, its useless
+
     // We enable the lapic
     lapic_write(lapic, SVR, 0x100 | 0xFF);
-    // We setup the timer vector
-    lapic_write(lapic, TIMER, PERIODIC | 32);
-    // Set the timer
-    lapic_write(lapic, TIMER_INITCNT, 10000000);
+    // Zero the task priority register
+    lapic_write(lapic, TPR, 0);
+
+    LOG("LAPIC Enabled");
+}
+void lapic_timer_enable() {
+    // We enable the PIT breifly
+    pit_init();
+    irq_register_handler(34, pit_handler);
+
     lapic_write(lapic, TIMER_DIV, 16);
+    lapic_write(lapic, TIMER_INITCNT, 0xffffffff);
+
+    asm("sti");
+    pit_sleep(1);
+    asm("cli");
+
+    uint32_t ticks = 0xFFFFFFFF - lapic_read(lapic, TIMER_CURCNT);
+
+    lapic_write(lapic, TIMER, PERIODIC | 32);
+    lapic_write(lapic, TIMER_INITCNT, ticks);
+    lapic_write(lapic, TIMER_DIV, 16);
+
+    LOG("LAPIC Timer Enabled: cpu=%u, ticks=%u", lapic_id(), ticks);
 }
 void lapic_init() {
     // We get the processors lapic and mask the address out
@@ -92,5 +113,7 @@ void lapic_init() {
     vmm_map(&kernel_pm, (uintptr_t)lapic_phys, (uintptr_t)lapic_virt, VMM_PRESENT | VMM_WRITE);
     lapic = lapic_virt;
 
-    lapic_core();
+    pic_disable();
+
+    LOG("LAPIC Initalized");
 }

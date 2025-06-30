@@ -25,18 +25,18 @@ typedef struct {
     uint64_t rflags;
     uint64_t rsp;
     uint64_t ss;
-} stack_frame;
+} cpu_context;
 
 static inline uint8_t inb(uint16_t port) {
     uint8_t ret;
-    __asm__ volatile("inb %w1, %b0"
-                     : "=a"(ret)
-                     : "Nd"(port)
-                     : "memory");
+    asm volatile("inb %w1, %b0"
+                 : "=a"(ret)
+                 : "Nd"(port)
+                 : "memory");
     return ret;
 }
 static inline void outb(uint16_t port, uint8_t val) {
-    __asm__ volatile("outb %b0, %w1" : : "a"(val), "Nd"(port) : "memory");
+    asm volatile("outb %b0, %w1" : : "a"(val), "Nd"(port) : "memory");
 }
 
 static inline void wrmsr(uint64_t msr, uint64_t value) {
@@ -56,4 +56,24 @@ static inline uint64_t rdmsr(uint64_t msr) {
         : "c"(msr)
     );
     return ((uint64_t)high << 32) | low;
+}
+static inline void int_disable() {
+    asm volatile("cli");
+}
+static inline void int_enable() {
+    asm volatile("sti");
+}
+static inline void int_set_state(bool state) {
+    if (state) {
+        int_enable();
+    } else {
+        int_disable();
+    }
+}
+static inline bool int_get_state() {
+    uint64_t flags;
+    asm volatile("pushfq\n\t"
+                 "pop %0"
+                 : "=g"(flags));
+    return flags & (1 << 9);
 }

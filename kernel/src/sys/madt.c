@@ -38,45 +38,36 @@ void madt_init() {
         switch (type) {
         case MADT_TYPE_LOCAL_APIC: {
             madt_lapic *lapic = (madt_lapic *)madt_entry;
-            LOG("Local APIC: proc_id=%hhu, apic_id=%hhu, flags=%x\n", lapic->proc_id, lapic->id, lapic->flags);
             vec_push(&lapics, lapic);
             break;
         }
         case MADT_TYPE_IO_APIC: {
             madt_ioapic *ioapic = (madt_ioapic *)madt_entry;
-            LOG("I/O APIC: id=%hhu, address=%x, gsi_base=%u\n", ioapic->id, ioapic->address, ioapic->gsi_base);
             vec_push(&ioapics, ioapic);
             break;
         }
         case MADT_TYPE_INT_SRC_OVERRIDE: {
             madt_ioapic_int_override *ioapic_override = (madt_ioapic_int_override *)madt_entry;
-            LOG("Int Src Override: bus_src=%hhu, irq_src=%hhu, gsi=%u, flags=%hx\n",
-                ioapic_override->bus_src, ioapic_override->irq_src, ioapic_override->gsi, ioapic_override->flags);
             vec_push(&ioapic_overrides, ioapic_override);
             break;
         }
         case MADT_TYPE_IO_APIC_NMI: {
             madt_ioapic_nmi *ioapic_nmi = (madt_ioapic_nmi *)madt_entry;
-            LOG("I/O APIC NMI: gsi=%u, flags=%hx\n", ioapic_nmi->gsi, ioapic_nmi->flags);
             vec_push(&ioapic_nmis, ioapic_nmi);
             break;
         }
         case MADT_TYPE_LOCAL_APIC_NMI: {
             madt_lapic_nmi *lapic_nmi = (madt_lapic_nmi *)madt_entry;
-            LOG("Local APIC NMI: proc_id=%hhu, lint=%hu, flags=%hx\n", lapic_nmi->proc_id, lapic_nmi->lint, lapic_nmi->flags);
             vec_push(&lapic_nmis, lapic_nmi);
             break;
         }
         case MADT_TYPE_LOCAL_APIC_ADDR_OVR: {
             madt_lapic_override *lapic_override = (madt_lapic_override *)madt_entry;
-            LOG("Local APIC Addr Override: address=%lx\n", lapic_override->address);
             vec_push(&lapic_overrides, lapic_override);
             break;
         }
         case MADT_TYPE_LOCAL_X2APIC: {
             madt_x2apic *x2apic = (madt_x2apic *)madt_entry;
-            LOG("Local x2APIC: proc_id=%u, acpi_id=%u, flags=%x\n",
-                x2apic->proc_id, x2apic->acpi_id, x2apic->flags);
             vec_push(&x2apics, x2apic);
             break;
         }
@@ -90,4 +81,6 @@ void madt_init() {
         void *temp = madt_entry;
         madt_entry = temp + size;
     }
+
+    LOG("MADT Parsed");
 }

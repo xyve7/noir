@@ -1,6 +1,8 @@
+#include "kernel.h"
 #include <cpu/cpu.h>
 #include <sys/pic.h>
 
+// PIC definitions
 #define PIC1 0x20
 #define PIC2 0xA0
 #define PIC1_COMMAND PIC1
@@ -17,6 +19,9 @@ void pic_disable() {
     outb(PIC2_DATA, 2);
     outb(PIC1_DATA, 0x01);
     outb(PIC2_DATA, 0x01);
+    // Mask everything, disabling
     outb(PIC1_DATA, 0xFF);
     outb(PIC2_DATA, 0xFF);
+
+    LOG("PIC Disabled");
 }

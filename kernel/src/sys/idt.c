@@ -33,11 +33,13 @@ void idt_init() {
         idt[i].resv = 0;
     }
 
+    // We want syscalls to be interruptable
+    idt[0x80].flags = 0x8F;
     // I set the entries as an interrupt gate not a trap gate.
     // This is because trap gates don't disable interrupts when
     // the handler is called.
 
     idt_load();
 
-    LOG("idt init\n");
+    LOG("IDT Initialized");
 }

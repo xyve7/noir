@@ -28,9 +28,9 @@ static const char *exceptions[] = {
     "Control Protection Exception"
 };
 
-static void (*except_handlers[32])(stack_frame *);
+static void (*except_handlers[32])(cpu_context *);
 
-void debug_handler(stack_frame *frame) {
+void debug_handler(cpu_context *frame) {
     (void)frame;
     printf("debug exception\n");
     serial_printf("debug exception\n");
@@ -38,15 +38,18 @@ void debug_handler(stack_frame *frame) {
 
 void except_init() {
     except_register_handler(1, debug_handler);
+
+    LOG("Exceptions Initialized");
 }
 
-void except_register_handler(uint8_t vector, void (*handler)(stack_frame *)) {
+void except_register_handler(uint8_t vector, void (*handler)(cpu_context *)) {
     if (vector >= 32) {
         PANIC("vector value is too high: %hhu\n", vector);
     }
     except_handlers[vector] = handler;
+    LOG("Registered Exception Handler: handler=%p, vector=%hhu", handler, vector);
 }
-void except_handler(stack_frame *frame) {
+void except_handler(cpu_context *frame) {
     if (except_handlers[frame->no]) {
         except_handlers[frame->no](frame);
     } else {

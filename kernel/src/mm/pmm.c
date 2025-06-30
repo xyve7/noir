@@ -1,3 +1,4 @@
+#include "cpu/cpu.h"
 #include <kernel.h>
 #include <lib/spinlock.h>
 #include <lib/string.h>
@@ -79,10 +80,12 @@ void pmm_init() {
         }
     }
 
-    LOG("pmm init\n");
+    LOG("PMM Initalized");
 }
 
 void *pmm_alloc(size_t count) {
+    bool state = int_get_state();
+    int_disable();
     spinlock_acquire(&pmm_lock);
 
     // for now, we will search from the start
@@ -106,10 +109,12 @@ void *pmm_alloc(size_t count) {
             // get the address
             void *address = (void *)(start * PAGE_SIZE);
             spinlock_release(&pmm_lock);
+            int_set_state(state);
             return address;
         }
     }
     spinlock_release(&pmm_lock);
+    int_set_state(state);
     PANIC("pmm is unable to allocate %lu pages\n", count);
     UNREACHABLE();
 }
@@ -119,6 +124,8 @@ void *pmm_allocz(size_t count) {
     return PHYS(page);
 }
 void pmm_free(void *address, size_t count) {
+    bool state = int_get_state();
+    int_disable();
     spinlock_acquire(&pmm_lock);
     // assumes the address is in the lower half, or the physical address
     uint64_t page = (uint64_t)address;
@@ -128,4 +135,5 @@ void pmm_free(void *address, size_t count) {
         clear(page + i);
     }
     spinlock_release(&pmm_lock);
+    int_set_state(state);
 }

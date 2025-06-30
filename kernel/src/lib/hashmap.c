@@ -21,7 +21,7 @@ hashmap hashmap_new() {
 
     return self;
 }
-void hashmap_add(hashmap *self, char *key, void *value, size_t size) {
+void hashmap_set(hashmap *self, const char *key, void *value, size_t size) {
     uint32_t string_hash = djb33_hash(key, strlen(key));
     size_t index = string_hash % self->bucket_count;
 
@@ -36,7 +36,7 @@ void hashmap_add(hashmap *self, char *key, void *value, size_t size) {
 
     self->node_count++;
 }
-hashmap_object *hashmap_get(hashmap *self, char *key) {
+hashmap_object *hashmap_get(hashmap *self, const char *key) {
     uint32_t string_hash = djb33_hash(key, strlen(key));
     size_t index = string_hash % self->bucket_count;
 
@@ -50,6 +50,21 @@ hashmap_object *hashmap_get(hashmap *self, char *key) {
 
     return nullptr;
 }
+hashmap_object *hashmap_at(hashmap *self, size_t i) {
+    size_t count = 0;
+    for (size_t j = 0; j < self->bucket_count; j++) {
+        bucket *b = self->buckets[j];
+        while (b) {
+            if (count == i) {
+                return &b->object;
+            }
+            count++;
+            b = b->next;
+        }
+    }
+
+    return nullptr;
+}
 void free_bucket_chain(bucket *b) {
     if (b->next == nullptr) {
         kfree(b->key);
@@ -59,7 +74,7 @@ void free_bucket_chain(bucket *b) {
     }
     free_bucket_chain(b->next);
 }
-void hashmap_free(hashmap *self) {
+void hashmap_kfree(hashmap *self) {
     for (size_t i = 0; i < self->bucket_count; i++) {
         free_bucket_chain(self->buckets[i]);
     }

@@ -3,5 +3,7 @@
 #include <cpu/cpu.h>
 #include <stdint.h>
 
+// Initialize IRQs
 void irq_init();
-void irq_register_handler(uint8_t vector, void (*handler)(stack_frame *));
+// Register IRQ handler
+void irq_register_handler(uint8_t vector, void (*handler)(cpu_context *));

@@ -1,3 +1,4 @@
+#include "cpu/cpu.h"
 #include <lib/printf.h>
 #include <lib/spinlock.h>
 #include <stddef.h>
@@ -11,8 +12,6 @@
 // Different kinds of digits for both capital and lowercase hex
 const char digits_low[] = "0123456789abcdef";
 const char digits_upper[] = "0123456789ABCDEF";
-
-spinlock printf_lock = SPINLOCK_INIT;
 
 // Converts a long into a string
 // This uses a long, so smaller types can be safely casted
@@ -86,7 +85,6 @@ char *next_uint(uint8_t len_mod, uint8_t radix, const char *digits, va_list list
 }
 
 int vfprintf(void (*write)(char), const char *restrict format, va_list list) {
-    spinlock_acquire(&printf_lock);
 
     // Flag characters
     int written = 0;
@@ -151,22 +149,35 @@ int vfprintf(void (*write)(char), const char *restrict format, va_list list) {
                 written += write_string(write, va_arg(list, const char *));
                 break;
             }
+            // Reset this, so we don't have errors
+            len_mod = 0;
         } else {
             write(*format++);
             written++;
         }
     }
 
-    spinlock_release(&printf_lock);
     return written;
 }
 int vprintf(const char *restrict format, va_list list) {
     return vfprintf(write_char, format, list);
 }
+
+spinlock printf_lock = SPINLOCK_INIT;
 int printf(const char *restrict format, ...) {
     va_list list;
     va_start(list, format);
+
+    bool state = int_get_state();
+    int_disable();
+
+    spinlock_acquire(&printf_lock);
+
     int ret = vprintf(format, list);
+
+    spinlock_release(&printf_lock);
+    int_set_state(state);
+
     va_end(list);
     return ret;
 }
