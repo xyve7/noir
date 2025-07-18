@@ -20,7 +20,7 @@ spinlock heap_lock = SPINLOCK_INIT;
 
 void heap_init() {
     // Initialize the memory
-    base = VIRT(pmm_alloc(pages));
+    base = VIRT(pmm_allocz(pages));
     end = base + PAGE_SIZE * pages;
     current = base;
 
@@ -63,7 +63,7 @@ void *kmalloc(size_t size) {
     alloc_header *block = current;
     // Advance the pointer
     size_t total_size = sizeof(alloc_header) + size;
-    size_t advance_bytes = ROUND(total_size, sizeof(alloc_header));
+    size_t advance_bytes = ROUND(total_size, 8);
     current += advance_bytes;
 
     // Too much memory allocated

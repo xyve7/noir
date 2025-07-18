@@ -16,8 +16,8 @@ hashmap hashmap_new() {
     hashmap self;
     self.bucket_count = 10;
     self.node_count = 0;
-    self.buckets = kmalloc(self.bucket_count * sizeof(bucket));
-    memset(self.buckets, 0, self.bucket_count * sizeof(bucket));
+    self.buckets = kmalloc(self.bucket_count * sizeof(bucket *));
+    memset(self.buckets, 0, self.bucket_count * sizeof(bucket *));
 
     return self;
 }

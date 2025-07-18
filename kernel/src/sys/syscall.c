@@ -1,113 +1,50 @@
-
-
-#include "cpu/cpu.h"
-#include "kernel.h"
-#include "lib/spinlock.h"
-#include "lib/vec.h"
-#include "mm/heap.h"
-#include "sys/proc.h"
-#include "sys/smp.h"
-#include <fs/vfs.h>
-#include <lib/string.h>
+#include <cpu/cpu.h>
+#include <kernel.h>
 #include <stdint.h>
-#include <sys/irq.h>
 #include <sys/syscall.h>
 
-typedef void (*syscall_entry)(cpu_context *);
+#define IA32_STAR 0xC0000081
+#define IA32_LSTAR 0xC0000082
+#define IA32_CSTAR 0xC0000083
+#define IA32_SFMASK 0xC0000084
+#define IA32_EFER 0xC0000080
 
-void syscall_write(cpu_context *frame) {
-    uint64_t fd = frame->rdi;
-    const void *buffer = (const void *)frame->rsi;
-    size_t bytes = frame->rdx;
+extern void syscall_common();
+typedef error (*syscall_entry)(syscall_state *state);
 
-    proc_file *file = vec_at(&cpu_get()->current_proc->files, fd);
-    if (file == nullptr) {
-        frame->rax = NO_ENTRY;
-        return;
-    }
-
-    error ret = vfs_write(file->node, buffer, file->offset, bytes);
-    frame->rax = ret;
-}
-void syscall_read(cpu_context *frame) {
-    uint64_t fd = frame->rdi;
-    void *buffer = (void *)frame->rsi;
-    size_t bytes = frame->rdx;
-
-    proc_file *file = vec_at(&cpu_get()->current_proc->files, fd);
-    if (file == nullptr) {
-        frame->rax = NO_ENTRY;
-        return;
-    }
-
-    error ret = vfs_read(file->node, buffer, file->offset, bytes);
-    frame->rax = ret;
-}
-void syscall_close(cpu_context *frame) {
-    uint64_t fd = frame->rdi;
-
-    proc_file *file = vec_at(&cpu_get()->current_proc->files, fd);
-    if (file == nullptr) {
-        frame->rax = NO_ENTRY;
-        return;
-    }
-
-    error ret = vfs_close(file->node);
-    frame->rax = ret;
-}
-void syscall_open(cpu_context *frame) {
-    const char *path = (const char *)frame->rdi;
-    uint64_t *fd = (uint64_t *)frame->rsi;
-
-    vnode *node;
-    error ret = vfs_open(path, 0, &node);
-
-    proc_file *pc = kmalloc(sizeof(proc_file));
-    pc->node = node;
-    vec_push(&cpu_get()->current_proc->files, pc);
-
-    *fd = cpu_get()->current_proc->files.len - 1;
-
-    frame->rax = ret;
-}
-void syscall_map(cpu_context *frame) {
-    uint64_t fd = frame->rdi;
-    size_t offset = frame->rsi;
-    size_t size = frame->rdx;
-    void **where = (void **)frame->rcx;
-
-    proc_file *file = vec_at(&cpu_get()->current_proc->files, fd);
-    if (file == nullptr) {
-        frame->rax = NO_ENTRY;
-        return;
-    }
-
-    error ret = vfs_map(file->node, offset, size, where);
-    frame->rax = ret;
-}
-void syscall_exit(cpu_context *frame) {
-    proc_exit(cpu_get()->current_proc);
-    proc_switch(frame);
-    frame->rax = OK;
-}
+// These are defined elsewhere
+extern error sys_open(syscall_state *state);
+extern error sys_close(syscall_state *state);
+extern error sys_read(syscall_state *state);
+extern error sys_write(syscall_state *state);
+extern error sys_exit(syscall_state *state);
 
 syscall_entry syscall_table[] = {
-    [SYS_OPEN] = syscall_open,
-    [SYS_WRITE] = syscall_write,
-    [SYS_READ] = syscall_read,
-    [SYS_CLOSE] = syscall_close,
-    [SYS_EXIT] = syscall_exit,
-    [SYS_MAP] = syscall_map
+    [SYS_OPEN] = sys_open,
+    [SYS_CLOSE] = sys_close,
+    [SYS_READ] = sys_read,
+    [SYS_WRITE] = sys_write,
+    [SYS_EXIT] = sys_exit,
 };
 
-spinlock syscall_lock = SPINLOCK_INIT;
-void syscall_handler(cpu_context *frame) {
-    spinlock_acquire(&syscall_lock);
-    syscall_table[frame->rax](frame);
-    spinlock_release(&syscall_lock);
+void syscall_handler(syscall_state *state) {
+    syscall_table[state->rax](state);
 }
 
 void syscall_init() {
-    irq_register_handler(0x80, syscall_handler);
-    LOG("Syscalls Initialized");
+    uint64_t segments = 0;
+    // This is what SYSRET will use.
+    // I went off on a rant in gdt.c about how stupid this is.
+    // Please, take a read.
+    segments |= ((uint64_t)USER_CS << 48);
+    segments |= ((uint64_t)KERNEL_CS << 32);
+
+    // Enable the SYSCALL instruction
+    wrmsr(IA32_EFER, rdmsr(IA32_EFER) | 1);
+    wrmsr(IA32_STAR, segments);
+
+    // The address to the assembly handler
+    wrmsr(IA32_LSTAR, (uint64_t)syscall_common);
+
+    LOG("SYSCALL Instruction Enabled");
 }

@@ -6,7 +6,7 @@ static idt_ent idt[256];
 extern void *isrs[256];
 
 void idt_load() {
-    idt_r idtr;
+    idtr r;
     // This is one less than the size because this value is added to the base
     // to get the last valid byte.
     // Some places, like the OSDEV Wiki, like to refer to this as the "size"
@@ -14,18 +14,18 @@ void idt_load() {
     // I don't get why they don't call it the limit.
     // This isn't really an issue, just a tiny nitpick.
     // Reference: Intel SDM 3.7.10.
-    idtr.limit = sizeof(idt) - 1;
-    idtr.base = (uint64_t)idt;
+    r.limit = sizeof(idt) - 1;
+    r.base = (uint64_t)idt;
 
     // Load the IDT
-    asm("lidt %0" : : "m"(idtr));
+    asm("lidt %0" : : "m"(r));
 }
 
 void idt_init() {
     // Set every entry
     for (size_t i = 0; i < 256; i++) {
         idt[i].isr0 = (uint64_t)isrs[i] & 0xffff;
-        idt[i].sel = 0x28;
+        idt[i].sel = 0x08;
         idt[i].ist = 0;      // I haven't set up a TSS yet.
         idt[i].flags = 0x8E; // Interrupt gate
         idt[i].isr1 = ((uint64_t)isrs[i] >> 16) & 0xffff;
@@ -34,7 +34,7 @@ void idt_init() {
     }
 
     // We want syscalls to be interruptable
-    idt[0x80].flags = 0x8F;
+    idt[0x80].flags = 0b11101110;
     // I set the entries as an interrupt gate not a trap gate.
     // This is because trap gates don't disable interrupts when
     // the handler is called.

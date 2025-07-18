@@ -30,15 +30,7 @@ static const char *exceptions[] = {
 
 static void (*except_handlers[32])(cpu_context *);
 
-void debug_handler(cpu_context *frame) {
-    (void)frame;
-    printf("debug exception\n");
-    serial_printf("debug exception\n");
-}
-
 void except_init() {
-    except_register_handler(1, debug_handler);
-
     LOG("Exceptions Initialized");
 }
 

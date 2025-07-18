@@ -6,6 +6,9 @@ MAKEFLAGS += -rR
 # Change as needed.
 override OUTPUT := kernel
 
+# Build hash (just the last commit hash)
+BUILD := $(shell git rev-parse --short HEAD)
+
 # Target architecture to build for. Default to x86_64.
 ARCH := x86_64
 
@@ -24,7 +27,7 @@ CC := cc
 AR := ar
 
 # User controllable C flags.
-CFLAGS := -g -O2 -pipe -I./src/include -fsanitize=undefined 
+CFLAGS := -g -O2 -pipe -I./src/include -fsanitize=undefined -DKERNEL_BUILD='"$(BUILD)"'
 
 # User controllable C preprocessor flags. We set none by default.
 CPPFLAGS :=

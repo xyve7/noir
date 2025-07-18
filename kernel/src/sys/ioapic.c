@@ -28,7 +28,7 @@ void ioapic_init() {
     void *ioapic_phys = (void *)(uint64_t)i->address;
     void *ioapic_virt = VIRT(ioapic_phys);
 
-    vmm_map(&kernel_pm, (uintptr_t)ioapic_phys, (uintptr_t)ioapic_virt, VMM_PRESENT | VMM_WRITE);
+    vmm_map(&kernel_pagemap, (uintptr_t)ioapic_phys, (uintptr_t)ioapic_virt, VMM_PRESENT | VMM_WRITE);
     ioapic = ioapic_virt;
 
     // Setup the interrupt

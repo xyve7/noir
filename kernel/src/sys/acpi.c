@@ -10,26 +10,41 @@ __attribute__((used, section(".limine_requests"))) static volatile struct limine
     .id = LIMINE_RSDP_REQUEST,
     .revision = 0
 };
-
-rsdp *rsdp_ptr;
-xsdp *xsdp_ptr;
-
 bool is_extended = false;
 
 rsdt *rsdt_ptr;
 xsdt *xsdt_ptr;
 
+// void acpi_init() {
+//     // By default, assume rsdp
+//     rsdp *rsdp_ptr = (void *)VIRT(rsdp_request.response->address);
+//     xsdp *xsdp_ptr = nullptr;
+//
+//     if (rsdp_ptr->revision == 2) {
+//         // If the revision is 2, assume xsdp
+//         is_extended = true;
+//         xsdp_ptr = (void *)VIRT(rsdp_request.response->address);
+//     }
+//
+//     // Get the sdt, either xsdt or rsdt
+//     if (is_extended) {
+//         xsdt_ptr = (xsdt *)VIRT(xsdp_ptr->xsdt_address);
+//     } else {
+//         rsdt_ptr = (rsdt *)VIRT(rsdp_ptr->rsdt_address);
+//     }
+//
+//     LOG("ACPI Initialized");
+// }
+
 void acpi_init() {
     // By default, assume rsdp
-    rsdp_ptr = (void *)VIRT(rsdp_request.response->address);
+    rsdp *rsdp_ptr = (void *)VIRT(rsdp_request.response->address);
+    xsdp *xsdp_ptr = nullptr;
+
+    // If the revision is 2, its an xsdp
     if (rsdp_ptr->revision == 2) {
-        // If the revision is 2, assume xsdp
         is_extended = true;
         xsdp_ptr = (void *)VIRT(rsdp_request.response->address);
-    }
-
-    // Get the sdt, either xsdt or rsdt
-    if (is_extended) {
         xsdt_ptr = (xsdt *)VIRT(xsdp_ptr->xsdt_address);
     } else {
         rsdt_ptr = (rsdt *)VIRT(rsdp_ptr->rsdt_address);

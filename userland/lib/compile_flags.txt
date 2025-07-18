@@ -1,0 +1,6 @@
+-xc
+-Wall 
+-Wextra 
+-nostdlib
+-std=gnu2x 
+-I./

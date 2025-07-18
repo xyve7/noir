@@ -6,7 +6,7 @@
 typedef struct [[gnu::packed]] {
     uint16_t limit;
     uint64_t base;
-} idt_r;
+} idtr;
 
 // IDT entry
 typedef struct [[gnu::packed]] {

@@ -127,9 +127,7 @@ uint32_t bright_color_table[] = {
 static inline void handle_ansi(uint8_t ch) {
     // The CSI byte has been read
     if (csi) {
-        // We first handle the cases with no arguments
         switch (ch) {
-        // ESC[H (Home)
         case 'H': {
             col = 0;
             row = 0;

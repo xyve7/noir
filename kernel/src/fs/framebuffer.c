@@ -1,6 +1,5 @@
 #include "mm/pmm.h"
 #include "mm/vmm.h"
-#include "sys/smp.h"
 #include <fs/devfs.h>
 #include <fs/vfs.h>
 #include <kernel.h>
@@ -41,18 +40,6 @@ error framebuffer_info(vnode *node, vinfo *info) {
 }
 
 error framebuffer_map(vnode *node, size_t offset, size_t size, void **where) {
-    // FIXME: HORRENOUS HACK, THIS IS JUST SO DOOM WORKS
-
-    // We map the framebuffer into the processes memory
-    pagemap *pm = &cpu_get()->current_proc->pm;
-    // 0x0000700000000000
-    uintptr_t fb_phys = (uintptr_t)PHYS(framebuffer->address);
-    size_t fb_size = framebuffer->height * framebuffer->pitch;
-    for (uintptr_t i = 0; i < fb_size; i += PAGE_SIZE) {
-        vmm_map(pm, fb_phys + i, 0x0000700000000000 + i, VMM_WRITE | VMM_PRESENT | VMM_XD);
-    }
-
-    *where = (void *)0x0000700000000000;
     return OK;
 }
 void framebuffer_init() {

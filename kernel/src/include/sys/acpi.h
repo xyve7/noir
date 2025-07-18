@@ -21,11 +21,6 @@ typedef struct [[gnu::packed]] {
     uint8_t reserved[3];
 } xsdp;
 
-typedef enum {
-    RS,
-    XS
-} acpi_kind;
-
 typedef struct [[gnu::packed]] {
     char signature[4];
     uint32_t length;
@@ -48,5 +43,8 @@ typedef struct [[gnu::packed]] {
     uint64_t sdts[];
 } xsdt;
 
+// Initialize ACPI
 void acpi_init();
+// Get sdt_header of the specified signature
+// Ex: "APIC", "HPET"
 sdt_header *acpi_get_entry(char *signature);

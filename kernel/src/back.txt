@@ -1,0 +1,21 @@
+    void *tar = module_request.response->modules[0]->address;
+    size_t size = module_request.response->modules[0]->size;
+
+    mem_node *tar_buf_root = kmalloc(sizeof(mem_node));
+    tar_buf_root->node.ops = mem_ops;
+    tar_buf_root->memory = tar;
+    tar_buf_root->size = size;
+
+    vfs_init();
+    tarfs_init();
+    vfs_mount_raw((vnode *)tar_buf_root, "/", "tarfs");
+
+    // Initialize devices
+    devfs_init();
+    console_init();
+    framebuffer_init();
+
+    syscall_init();
+    proc_init();
+
+    printf("%s %hhu.%hhu.%hhu-%s+%s %s\n", kernel_name, kernel_major, kernel_minor, kernel_patch, kernel_revision, kernel_build, kernel_timestamp);

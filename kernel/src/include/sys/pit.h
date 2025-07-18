@@ -1,5 +1,7 @@
 #pragma once
 
+// The PIT is only used when calibrating the LAPIC timer
+
 #include <cpu/cpu.h>
 #include <stdint.h>
 

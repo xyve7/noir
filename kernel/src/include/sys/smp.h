@@ -1,16 +1,15 @@
 #pragma once
 
 #include <stdint.h>
-#include <sys/proc.h>
+#include <task/sched.h>
 
-// Data structure to hold current CPU data
+#define CPU_MAX 16
+
 typedef struct {
-    proc *current_proc;
+    thread *current_thread;
+    uint64_t kernel_stack;
+    uint64_t user_stack;
 } cpu;
 
-// Get the current CPU
+void cpu_set(cpu *c);
 cpu *cpu_get();
-// Set the current CPU
-void cpu_set(cpu *);
-// Initialize SMP
-void smp_init();

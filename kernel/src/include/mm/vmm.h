@@ -3,7 +3,7 @@
 #include <mm/pmm.h>
 
 typedef uintptr_t pagemap;
-extern pagemap kernel_pm;
+extern pagemap kernel_pagemap;
 
 #define VMM_PRESENT (1ul << 0)
 #define VMM_WRITE (1ul << 1)
@@ -19,6 +19,8 @@ extern pagemap kernel_pm;
 
 void vmm_init();
 void vmm_switch(pagemap *pm);
-pagemap vmm_pagemap_new();
 void vmm_map(pagemap *pm, uintptr_t phys, uintptr_t virt, uint64_t flags);
 void vmm_unmap(pagemap *pm, uintptr_t virt);
+
+pagemap vmm_new();
+void vmm_destroy(pagemap *pm);

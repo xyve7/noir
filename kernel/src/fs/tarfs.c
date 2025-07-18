@@ -119,11 +119,11 @@ error tarfs_info(vnode *node, vinfo *info) {
     tarfs_node *n = (tarfs_node *)node;
 
     // We read the header
-    posix_header header;
-    vfs_read(n->device, &header, n->offset, sizeof(header));
+    posix_header *header = kmalloc(sizeof(posix_header));
+    vfs_read(n->device, header, n->offset, sizeof(posix_header));
 
     // Get the type
-    switch (header.typeflag) {
+    switch (header->typeflag) {
     case TAR_REG:
         info->type = VFS_FILE;
         break;
@@ -135,28 +135,26 @@ error tarfs_info(vnode *node, vinfo *info) {
         break;
     }
 
-    info->size = otob(header.size);
+    info->size = otob(header->size);
 
     size_t count = 0;
     // Get count
-    if (header.typeflag == TAR_DIR || n->is_root) {
-        // VFS Node stuff
+    if (header->typeflag == TAR_DIR || n->is_root) {
         size_t offset = n->offset;
 
         // We read the header
-        posix_header header;
-        vfs_read(n->device, &header, offset, sizeof(header));
+        vfs_read(n->device, header, offset, sizeof(posix_header));
 
         // Offset 0 means root
-        size_t parent_slash = n->offset == 0 ? 0 : strcnt(header.name, '/');
-        while (memcmp(header.magic, "ustar", 5) == 0) {
+        size_t parent_slash = offset == 0 ? 0 : strcnt(header->name, '/');
+        while (memcmp(header->magic, "ustar", 5) == 0) {
             // Get information
-            size_t s = otob(header.size);
-            size_t child_slash = strcnt(header.name, '/');
+            size_t s = otob(header->size);
+            size_t child_slash = strcnt(header->name, '/');
 
             // If its regular it wont have an ending slash
             // So we add it
-            if (header.typeflag == TAR_REG) {
+            if (header->typeflag == TAR_REG) {
                 child_slash++;
             }
 
@@ -169,10 +167,11 @@ error tarfs_info(vnode *node, vinfo *info) {
             offset += (((s + 511) / 512) + 1) * 512;
 
             // We read the next header
-            vfs_read(n->device, &header, offset, sizeof(header));
+            vfs_read(n->device, header, offset, sizeof(posix_header));
         }
     }
     info->count = count;
+    kfree(header);
     return OK;
 }
 error tarfs_find(vnode *parent, const char *name, vnode **found) {

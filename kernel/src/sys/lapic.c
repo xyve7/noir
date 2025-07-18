@@ -110,7 +110,7 @@ void lapic_init() {
     // We load the LAPIC, and write the enable bit
     // This is to turn on the LAPIC for the processor
     // We map it
-    vmm_map(&kernel_pm, (uintptr_t)lapic_phys, (uintptr_t)lapic_virt, VMM_PRESENT | VMM_WRITE);
+    vmm_map(&kernel_pagemap, (uintptr_t)lapic_phys, (uintptr_t)lapic_virt, VMM_PRESENT | VMM_WRITE);
     lapic = lapic_virt;
 
     pic_disable();
