@@ -49,3 +49,4 @@ process *process_new(process *parent, const char *path);
 void process_spawn_thread(process *parent, uintptr_t entry);
 void schedule(cpu_context *state);
 void sched_init();
+void timer_handler(cpu_context *state);

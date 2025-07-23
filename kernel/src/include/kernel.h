@@ -40,6 +40,8 @@ extern const char *kernel_build;
 
 __attribute__((used, section(".limine_requests"))) extern volatile struct limine_hhdm_request hhdm_request;
 __attribute__((used, section(".limine_requests"))) extern volatile struct limine_memmap_request memmap_request;
+__attribute__((used, section(".limine_requests"))) extern volatile struct limine_module_request module_request;
+__attribute__((used, section(".limine_requests"))) extern volatile struct limine_framebuffer_request framebuffer_request;
 
 // Framebuffer
 extern struct limine_framebuffer *framebuffer;

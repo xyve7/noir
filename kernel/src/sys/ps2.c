@@ -1,4 +1,4 @@
-#include "kernel.h"
+#include <kernel.h>
 #include <cpu/cpu.h>
 #include <sys/ps2.h>
 

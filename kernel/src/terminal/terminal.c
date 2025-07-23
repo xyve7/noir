@@ -265,3 +265,7 @@ ensure:
         scroll();
     }
 }
+// This is for the printf implementation and write syscall
+void write_char(char ch) {
+    terminal_write((uint8_t)ch);
+}

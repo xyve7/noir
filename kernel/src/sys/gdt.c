@@ -1,4 +1,4 @@
-#include "cpu/cpu.h"
+#include <cpu/cpu.h>
 #include <kernel.h>
 #include <stdint.h>
 #include <sys/gdt.h>

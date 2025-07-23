@@ -21,15 +21,15 @@ static inline uint8_t serial_status() {
     return inb(COM1 + COM_LINE_STATUS_REGISTER);
 }
 void serial_write(uint8_t byte) {
-    // Loop until the data is ready to be read
-    while (!(serial_status() & COM_READ)) {
+    // Loop until the data is ready to be sent
+    while (!(serial_status() & COM_WRITE)) {
         asm("pause");
     }
     outb(COM1, byte);
 }
 uint8_t serial_read() {
-    // Loop until the data is ready to be sent
-    while (!(serial_status() & COM_WRITE)) {
+    // Loop until the data is ready to be read
+    while (!(serial_status() & COM_READ)) {
         asm("pause");
     }
     return inb(COM1);

@@ -1,4 +1,4 @@
-#include "cpu/cpu.h"
+#include <cpu/cpu.h>
 #include <lib/printf.h>
 #include <lib/spinlock.h>
 #include <stddef.h>
@@ -168,15 +168,11 @@ int printf(const char *restrict format, ...) {
     va_list list;
     va_start(list, format);
 
-    bool state = int_get_state();
-    int_disable();
-
-    spinlock_acquire(&printf_lock);
+    bool state = spinlock_acquire_irq_save(&printf_lock);
 
     int ret = vprintf(format, list);
 
-    spinlock_release(&printf_lock);
-    int_set_state(state);
+    spinlock_release_irq_restore(&printf_lock, state);
 
     va_end(list);
     return ret;

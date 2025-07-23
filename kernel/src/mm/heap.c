@@ -1,4 +1,3 @@
-#include "cpu/cpu.h"
 #include <kernel.h>
 #include <lib/spinlock.h>
 #include <lib/string.h>
@@ -40,9 +39,7 @@ void *heap_alloc(size_t size) {
         return nullptr;
     }
 
-    bool state = int_get_state();
-    int_disable();
-    spinlock_acquire(&heap_lock);
+    bool state = spinlock_acquire_irq_save(&heap_lock);
 
     // We check the free list first
     alloc_header *n = free_list;
@@ -60,8 +57,7 @@ void *heap_alloc(size_t size) {
             n->next = used_list;
             used_list = n;
 
-            spinlock_release(&heap_lock);
-            int_set_state(state);
+            spinlock_release_irq_restore(&heap_lock, state);
 
             // Return
             return (void *)(n + 1);
@@ -77,8 +73,7 @@ void *heap_alloc(size_t size) {
 
     // Too much memory allocated
     if (current >= end) {
-        spinlock_release(&heap_lock);
-        int_set_state(state);
+        spinlock_release_irq_restore(&heap_lock, state);
         PANIC("out of memory: %ld\n", current - end);
     }
 
@@ -90,8 +85,7 @@ void *heap_alloc(size_t size) {
     // Add to the list
     used_list = block;
 
-    spinlock_release(&heap_lock);
-    int_set_state(state);
+    spinlock_release_irq_restore(&heap_lock, state);
 
     return (void *)(block + 1);
 }
@@ -100,9 +94,7 @@ void heap_free(void *ptr) {
         return;
     }
 
-    bool state = int_get_state();
-    int_disable();
-    spinlock_acquire(&heap_lock);
+    bool state = spinlock_acquire_irq_save(&heap_lock);
 
     alloc_header *block = (alloc_header *)ptr - 1;
     // Remove it from the used list
@@ -117,8 +109,7 @@ void heap_free(void *ptr) {
     block->next = free_list;
     free_list = block;
 
-    spinlock_release(&heap_lock);
-    int_set_state(state);
+    spinlock_release_irq_restore(&heap_lock, state);
 }
 void *heap_realloc(void *ptr, size_t size) {
     if (ptr == nullptr) {

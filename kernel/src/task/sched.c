@@ -1,14 +1,14 @@
 #include <cpu/cpu.h>
-#include <fs/vfs.h>
-#include <mm/pmm.h>
-#include <mm/vmm.h>
-#include <sys/gdt.h>
-#include <sys/smp.h>
 #include <elf.h>
+#include <fs/vfs.h>
 #include <kernel.h>
 #include <lib/string.h>
 #include <mm/heap.h>
+#include <mm/pmm.h>
+#include <mm/vmm.h>
 #include <stdint.h>
+#include <sys/gdt.h>
+#include <sys/smp.h>
 #include <task/sched.h>
 
 process *process_table[MAX_PROCESSES];
@@ -227,4 +227,8 @@ void sched_init() {
     t->context->ss = KERNEL_SS;
 
     thread_idle = t;
+}
+
+void timer_handler(cpu_context *state) {
+    schedule(state);
 }

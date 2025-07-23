@@ -1,7 +1,7 @@
 #include <fs/vfs.h>
 #include <lib/hashmap.h>
-#include <lib/sb.h>
 #include <lib/string.h>
+#include <lib/string_buffer.h>
 #include <lib/vector.h>
 #include <mm/heap.h>
 #include <stdarg.h>
@@ -35,15 +35,15 @@ char *path_normalize(const char *path) {
         token = strtok(nullptr, "/");
     }
 
-    sb norm = sb_new();
+    string_buffer norm = string_buffer_new();
     // This means we have just a root
     if (parts.len < 1) {
-        sb_push_ch(&norm, '/');
+        string_buffer_push_ch(&norm, '/');
     } else {
         for (size_t i = 0; i < parts.len; i++) {
             char *s = vector_at(&parts, i);
-            sb_push_ch(&norm, '/');
-            sb_push_str(&norm, s);
+            string_buffer_push_ch(&norm, '/');
+            string_buffer_push_str(&norm, s);
         }
     }
 
@@ -62,14 +62,14 @@ char *path_from_parts(...) {
     va_start(args);
 
     // Create a new buffer
-    sb joined = sb_new();
+    string_buffer joined = string_buffer_new();
 
     // We keep adding the args
     // The args are terminated with nullptr
     const char *arg = va_arg(args, const char *);
     while (arg) {
-        sb_push_ch(&joined, '/');
-        sb_push_str(&joined, arg);
+        string_buffer_push_ch(&joined, '/');
+        string_buffer_push_str(&joined, arg);
         // Next argument
         arg = va_arg(args, const char *);
     }

@@ -1,5 +1,5 @@
-#include "kernel.h"
-#include "mm/vmm.h"
+#include <kernel.h>
+#include <mm/vmm.h>
 #include <lib/vector.h>
 #include <mm/pmm.h>
 #include <stdint.h>

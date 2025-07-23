@@ -11,9 +11,6 @@ error tarfs_close(vnode *node);
 error tarfs_info(vnode *node, vinfo *info);
 error tarfs_find(vnode *parent, const char *name, vnode **found);
 error tarfs_entry(vnode *parent, size_t index, vnode **found);
-error tarfs_create(vnode *parent, const char *name, vtype type, vflags flags);
-error tarfs_rename(vnode *node, const char *new_name);
-error tarfs_delete(vnode *node);
 
 typedef struct {
     vnode node;
@@ -60,9 +57,6 @@ vnode_ops tarfs_ops = {
     .info = tarfs_info,
     .find = tarfs_find,
     .entry = tarfs_entry,
-    .create = tarfs_create,
-    .rename = tarfs_rename,
-    .delete = tarfs_delete,
 };
 int otob(char *str) {
     size_t size = strlen(str);
@@ -296,13 +290,4 @@ error tarfs_entry(vnode *parent, size_t index, vnode **found) {
         vfs_read(p->device, &header, offset, sizeof(header));
     }
     return NO_ENTRY;
-}
-error tarfs_create(vnode *parent, const char *name, vtype type, vflags flags) {
-    return OK;
-}
-error tarfs_rename(vnode *node, const char *new_name) {
-    return OK;
-}
-error tarfs_delete(vnode *node) {
-    return OK;
 }

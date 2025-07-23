@@ -99,9 +99,7 @@ uintptr_t *next_level(uintptr_t *prev, uintptr_t pml, bool allocate) {
     return (uintptr_t *)VIRT(PHYSADDR(prev[pml]));
 }
 void vmm_map(page_table *pt, uintptr_t phys, uintptr_t virt, uint64_t flags) {
-    bool state = int_get_state();
-    int_disable();
-    spinlock_acquire(&vmm_lock);
+    bool state = spinlock_acquire_irq_save(&vmm_lock);
 
     uintptr_t pml1 = PML1(virt);
     uintptr_t pml2 = PML2(virt);
@@ -116,13 +114,10 @@ void vmm_map(page_table *pt, uintptr_t phys, uintptr_t virt, uint64_t flags) {
 
     p[pml1] = phys | flags;
 
-    spinlock_release(&vmm_lock);
-    int_set_state(state);
+    spinlock_release_irq_restore(&vmm_lock, state);
 }
 void vmm_unmap(page_table *pt, uintptr_t virt) {
-    bool state = int_get_state();
-    int_disable();
-    spinlock_acquire(&vmm_lock);
+    bool state = spinlock_acquire_irq_save(&vmm_lock);
 
     uintptr_t pml1 = PML1(virt);
     uintptr_t pml2 = PML2(virt);
@@ -137,6 +132,5 @@ void vmm_unmap(page_table *pt, uintptr_t virt) {
 
     p[pml1] = 0;
 
-    spinlock_release(&vmm_lock);
-    int_set_state(state);
+    spinlock_release_irq_restore(&vmm_lock, state);
 }

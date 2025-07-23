@@ -28,6 +28,7 @@ const char scancode_set1_ascii_shift[128] = {
 #define KBD_LSHIFT 0x2A
 #define KBD_RSHIFT 0x36
 
+spinlock kbd_lock = SPINLOCK_INIT;
 ring_buffer kbd_buffer;
 bool shift = false;
 
@@ -54,11 +55,12 @@ void keyboard_handler(cpu_context *frame) {
             } else {
                 ch = scancode_set1_ascii[scan];
             }
+            spinlock_acquire(&kbd_lock);
             ring_buffer_write(&kbd_buffer, (uint8_t)ch);
+            spinlock_release(&kbd_lock);
         }
     }
 }
-spinlock kbd_lock = SPINLOCK_INIT;
 char keyboard_read() {
     while (ring_buffer_empty(&kbd_buffer)) {
         asm("pause");

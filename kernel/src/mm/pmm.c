@@ -1,6 +1,4 @@
-#include "cpu/cpu.h"
-#include "dev/serial.h"
-#include "mm/vmm.h"
+#include <mm/vmm.h>
 #include <kernel.h>
 #include <lib/spinlock.h>
 #include <lib/string.h>
@@ -21,13 +19,6 @@ uint64_t total_pages = 0;
 uint8_t *bitmap = nullptr;
 // size aligned by page size
 uint64_t bitmap_size_aligned = 0;
-
-uint64_t pmm_bitmap_size() {
-    return bitmap_size_aligned;
-}
-uint8_t *pmm_bitmap() {
-    return bitmap;
-}
 
 void set(uint64_t i) {
     bitmap[i / 8] |= (1 << (i % 8));
@@ -84,10 +75,7 @@ void pmm_init() {
 }
 
 void *pmm_alloc(size_t count) {
-    bool state = int_get_state();
-    int_disable();
-    spinlock_acquire(&pmm_lock);
-
+    bool state = spinlock_acquire_irq_save(&pmm_lock);
     // for now, we will search from the start
     // yes this is slow, ill fix it later
     uint64_t found = 0;
@@ -110,13 +98,11 @@ void *pmm_alloc(size_t count) {
             }
             // get the address
             void *address = (void *)(start * PAGE_SIZE);
-            spinlock_release(&pmm_lock);
-            int_set_state(state);
+            spinlock_release_irq_restore(&pmm_lock, state);
             return address;
         }
     }
-    spinlock_release(&pmm_lock);
-    int_set_state(state);
+    spinlock_release_irq_restore(&pmm_lock, state);
 
     PANIC("PMM is unable to allocate %lu pages\n", count);
     UNREACHABLE();
@@ -127,18 +113,14 @@ void *pmm_alloc_zeroed(size_t count) {
     return PHYS(page);
 }
 void pmm_free(void *address, size_t count) {
-    bool state = int_get_state();
-    int_disable();
-    spinlock_acquire(&pmm_lock);
+    bool state = spinlock_acquire_irq_save(&pmm_lock);
 
-    uint64_t page = (uint64_t)address;
-    page /= PAGE_SIZE;
-
+    uint64_t page = (uint64_t)address / PAGE_SIZE;
     for (uint64_t i = 0; i < count; i++) {
         clear(page + i);
     }
-    spinlock_release(&pmm_lock);
-    int_set_state(state);
+    
+    spinlock_release_irq_restore(&pmm_lock, state);
 }
 
 void pmm_map(uintptr_t *pt) {

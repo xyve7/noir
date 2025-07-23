@@ -1,6 +1,6 @@
-#include "sys/irq.h"
-#include "sys/pic.h"
-#include "sys/pit.h"
+#include <sys/irq.h>
+#include <sys/pic.h>
+#include <sys/pit.h>
 #include <cpu/cpu.h>
 #include <kernel.h>
 #include <lib/spinlock.h>
