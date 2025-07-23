@@ -2,26 +2,6 @@
 #include <stdint.h>
 
 typedef struct [[gnu::packed]] {
-    char signature[8];
-    uint8_t checksum;
-    char oem_id[6];
-    uint8_t revision;
-    uint32_t rsdt_address;
-} rsdp;
-
-typedef struct [[gnu::packed]] {
-    char signature[8];
-    uint8_t checksum;
-    char oem_id[6];
-    uint8_t revision;
-    uint32_t rsdt_address;
-    uint32_t length;
-    uint64_t xsdt_address;
-    uint8_t ext_checksum;
-    uint8_t reserved[3];
-} xsdp;
-
-typedef struct [[gnu::packed]] {
     char signature[4];
     uint32_t length;
     uint8_t revision;
@@ -32,16 +12,6 @@ typedef struct [[gnu::packed]] {
     uint32_t creator_id;
     uint32_t creator_revision;
 } sdt_header;
-
-typedef struct [[gnu::packed]] {
-    sdt_header header;
-    uint32_t sdts[];
-} rsdt;
-
-typedef struct [[gnu::packed]] {
-    sdt_header header;
-    uint64_t sdts[];
-} xsdt;
 
 // Initialize ACPI
 void acpi_init();

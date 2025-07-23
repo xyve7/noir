@@ -54,7 +54,7 @@ static bool csi = false;
 static char ansi_buffer[16] = {0};
 static uint64_t buffer_i = 0;
 
-// This optimization makes character drawing fast
+// This optimization makes character drawing faster
 static inline void draw_char(uint64_t x, uint64_t y, uint8_t ch) {
     size_t index = (size_t)ch;
     const uint8_t *glyph = INTELV8[index];
@@ -128,33 +128,6 @@ static inline void handle_ansi(uint8_t ch) {
     // The CSI byte has been read
     if (csi) {
         switch (ch) {
-        case 'H': {
-            col = 0;
-            row = 0;
-            break;
-        }
-        case 'A': {
-            int lines = get_ansi_arg();
-            row -= lines;
-            if (row < 0)
-                row = 0;
-            break;
-        }
-        case 'B': {
-            int lines = get_ansi_arg();
-            row += lines;
-            break;
-        }
-        case 'C': {
-            int cols = get_ansi_arg();
-            col += cols;
-            break;
-        }
-        case 'D': {
-            int cols = get_ansi_arg();
-            col -= cols;
-            break;
-        }
         case 'm': {
             int color = get_ansi_arg();
             // We get the first number
@@ -195,20 +168,6 @@ static inline void handle_ansi(uint8_t ch) {
             return;
         }
         }
-        // We make sure we are still in bounds
-        if (row < 0) {
-            row = 0;
-        }
-        if (row >= rows) {
-            row = rows - 1;
-        }
-        if (col < 0) {
-            col = 0;
-        }
-        if (col >= cols) {
-            col = cols - 1;
-        }
-
         // Disable CSI
         csi = false;
         ansi = false;

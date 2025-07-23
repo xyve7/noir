@@ -6,35 +6,45 @@
 #include <stddef.h>
 #include <sys/acpi.h>
 
+typedef struct [[gnu::packed]] {
+    char signature[8];
+    uint8_t checksum;
+    char oem_id[6];
+    uint8_t revision;
+    uint32_t rsdt_address;
+} rsdp;
+
+typedef struct [[gnu::packed]] {
+    char signature[8];
+    uint8_t checksum;
+    char oem_id[6];
+    uint8_t revision;
+    uint32_t rsdt_address;
+    uint32_t length;
+    uint64_t xsdt_address;
+    uint8_t ext_checksum;
+    uint8_t reserved[3];
+} xsdp;
+
+typedef struct [[gnu::packed]] {
+    sdt_header header;
+    uint32_t sdts[];
+} rsdt;
+
+typedef struct [[gnu::packed]] {
+    sdt_header header;
+    uint64_t sdts[];
+} xsdt;
+
 __attribute__((used, section(".limine_requests"))) static volatile struct limine_rsdp_request rsdp_request = {
     .id = LIMINE_RSDP_REQUEST,
     .revision = 0
 };
+
 bool is_extended = false;
 
 rsdt *rsdt_ptr;
 xsdt *xsdt_ptr;
-
-// void acpi_init() {
-//     // By default, assume rsdp
-//     rsdp *rsdp_ptr = (void *)VIRT(rsdp_request.response->address);
-//     xsdp *xsdp_ptr = nullptr;
-//
-//     if (rsdp_ptr->revision == 2) {
-//         // If the revision is 2, assume xsdp
-//         is_extended = true;
-//         xsdp_ptr = (void *)VIRT(rsdp_request.response->address);
-//     }
-//
-//     // Get the sdt, either xsdt or rsdt
-//     if (is_extended) {
-//         xsdt_ptr = (xsdt *)VIRT(xsdp_ptr->xsdt_address);
-//     } else {
-//         rsdt_ptr = (rsdt *)VIRT(rsdp_ptr->rsdt_address);
-//     }
-//
-//     LOG("ACPI Initialized");
-// }
 
 void acpi_init() {
     // By default, assume rsdp

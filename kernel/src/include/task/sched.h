@@ -39,7 +39,7 @@ typedef struct {
 typedef struct process {
     process *parent;
     uint64_t pid;
-    pagemap pm;
+    page_table pt;
     file *files[MAX_FILES_PER_PROCESS];
     process *children[MAX_CHILDREN_PER_PROCESS];
     thread *threads[MAX_THREADS_PER_PROCESS];

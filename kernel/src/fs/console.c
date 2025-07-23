@@ -58,7 +58,7 @@ error console_info(vnode *node, vinfo *info) {
     return OK;
 }
 void console_init() {
-    console_node *n = kmalloc(sizeof(console_node));
+    console_node *n = heap_alloc(sizeof(console_node));
     n->node.node.ops = console_ops;
     strcpy(n->node.node.name, "console");
 

@@ -2,7 +2,7 @@
 #include <lib/hashmap.h>
 #include <lib/sb.h>
 #include <lib/string.h>
-#include <lib/vec.h>
+#include <lib/vector.h>
 #include <mm/heap.h>
 #include <stdarg.h>
 
@@ -14,7 +14,7 @@ char *path_normalize(const char *path) {
     // This is so strtok doesn't cause UB
     char *duped = strdup(path);
 
-    vec parts = vec_new();
+    vector parts = vector_new();
     char *token = strtok(duped, "/");
     while (token) {
         if (strncmp(token, "..", 2) == 0) {
@@ -22,12 +22,12 @@ char *path_normalize(const char *path) {
             if (parts.len > 0) {
                 // We pop the previous directory off the path.
                 // This is essentially moving back a directory.
-                vec_pop(&parts);
+                vector_pop(&parts);
             }
             // We skip going up a directory if its at the root
         } else if (strncmp(token, ".", 1) != 0) {
             // We push the token that isn't "."
-            vec_push(&parts, token);
+            vector_push(&parts, token);
         }
 
         // "." is implicitly handled
@@ -41,14 +41,14 @@ char *path_normalize(const char *path) {
         sb_push_ch(&norm, '/');
     } else {
         for (size_t i = 0; i < parts.len; i++) {
-            char *s = vec_at(&parts, i);
+            char *s = vector_at(&parts, i);
             sb_push_ch(&norm, '/');
             sb_push_str(&norm, s);
         }
     }
 
-    kfree(duped);
-    vec_free(&parts);
+    heap_free(duped);
+    vector_free(&parts);
 
     return norm.data;
 }
@@ -255,8 +255,8 @@ error vfs_lookup(const char *path, vnode **found) {
     *found = current;
 
 cleanup:
-    kfree(duped);
-    kfree(current_path);
+    heap_free(duped);
+    heap_free(current_path);
     return err;
 }
 // Open a VFS
@@ -283,7 +283,7 @@ error vfs_open(const char *path, vflags flags, vnode **result) {
     // Return the node we found
     *result = found;
 cleanup:
-    kfree(normalized);
+    heap_free(normalized);
     return err;
 }
 error vfs_read(vnode *node, void *buffer, size_t offset, size_t size) {
@@ -330,7 +330,7 @@ error vfs_info(const char *path, vinfo *info) {
     // Return the node we found
     *info = i;
 cleanup:
-    kfree(normalized);
+    heap_free(normalized);
     return err;
 }
 error vfs_entry(const char *path, size_t index, vnode **found) {
@@ -357,7 +357,7 @@ error vfs_entry(const char *path, size_t index, vnode **found) {
     // Return the node we found
     *found = f2;
 cleanup:
-    kfree(normalized);
+    heap_free(normalized);
     return err;
 }
 
@@ -384,9 +384,9 @@ error vfs_create(const char *path, vtype type, vflags flags) {
     err = f->ops.create(f, basename, type, flags);
 
 cleanup:
-    kfree(normalized);
-    kfree(parent);
-    kfree(basename);
+    heap_free(normalized);
+    heap_free(parent);
+    heap_free(basename);
     return err;
 }
 error vfs_rename(const char *old_name, const char *new_name);

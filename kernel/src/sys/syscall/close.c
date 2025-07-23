@@ -13,7 +13,7 @@ error close_fd(process *current_process, uint64_t fd) {
         return err;
     }
 
-    kfree(current_process->files[fd]);
+    heap_free(current_process->files[fd]);
     current_process->files[fd] = nullptr;
     return OK;
 }

@@ -11,22 +11,21 @@ error devfs_entry(vnode *parent, size_t index, vnode **found);
 vfs_ops devfs_vfs_ops = {
     .mount = devfs_mount
 };
-
-vfs *devfs_vfs = nullptr;
-// We store the root since there is really only one devfs
-devfs_node *root = nullptr;
 vnode_ops devfs_ops = {
     .find = devfs_find,
     .entry = devfs_entry,
 };
 
+vfs *devfs_vfs = nullptr;
+devfs_node *root = nullptr;
+
 void devfs_init() {
     // Create VFS
-    devfs_vfs = kmalloc(sizeof(vfs));
+    devfs_vfs = heap_alloc(sizeof(vfs));
     strcpy(devfs_vfs->name, "devfs");
     devfs_vfs->ops = devfs_vfs_ops;
 
-    root = kmalloc(sizeof(devfs_node));
+    root = heap_alloc(sizeof(devfs_node));
     memset(root, 0, sizeof(*root));
     root->node.ops = devfs_ops;
     root->children = hashmap_new();
@@ -40,12 +39,15 @@ void devfs_add(vnode *v) {
     hashmap_set(&root->children, v->name, v, sizeof(*v));
 }
 error devfs_mount(vnode *device, vmount **mount) {
-    // When mounting the devfs, the device itself doesnt matter
+    // It is the devfs, device doesn't matter
     (void)device;
 
-    *mount = kmalloc(sizeof(vmount));
-    (*mount)->root = (vnode *)root;
-    (*mount)->fs = devfs_vfs;
+    // Create the mount point
+    vmount *m = heap_alloc(sizeof(vmount));
+    m->root = (vnode *)root;
+    m->fs = devfs_vfs;
+    
+    *mount = m;
 
     return OK;
 }

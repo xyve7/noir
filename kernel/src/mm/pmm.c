@@ -121,7 +121,7 @@ void *pmm_alloc(size_t count) {
     PANIC("PMM is unable to allocate %lu pages\n", count);
     UNREACHABLE();
 }
-void *pmm_allocz(size_t count) {
+void *pmm_alloc_zeroed(size_t count) {
     void *page = VIRT(pmm_alloc(count));
     memset(page, 0, count * PAGE_SIZE);
     return PHYS(page);
@@ -141,9 +141,9 @@ void pmm_free(void *address, size_t count) {
     int_set_state(state);
 }
 
-void pmm_map(uintptr_t *pm) {
+void pmm_map(uintptr_t *pt) {
     for (uint64_t i = 0; i < bitmap_size_aligned; i += PAGE_SIZE) {
         uintptr_t addr = (uintptr_t)(bitmap + i);
-        vmm_map(pm, (uintptr_t)PHYS(addr), addr, VMM_PRESENT | VMM_WRITE);
+        vmm_map(pt, (uintptr_t)PHYS(addr), addr, VMM_PRESENT | VMM_WRITE);
     }
 }

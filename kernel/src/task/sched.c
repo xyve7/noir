@@ -1,9 +1,9 @@
-#include "cpu/cpu.h"
-#include "fs/vfs.h"
-#include "mm/pmm.h"
-#include "mm/vmm.h"
-#include "sys/gdt.h"
-#include "sys/smp.h"
+#include <cpu/cpu.h>
+#include <fs/vfs.h>
+#include <mm/pmm.h>
+#include <mm/vmm.h>
+#include <sys/gdt.h>
+#include <sys/smp.h>
 #include <elf.h>
 #include <kernel.h>
 #include <lib/string.h>
@@ -23,15 +23,15 @@ uintptr_t user_stack_current = user_stack_base;
 
 [[gnu::noreturn]] void context_switch(uint64_t rsp);
 
-uintptr_t new_user_stack(pagemap *process_pm) {
-    void *user_stack = pmm_allocz(1);
+uintptr_t new_user_stack(page_table *process_pm) {
+    void *user_stack = pmm_alloc_zeroed(1);
     uintptr_t user_mapping = user_stack_current;
     vmm_map(process_pm, (uintptr_t)user_stack, user_mapping, VMM_PRESENT | VMM_WRITE | VMM_USER);
     user_stack_current += PAGE_SIZE;
     return user_mapping + PAGE_SIZE;
 }
 uintptr_t new_kernel_stack() {
-    void *kernel_stack = pmm_allocz(4);
+    void *kernel_stack = pmm_alloc_zeroed(4);
     return (uintptr_t)VIRT(kernel_stack) + (PAGE_SIZE * 4);
 }
 
@@ -68,13 +68,13 @@ void enqueue(thread *t) {
 }
 
 thread *thread_new(process *parent, uintptr_t entry) {
-    thread *t = kmalloc(sizeof(thread));
+    thread *t = heap_alloc(sizeof(thread));
     t->parent = parent;
     t->state = READY;
     t->tid = next_tid(parent);
     t->entry = entry;
     t->kernel_stack = new_kernel_stack();
-    t->user_stack = new_user_stack(&parent->pm);
+    t->user_stack = new_user_stack(&parent->pt);
     t->context = (cpu_context *)(t->kernel_stack - sizeof(cpu_context));
 
     t->context->rip = entry;
@@ -86,7 +86,7 @@ thread *thread_new(process *parent, uintptr_t entry) {
     enqueue(t);
     return t;
 }
-uintptr_t load_elf(pagemap *pm, void *buffer) {
+uintptr_t load_elf(page_table *pt, void *buffer) {
     // Read ehdr
     elf64_ehdr *e = buffer;
 
@@ -123,37 +123,37 @@ uintptr_t load_elf(pagemap *pm, void *buffer) {
         // Technically its already mapped but, you know what I mean
 
         // We copy the page
-        void *page = VIRT(pmm_allocz(1));
+        void *page = VIRT(pmm_alloc_zeroed(1));
         memcpy(page, buffer + p[i].offset, p[i].memsz);
 
         // We map the page
         page = PHYS(page);
         void *virt_page = (void *)p[i].vaddr;
 
-        vmm_map(pm, (uintptr_t)page, (uintptr_t)virt_page, flags);
+        vmm_map(pt, (uintptr_t)page, (uintptr_t)virt_page, flags);
     }
     return entry;
 }
 
 process *process_new(process *parent, const char *path) {
-    // We create the new pagemap and map the elf to it
-    pagemap new_process_pagemap = vmm_new();
+    // We create the new page_table and map the elf to it
+    page_table new_process_page_table = vmm_new();
 
     vinfo elf_info;
     vfs_info(path, &elf_info);
 
-    void *buffer = kmalloc(elf_info.size);
+    void *buffer = heap_alloc(elf_info.size);
     vnode *elf;
     vfs_open(path, VFS_READ, &elf);
     vfs_read(elf, buffer, 0, elf_info.size);
     vfs_close(elf);
 
-    uintptr_t entry = load_elf(&new_process_pagemap, buffer);
+    uintptr_t entry = load_elf(&new_process_page_table, buffer);
 
-    process *p = kmalloc(sizeof(process));
+    process *p = heap_alloc(sizeof(process));
     p->parent = parent;
     p->pid = next_pid();
-    p->pm = new_process_pagemap;
+    p->pt = new_process_page_table;
     p->threads[0] = thread_new(p, entry);
 
     process_table[p->pid] = p;
@@ -185,9 +185,9 @@ void sched_switch() {
     current_cpu->user_stack = t->user_stack;
 
     if (t == thread_idle) {
-        vmm_switch(&kernel_pagemap);
+        vmm_switch(&kernel_page_table);
     } else {
-        vmm_switch(&t->parent->pm);
+        vmm_switch(&t->parent->pt);
     }
     gdt_set_rsp0(t->kernel_stack);
     context_switch((uint64_t)t->context);
@@ -212,7 +212,7 @@ void sched_idle() {
     }
 }
 void sched_init() {
-    thread *t = kmalloc(sizeof(thread));
+    thread *t = heap_alloc(sizeof(thread));
     t->parent = nullptr;
     t->state = READY;
     t->tid = 0;

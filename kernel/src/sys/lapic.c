@@ -4,7 +4,7 @@
 #include <cpu/cpu.h>
 #include <kernel.h>
 #include <lib/spinlock.h>
-#include <lib/vec.h>
+#include <lib/vector.h>
 #include <mm/pmm.h>
 #include <mm/vmm.h>
 #include <stdint.h>
@@ -53,7 +53,7 @@ void lapic_enable() {
     // We map the NMI to, but we have to check which one it is
     // Generally its LINT1
     for (size_t i = 0; i < lapic_nmis.len; i++) {
-        madt_lapic_nmi *lapic_nmi = vec_at(&lapic_nmis, i);
+        madt_lapic_nmi *lapic_nmi = vector_at(&lapic_nmis, i);
         // We check if the current lapic id is the same
         // as the proc_id for the lapic_nmi
 
@@ -110,7 +110,7 @@ void lapic_init() {
     // We load the LAPIC, and write the enable bit
     // This is to turn on the LAPIC for the processor
     // We map it
-    vmm_map(&kernel_pagemap, (uintptr_t)lapic_phys, (uintptr_t)lapic_virt, VMM_PRESENT | VMM_WRITE);
+    vmm_map(&kernel_page_table, (uintptr_t)lapic_phys, (uintptr_t)lapic_virt, VMM_PRESENT | VMM_WRITE);
     lapic = lapic_virt;
 
     pic_disable();

@@ -26,6 +26,6 @@ void pit_sleep(uint64_t ms) {
     uint64_t start = count;
     uint64_t until = start + ms;
     while (count < until) {
-        __builtin_ia32_pause();
+        asm ("pause");
     }
 }

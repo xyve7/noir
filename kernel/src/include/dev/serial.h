@@ -3,8 +3,6 @@
 #include <lib/printf.h>
 #include <stdint.h>
 
-#define COM1 0x3F8
-
 // Initialize serial
 void serial_init();
 

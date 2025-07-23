@@ -77,7 +77,7 @@ int otob(char *str) {
 }
 void tarfs_init() {
     // Create VFS
-    tarfs_vfs = kmalloc(sizeof(vfs));
+    tarfs_vfs = heap_alloc(sizeof(vfs));
     strcpy(tarfs_vfs->name, "tarfs");
     tarfs_vfs->ops = tarfs_vfs_ops;
 
@@ -87,7 +87,7 @@ void tarfs_init() {
 }
 error tarfs_mount(vnode *device, vmount **mount) {
     // We create the root
-    tarfs_node *root = kmalloc(sizeof(tarfs_node));
+    tarfs_node *root = heap_alloc(sizeof(tarfs_node));
     memset(root, 0, sizeof(*root));
     root->node.ops = tarfs_ops;
     root->device = device;
@@ -95,7 +95,7 @@ error tarfs_mount(vnode *device, vmount **mount) {
     root->is_root = true;
 
     // Create mountpoint
-    *mount = kmalloc(sizeof(vmount));
+    *mount = heap_alloc(sizeof(vmount));
     (*mount)->root = (vnode *)root;
     (*mount)->fs = tarfs_vfs;
 
@@ -119,7 +119,7 @@ error tarfs_info(vnode *node, vinfo *info) {
     tarfs_node *n = (tarfs_node *)node;
 
     // We read the header
-    posix_header *header = kmalloc(sizeof(posix_header));
+    posix_header *header = heap_alloc(sizeof(posix_header));
     vfs_read(n->device, header, n->offset, sizeof(posix_header));
 
     // Get the type
@@ -171,7 +171,7 @@ error tarfs_info(vnode *node, vinfo *info) {
         }
     }
     info->count = count;
-    kfree(header);
+    heap_free(header);
     return OK;
 }
 error tarfs_find(vnode *parent, const char *name, vnode **found) {
@@ -211,7 +211,7 @@ error tarfs_find(vnode *parent, const char *name, vnode **found) {
                 last_slash++;
             }
             if (strcmp(last_slash, name) == 0) {
-                tarfs_node *f = kmalloc(sizeof(tarfs_node));
+                tarfs_node *f = heap_alloc(sizeof(tarfs_node));
                 f->device = p->device;
                 f->offset = offset;
                 f->is_root = false;
@@ -219,12 +219,12 @@ error tarfs_find(vnode *parent, const char *name, vnode **found) {
                 strcpy(f->node.name, name);
 
                 f->node.ops = tarfs_ops;
-                kfree(n);
+                heap_free(n);
 
                 *found = (vnode *)f;
                 return OK;
             }
-            kfree(n);
+            heap_free(n);
         }
         // Skip past the header and data
         offset += (((s + 511) / 512) + 1) * 512;
@@ -261,7 +261,7 @@ error tarfs_entry(vnode *parent, size_t index, vnode **found) {
         // If we have one more slash than the root
         if (parent_slash + 1 == child_slash) {
             if (i == index) {
-                tarfs_node *f = kmalloc(sizeof(tarfs_node));
+                tarfs_node *f = heap_alloc(sizeof(tarfs_node));
                 f->device = p->device;
                 f->offset = offset;
                 f->is_root = false;
@@ -281,7 +281,7 @@ error tarfs_entry(vnode *parent, size_t index, vnode **found) {
                 strcpy(f->node.name, last_slash);
 
                 f->node.ops = tarfs_ops;
-                kfree(name);
+                heap_free(name);
 
                 *found = (vnode *)f;
                 return OK;

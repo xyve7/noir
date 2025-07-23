@@ -1,6 +1,6 @@
 #include "kernel.h"
 #include "mm/vmm.h"
-#include <lib/vec.h>
+#include <lib/vector.h>
 #include <mm/pmm.h>
 #include <stdint.h>
 #include <sys/ioapic.h>
@@ -23,12 +23,12 @@ uint32_t ioapic_read(volatile void *address, uint8_t index) {
     return *((volatile uint32_t *)(address + 0x10));
 }
 void ioapic_init() {
-    madt_ioapic *i = vec_at(&ioapics, 0);
+    madt_ioapic *i = vector_at(&ioapics, 0);
 
     void *ioapic_phys = (void *)(uint64_t)i->address;
     void *ioapic_virt = VIRT(ioapic_phys);
 
-    vmm_map(&kernel_pagemap, (uintptr_t)ioapic_phys, (uintptr_t)ioapic_virt, VMM_PRESENT | VMM_WRITE);
+    vmm_map(&kernel_page_table, (uintptr_t)ioapic_phys, (uintptr_t)ioapic_virt, VMM_PRESENT | VMM_WRITE);
     ioapic = ioapic_virt;
 
     // Setup the interrupt

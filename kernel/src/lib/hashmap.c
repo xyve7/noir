@@ -16,7 +16,7 @@ hashmap hashmap_new() {
     hashmap self;
     self.bucket_count = 10;
     self.node_count = 0;
-    self.buckets = kmalloc(self.bucket_count * sizeof(bucket *));
+    self.buckets = heap_alloc(self.bucket_count * sizeof(bucket *));
     memset(self.buckets, 0, self.bucket_count * sizeof(bucket *));
 
     return self;
@@ -25,7 +25,7 @@ void hashmap_set(hashmap *self, const char *key, void *value, size_t size) {
     uint32_t string_hash = djb33_hash(key, strlen(key));
     size_t index = string_hash % self->bucket_count;
 
-    bucket *new_bucket = kmalloc(sizeof(bucket));
+    bucket *new_bucket = heap_alloc(sizeof(bucket));
     new_bucket->hash = string_hash;
     new_bucket->key = strdup(key);
     new_bucket->object.value = value;
@@ -67,14 +67,14 @@ hashmap_object *hashmap_at(hashmap *self, size_t i) {
 }
 void free_bucket_chain(bucket *b) {
     if (b->next == nullptr) {
-        kfree(b->key);
-        kfree(b->object.value);
-        kfree(b);
+        heap_free(b->key);
+        heap_free(b->object.value);
+        heap_free(b);
         return;
     }
     free_bucket_chain(b->next);
 }
-void hashmap_kfree(hashmap *self) {
+void hashmap_heap_free(hashmap *self) {
     for (size_t i = 0; i < self->bucket_count; i++) {
         free_bucket_chain(self->buckets[i]);
     }

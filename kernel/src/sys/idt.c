@@ -1,8 +1,25 @@
-#include "kernel.h"
+#include <kernel.h>
 #include <stddef.h>
 #include <sys/idt.h>
 
-static idt_ent idt[256];
+// IDT struct used to load the IDT
+typedef struct [[gnu::packed]] {
+    uint16_t limit;
+    uint64_t base;
+} idtr;
+
+// IDT entry
+typedef struct [[gnu::packed]] {
+    uint16_t isr0;
+    uint16_t selector;
+    uint8_t ist;
+    uint8_t flags;
+    uint16_t isr1;
+    uint32_t isr2;
+    uint32_t reserved;
+} idt_entry;
+
+static idt_entry idt[256];
 extern void *isrs[256];
 
 void idt_load() {
@@ -25,21 +42,14 @@ void idt_init() {
     // Set every entry
     for (size_t i = 0; i < 256; i++) {
         idt[i].isr0 = (uint64_t)isrs[i] & 0xffff;
-        idt[i].sel = 0x08;
-        idt[i].ist = 0;      // I haven't set up a TSS yet.
+        idt[i].selector = 0x08;
+        idt[i].ist = 0;
         idt[i].flags = 0x8E; // Interrupt gate
         idt[i].isr1 = ((uint64_t)isrs[i] >> 16) & 0xffff;
         idt[i].isr2 = ((uint64_t)isrs[i] >> 32) & 0xffffffff;
-        idt[i].resv = 0;
+        idt[i].reserved = 0;
     }
 
-    // We want syscalls to be interruptable
-    idt[0x80].flags = 0b11101110;
-    // I set the entries as an interrupt gate not a trap gate.
-    // This is because trap gates don't disable interrupts when
-    // the handler is called.
-
     idt_load();
-
     LOG("IDT Initialized");
 }

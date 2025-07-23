@@ -114,14 +114,14 @@ char *strdup(const char *s) {
     size_t len = strlen(s);
     size_t cap = len + 1;
 
-    char *duped = kmalloc(cap);
+    char *duped = heap_alloc(cap);
     memcpy(duped, s, cap);
 
     return duped;
 }
 char *strndup(const char *s, size_t n) {
     size_t cap = n + 1;
-    char *duped = kmalloc(cap);
+    char *duped = heap_alloc(cap);
 
     char *d = duped;
     while (*s && n > 0) {

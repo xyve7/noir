@@ -8,16 +8,18 @@
 
 uint8_t ps2_read() {
     // Wait until ps2 status is free
-    while (!(ps2_status() & 0b1))
-        ;
+    while (!(ps2_status() & 0b1)) {
+        asm ("pause");
+    }
 
     // Read data
     return inb(PS2_DATA);
 }
 void ps2_write(uint8_t byte) {
     // Wait until ps2 status is free
-    while (ps2_status() & 0b10)
-        ;
+    while (ps2_status() & 0b10) {
+        asm ("pause");
+    }
 
     // Read data
     outb(PS2_DATA, byte);
@@ -28,10 +30,8 @@ uint8_t ps2_status() {
 
 void ps2_init() {
     // We read in data, sometimes there is garbage data
-    // This causes the interrupt to never fire, since the initial data was never
-    // read.
-
+    // This causes the interrupt to never fire, since the initial data was never read.
     inb(PS2_DATA);
-
+    
     LOG("PS/2 Initialized");
 }

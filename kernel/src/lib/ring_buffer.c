@@ -1,18 +1,18 @@
-#include <lib/rb.h>
+#include <lib/ring_buffer.h>
 #include <lib/string.h>
 
-rb rb_new() {
-    return (rb){{0}, 0, 0, 0};
+ring_buffer ring_buffer_new() {
+    return (ring_buffer){{0}, 0, 0, 0};
 }
 
-bool rb_empty(rb *self) {
+bool ring_buffer_empty(ring_buffer *self) {
     return self->count == 0;
 }
-bool rb_full(rb *self) {
+bool ring_buffer_full(ring_buffer *self) {
     return self->count == sizeof(self->data);
 }
-void rb_write(rb *self, uint8_t byte) {
-    if (rb_full(self)) {
+void ring_buffer_write(ring_buffer *self, uint8_t byte) {
+    if (ring_buffer_full(self)) {
         return;
     }
 
@@ -23,8 +23,8 @@ void rb_write(rb *self, uint8_t byte) {
 
     self->count++;
 }
-uint8_t rb_read(rb *self) {
-    if (rb_empty(self)) {
+uint8_t ring_buffer_read(ring_buffer *self) {
+    if (ring_buffer_empty(self)) {
         return 0;
     }
     size_t cap = sizeof(self->data);
@@ -35,7 +35,7 @@ uint8_t rb_read(rb *self) {
     self->count--;
     return byte;
 }
-void rb_clear(rb *self) {
+void ring_buffer_clear(ring_buffer *self) {
     memset(self->data, 0, sizeof(self->data));
     self->write = 0;
     self->read = 0;

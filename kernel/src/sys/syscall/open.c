@@ -30,7 +30,7 @@ error sys_open(syscall_state *state) {
     process *current_process = current_cpu->current_thread->parent;
     uint64_t fd = next_fd(current_process);
 
-    current_process->files[fd] = kmalloc(sizeof(file));
+    current_process->files[fd] = heap_alloc(sizeof(file));
     current_process->files[fd]->fd = fd;
     current_process->files[fd]->node = file_node;
     current_process->files[fd]->offset = 0;

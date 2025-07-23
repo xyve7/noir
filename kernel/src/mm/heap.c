@@ -5,6 +5,15 @@
 #include <mm/heap.h>
 #include <mm/pmm.h>
 
+typedef struct alloc_header alloc_header;
+
+// Header for allocation
+typedef struct alloc_header {
+    size_t size;
+    alloc_header *next;
+    alloc_header *prev;
+} alloc_header;
+
 void *base = nullptr;
 void *end = nullptr;
 void *current = nullptr;
@@ -20,13 +29,13 @@ spinlock heap_lock = SPINLOCK_INIT;
 
 void heap_init() {
     // Initialize the memory
-    base = VIRT(pmm_allocz(pages));
+    base = VIRT(pmm_alloc_zeroed(pages));
     end = base + PAGE_SIZE * pages;
     current = base;
 
     LOG("Heap Initialized");
 }
-void *kmalloc(size_t size) {
+void *heap_alloc(size_t size) {
     if (size == 0) {
         return nullptr;
     }
@@ -86,7 +95,7 @@ void *kmalloc(size_t size) {
 
     return (void *)(block + 1);
 }
-void kfree(void *ptr) {
+void heap_free(void *ptr) {
     if (!ptr) {
         return;
     }
@@ -111,9 +120,9 @@ void kfree(void *ptr) {
     spinlock_release(&heap_lock);
     int_set_state(state);
 }
-void *krealloc(void *ptr, size_t size) {
+void *heap_realloc(void *ptr, size_t size) {
     if (ptr == nullptr) {
-        return kmalloc(size);
+        return heap_alloc(size);
     }
 
     // We grab the header
@@ -125,11 +134,11 @@ void *krealloc(void *ptr, size_t size) {
     }
     // It isn't lets, reallocate
     // This also assumes that the new size is bigger
-    void *p = kmalloc(size);
+    void *p = heap_alloc(size);
     memcpy(p, ptr, block->size);
 
     // Free the original pointer
-    kfree(ptr);
+    heap_free(ptr);
 
     return p;
 }
@@ -138,12 +147,12 @@ void heap_tests() {
     LOG("Heap tests starting...\n");
 
     // Test 1: Simple allocation/free
-    void *ptr = kmalloc(64);
+    void *ptr = heap_alloc(64);
     if (!ptr) {
-        LOG("FAIL: kmalloc(64) returned NULL\n");
+        LOG("FAIL: heap_alloc(64) returned NULL\n");
     } else {
-        LOG("PASS: kmalloc(64) returned %p\n", ptr);
-        kfree(ptr);
+        LOG("PASS: heap_alloc(64) returned %p\n", ptr);
+        heap_free(ptr);
         LOG("Freed memory at %p\n", ptr);
     }
 
@@ -152,9 +161,9 @@ void heap_tests() {
     int i;
     int all_allocated = 1;
     for (i = 0; i < 5; i++) {
-        ptrs[i] = kmalloc(32 * (i + 1));
+        ptrs[i] = heap_alloc(32 * (i + 1));
         if (!ptrs[i]) {
-            LOG("FAIL: kmalloc(%d) returned NULL\n", 32 * (i + 1));
+            LOG("FAIL: heap_alloc(%d) returned NULL\n", 32 * (i + 1));
             all_allocated = 0;
             break;
         } else {
@@ -164,30 +173,30 @@ void heap_tests() {
 
     if (all_allocated) {
         for (i = 0; i < 5; i++) {
-            kfree(ptrs[i]);
+            heap_free(ptrs[i]);
             LOG("Freed ptr[%d] = %p\n", i, ptrs[i]);
         }
         LOG("PASS: Multiple allocations and frees succeeded\n");
     } else {
         // Free previously allocated ptrs in case of failure
         for (int j = 0; j < i; j++) {
-            kfree(ptrs[j]);
+            heap_free(ptrs[j]);
             LOG("Freed ptr[%d] = %p\n", j, ptrs[j]);
         }
     }
 
     // Test 3: Allocation size zero
-    ptr = kmalloc(0);
+    ptr = heap_alloc(0);
     if (ptr != NULL) {
-        LOG("Warning: kmalloc(0) should usually return NULL or minimum size. Got %p\n", ptr);
-        kfree(ptr);
+        LOG("Warning: heap_alloc(0) should usually return NULL or minimum size. Got %p\n", ptr);
+        heap_free(ptr);
     } else {
-        LOG("PASS: kmalloc(0) returned NULL\n");
+        LOG("PASS: heap_alloc(0) returned NULL\n");
     }
 
     // Test 4: Free NULL pointer
-    kfree(NULL); // should safely do nothing or handle gracefully
-    LOG("PASS: kfree(NULL) did not crash\n");
+    heap_free(NULL); // should safely do nothing or handle gracefully
+    LOG("PASS: heap_free(NULL) did not crash\n");
 }
 
 // This function will wipe every allocation

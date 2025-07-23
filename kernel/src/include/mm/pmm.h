@@ -17,8 +17,8 @@ void pmm_init();
 // Allocated pages
 void *pmm_alloc(size_t count);
 // Allocated pages, zeroed
-void *pmm_allocz(size_t count);
+void *pmm_alloc_zeroed(size_t count);
 // Free pages, address pointing to the beginning
 void pmm_free(void *address, size_t count);
 // Map the bitmap, called only from the vmm
-void pmm_map(uintptr_t *pm);
+void pmm_map(uintptr_t *pt);
