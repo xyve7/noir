@@ -8,7 +8,7 @@
 
 extern error close_fd(process *current_process, uint64_t fd);
 
-error sys_exit(syscall_state *state) {
+error sys_exit(syscall_context *state) {
     uint64_t ret = ARG0(state);
 
     cpu *current_cpu = cpu_get();
@@ -22,7 +22,7 @@ error sys_exit(syscall_state *state) {
     }
 
     current_cpu->current_thread->state = EXITED;
-    schedule(nullptr);
+    sched_yield();
     state->rax = ret;
     return OK;
 }

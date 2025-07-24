@@ -15,10 +15,6 @@ int mubsan_log(const char *format, ...) {
     return written;
 }
 
-const char *log_name[] = {
-    "INFO  ", "WARN  ", "DEBUG ", "PANIC "
-};
-
 spinlock log_lock = SPINLOCK_INIT;
 void log(int kind, const char *file, const char *func, uint32_t line, const char *restrict format, ...) {
     va_list serial, print;
@@ -27,17 +23,29 @@ void log(int kind, const char *file, const char *func, uint32_t line, const char
 
     bool state = spinlock_acquire_irq_save(&log_lock);
 
-    serial_printf("\033[36m%s\033[39m", log_name[kind]);
-    if (kind == 2) {
+    switch (kind) {
+    case 0:
+        serial_printf("\033[36mINFO  \033[39m");
+        printf("\033[36mINFO  \033[39m");
+        break;
+    case 1:
+        serial_printf("\033[33mWARN  \033[39m");
+        printf("\033[33mWARN  \033[39m");
+        break;
+    case 2:
+        serial_printf("\033[35mDEBUG \033[39m");
         serial_printf("%s:%s:%u: ", file, func, line);
+
+        printf("\033[35mDEBUG \033[39m");
+        printf("%s:%s:%u: ", file, func, line);
+        break;
+    case 3:
+        serial_printf("\033[31mPANIC \033[39m");
+        printf("\033[31mPANIC \033[39m");
+        break;
     }
     serial_vprintf(format, serial);
     serial_write('\n');
-
-    printf("\033[36m%s\033[39m", log_name[kind]);
-    if (kind == 2) {
-        printf("%s:%s:%u: ", file, func, line);
-    }
 
     vprintf(format, print);
     write_char('\n');

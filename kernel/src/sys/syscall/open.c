@@ -15,7 +15,7 @@ uint64_t next_fd(process *p) {
     PANIC("Too many open files\n");
     UNREACHABLE();
 }
-error sys_open(syscall_state *state) {
+error sys_open(syscall_context *state) {
     const char *path = (const char *)ARG0(state);
     vflags flags = ARG1(state);
     uint64_t *out_fd = (uint64_t *)ARG2(state);

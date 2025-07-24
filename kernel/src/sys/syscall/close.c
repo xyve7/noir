@@ -18,7 +18,7 @@ error close_fd(process *current_process, uint64_t fd) {
     return OK;
 }
 
-error sys_close(syscall_state *state) {
+error sys_close(syscall_context *state) {
     uint64_t fd = ARG0(state);
 
     cpu *current_cpu = cpu_get();

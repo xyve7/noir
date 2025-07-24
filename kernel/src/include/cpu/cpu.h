@@ -2,7 +2,9 @@
 
 #include <stdint.h>
 
+// State of the CPU which is pushed onto the stack upon an interrupt 
 typedef struct {
+    // Pushed manually
     uint64_t r15;
     uint64_t r14;
     uint64_t r13;
@@ -18,6 +20,7 @@ typedef struct {
     uint64_t rcx;
     uint64_t rbx;
     uint64_t rax;
+    // Pushed automatically
     uint64_t no;
     uint64_t err;
     uint64_t rip;
@@ -25,7 +28,7 @@ typedef struct {
     uint64_t rflags;
     uint64_t rsp;
     uint64_t ss;
-} cpu_context;
+} int_context;
 
 static inline uint8_t inb(uint16_t port) {
     uint8_t ret;

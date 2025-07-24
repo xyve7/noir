@@ -5,7 +5,7 @@
 #include <sys/smp.h>
 #include <sys/syscall.h>
 #include <task/sched.h>
-error sys_write(syscall_state *state) {
+error sys_write(syscall_context *state) {
     uint64_t fd = ARG0(state);
     const void *buffer = (const void *)ARG1(state);
     size_t size = ARG2(state);

@@ -21,7 +21,8 @@ uint64_t current_thread;
 constexpr uintptr_t user_stack_base = 0x00007F0000000000;
 uintptr_t user_stack_current = user_stack_base;
 
-[[gnu::noreturn]] void context_switch(uint64_t rsp);
+[[gnu::noreturn]] void context_restore(thread_context *ctx);
+[[gnu::returns_twice]] uint64_t context_save(thread_context *ctx);
 
 uintptr_t new_user_stack(page_table *process_pm) {
     void *user_stack = pmm_alloc_zeroed(1);
@@ -75,13 +76,10 @@ thread *thread_new(process *parent, uintptr_t entry) {
     t->entry = entry;
     t->kernel_stack = new_kernel_stack();
     t->user_stack = new_user_stack(&parent->pt);
-    t->context = (cpu_context *)(t->kernel_stack - sizeof(cpu_context));
+    t->context = (thread_context *)(t->kernel_stack - sizeof(thread_context));
 
     t->context->rip = entry;
     t->context->rsp = t->user_stack;
-    t->context->rflags = 0x202;
-    t->context->cs = USER_CS | 3;
-    t->context->ss = USER_SS | 3;
 
     enqueue(t);
     return t;
@@ -176,7 +174,7 @@ thread *next_thread() {
 }
 extern void usermode_enter(uint64_t rsp, uint64_t rip);
 // Perform a context switch
-void sched_switch() {
+void sched_switch(bool usermode) {
     thread *t = next_thread();
 
     cpu *current_cpu = cpu_get();
@@ -190,21 +188,29 @@ void sched_switch() {
         vmm_switch(&t->parent->pt);
     }
     gdt_set_rsp0(t->kernel_stack);
-    context_switch((uint64_t)t->context);
+    if (usermode) {
+        usermode_enter(t->context->rsp, t->context->rip);
+    } else {
+        context_restore(t->context);
+    }
 }
 // Save the current state and switch
-void schedule(cpu_context *state) {
+void sched_yield() {
     // The current cpu state is passed
     // This is inside the current processes kernel stack
-
     cpu *current_cpu = cpu_get();
     if (current_cpu->current_thread) {
         // We save the state
-        current_cpu->current_thread->context = state;
         current_cpu->kernel_stack = current_cpu->current_thread->kernel_stack;
         current_cpu->user_stack = current_cpu->current_thread->user_stack;
+        if (context_save(current_cpu->current_thread->context) == 1) {
+            // We returned from a context_restore, return
+            return;
+        }
+        sched_switch(false);
+    } else {
+        sched_switch(true);
     }
-    sched_switch();
 }
 void sched_idle() {
     while (1) {
@@ -218,17 +224,14 @@ void sched_init() {
     t->tid = 0;
     t->entry = (uintptr_t)sched_idle;
     t->kernel_stack = new_kernel_stack();
-    t->context = (cpu_context *)(t->kernel_stack - sizeof(cpu_context));
+    t->context = (thread_context *)(t->kernel_stack - sizeof(thread_context));
 
     t->context->rip = t->entry;
     t->context->rsp = t->kernel_stack;
-    t->context->rflags = 0x202;
-    t->context->cs = KERNEL_CS;
-    t->context->ss = KERNEL_SS;
 
     thread_idle = t;
 }
 
-void timer_handler(cpu_context *state) {
-    schedule(state);
+void timer_handler(int_context *state) {
+    sched_yield();
 }

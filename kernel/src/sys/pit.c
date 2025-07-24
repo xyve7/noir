@@ -15,7 +15,7 @@ void pit_init() {
 }
 
 volatile uint64_t count = 0;
-void pit_handler(cpu_context *frame) {
+void pit_handler(int_context *frame) {
     (void)frame;
     count++;
 }

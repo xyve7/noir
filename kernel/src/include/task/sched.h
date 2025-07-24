@@ -14,6 +14,17 @@
 
 typedef struct process process;
 
+typedef struct {
+    uint64_t r15;
+    uint64_t r14;
+    uint64_t r13;
+    uint64_t r12;
+    uint64_t rbp;
+    uint64_t rsp;
+    uint64_t rbx;
+    uint64_t rip;
+} thread_context;
+
 typedef enum {
     READY,
     RUNNING,
@@ -34,7 +45,7 @@ typedef struct {
     uintptr_t entry;
     uintptr_t kernel_stack;
     uintptr_t user_stack;
-    cpu_context *context;
+    thread_context *context;
 } thread;
 typedef struct process {
     process *parent;
@@ -47,6 +58,6 @@ typedef struct process {
 
 process *process_new(process *parent, const char *path);
 void process_spawn_thread(process *parent, uintptr_t entry);
-void schedule(cpu_context *state);
+void sched_yield();
 void sched_init();
-void timer_handler(cpu_context *state);
+void timer_handler(int_context *state);

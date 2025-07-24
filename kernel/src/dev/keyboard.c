@@ -33,7 +33,7 @@ ring_buffer kbd_buffer;
 bool shift = false;
 
 // FIXME: Don't assume the first scan code
-void keyboard_handler(cpu_context *frame) {
+void keyboard_handler(int_context *frame) {
     (void)frame;
 
     uint8_t scan = ps2_read();

@@ -1,8 +1,6 @@
 [bits 64]
 section .text 
 
-; This is unused, I will likely keep it for the sake of remembering how the usermode enter works
-; I have terrible memory
 global usermode_enter
 usermode_enter:
 	; We have to fake an interrupt return to be able to jump to usermode. 

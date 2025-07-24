@@ -10,14 +10,14 @@
 #define IA32_EFER 0xC0000080
 
 extern void syscall_common();
-typedef error (*syscall_entry)(syscall_state *state);
+typedef error (*syscall_entry)(syscall_context *state);
 
 // These are defined elsewhere
-extern error sys_open(syscall_state *state);
-extern error sys_close(syscall_state *state);
-extern error sys_read(syscall_state *state);
-extern error sys_write(syscall_state *state);
-extern error sys_exit(syscall_state *state);
+extern error sys_open(syscall_context *state);
+extern error sys_close(syscall_context *state);
+extern error sys_read(syscall_context *state);
+extern error sys_write(syscall_context *state);
+extern error sys_exit(syscall_context *state);
 
 syscall_entry syscall_table[] = {
     [SYS_OPEN] = sys_open,
@@ -27,7 +27,7 @@ syscall_entry syscall_table[] = {
     [SYS_EXIT] = sys_exit,
 };
 
-void syscall_handler(syscall_state *state) {
+void syscall_handler(syscall_context *state) {
     syscall_table[state->rax](state);
 }
 

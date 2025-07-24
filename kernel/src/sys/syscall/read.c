@@ -5,7 +5,7 @@
 #include <sys/smp.h>
 #include <sys/syscall.h>
 #include <task/sched.h>
-error sys_read(syscall_state *state) {
+error sys_read(syscall_context *state) {
     uint64_t fd = ARG0(state);
     void *buffer = (void *)ARG1(state);
     size_t size = ARG2(state);
