@@ -18,6 +18,7 @@ extern error sys_close(syscall_context *state);
 extern error sys_read(syscall_context *state);
 extern error sys_write(syscall_context *state);
 extern error sys_exit(syscall_context *state);
+extern error sys_version(syscall_context *state);
 
 syscall_entry syscall_table[] = {
     [SYS_OPEN] = sys_open,
@@ -25,6 +26,7 @@ syscall_entry syscall_table[] = {
     [SYS_READ] = sys_read,
     [SYS_WRITE] = sys_write,
     [SYS_EXIT] = sys_exit,
+    [SYS_VERSION] = sys_version,
 };
 
 void syscall_handler(syscall_context *state) {

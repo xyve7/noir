@@ -10,6 +10,7 @@ global sys_close
 global sys_read
 global sys_write
 global sys_exit
+global sys_version
 
 sys_open:
 	mov rax, 0
@@ -33,5 +34,10 @@ sys_write:
 
 sys_exit:
 	mov rax, 4
+	call make_syscall
+	ret
+
+sys_version:
+	mov rax, 5
 	call make_syscall
 	ret

@@ -4,6 +4,12 @@
 #include <stdint.h>
 
 // Kernel information
+// Formatted as:
+// <name> <major>.<minor>.<patch>-<revision>+<build> <timestamp>
+// noir 0.1.0-dev+1a364a2 Jun 30 2025 00:41:16
+extern const uint8_t kernel_patch;
+extern const uint8_t kernel_minor;
+extern const uint8_t kernel_major;
 extern const char *kernel_name;
 extern const char *kernel_revision;
 extern const char *kernel_timestamp;

@@ -3,15 +3,15 @@
 #include <stdint.h>
 
 typedef struct {
-	uint64_t r11;
-	uint64_t r10;
-	uint64_t r9;
-	uint64_t r8;
-	uint64_t rdi;
-	uint64_t rsi;
-	uint64_t rdx;
-	uint64_t rcx;
-	uint64_t rax;
+    uint64_t r11;
+    uint64_t r10;
+    uint64_t r9;
+    uint64_t r8;
+    uint64_t rdi;
+    uint64_t rsi;
+    uint64_t rdx;
+    uint64_t rcx;
+    uint64_t rax;
 } syscall_context;
 
 typedef enum : uint64_t {
@@ -19,7 +19,8 @@ typedef enum : uint64_t {
     SYS_CLOSE = 1,
     SYS_READ = 2,
     SYS_WRITE = 3,
-    SYS_EXIT = 4
+    SYS_EXIT = 4,
+    SYS_VERSION = 5
 } syscall_no;
 
 // Make fun of me or whatever, but I have horrible memory.

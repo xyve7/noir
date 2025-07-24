@@ -7,3 +7,4 @@ extern error sys_read(uint64_t fd, void *buffer, size_t size);
 extern error sys_write(uint64_t fd, const void *buffer, size_t size);
 extern error sys_close(uint64_t fd);
 extern error sys_exit();
+extern error sys_version(noir_version *nv);
