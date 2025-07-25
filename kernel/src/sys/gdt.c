@@ -54,7 +54,7 @@ void gdt_set_rsp0(uint64_t rsp0) {
 void gdt_init() {
 
     // Since the GDT is irrelavent in long mode aside from the TSS
-    // we dont care about hardcoding it
+    // We will just hardcode it
     gdt_and_tss.gdt[0] = 0x0;
     gdt_and_tss.gdt[1] = 0x00AF9A000000FFFF;
     gdt_and_tss.gdt[2] = 0x00CF92000000FFFF;

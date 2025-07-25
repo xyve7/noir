@@ -15,5 +15,5 @@ void cpu_set(cpu *c) {
     wrmsr(IA32_GS_BASE, (uint64_t)c);
 }
 cpu *cpu_get() {
-    return cpus[lapic_id()];
+    return (cpu *)rdmsr(IA32_KERNEL_GS_BASE);
 }
