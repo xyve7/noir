@@ -1,0 +1,11 @@
+-xc
+-Wall
+-Wextra
+-Werror
+-O2
+-nostdlib
+-ffreestanding
+-no-pie
+-std=c17
+-Isrc/include
+-m64
