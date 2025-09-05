@@ -1,8 +1,8 @@
-#include <mm/vmm.h>
 #include <kernel.h>
 #include <lib/spinlock.h>
 #include <lib/string.h>
 #include <mm/pmm.h>
+#include <mm/vmm.h>
 
 __attribute__((used, section(".limine_requests"))) volatile struct limine_memmap_request memmap_request = {
     .id = LIMINE_MEMMAP_REQUEST,
@@ -43,9 +43,9 @@ void pmm_init() {
     // Now get the number of pages it'll be
     total_pages = last_usable_address / PAGE_SIZE;
     // Get the bitmap size
-    uint64_t bitmap_size = ROUND(total_pages, 8) / 8;
+    uint64_t bitmap_size = ALIGN_UP(total_pages, 8) / 8;
     // Align to the page size
-    bitmap_size_aligned = ROUND(bitmap_size, PAGE_SIZE);
+    bitmap_size_aligned = ALIGN_UP(bitmap_size, PAGE_SIZE);
 
     // Find a place for the bitmap
     for (uint64_t i = 0; i < resp->entry_count; i++) {
@@ -119,7 +119,7 @@ void pmm_free(void *address, size_t count) {
     for (uint64_t i = 0; i < count; i++) {
         clear(page + i);
     }
-    
+
     spinlock_release_irq_restore(&pmm_lock, state);
 }
 

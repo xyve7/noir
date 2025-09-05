@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-// State of the CPU which is pushed onto the stack upon an interrupt 
+// State of the CPU which is pushed onto the stack upon an interrupt
 typedef struct {
     // Pushed manually
     uint64_t r15;
@@ -40,6 +40,17 @@ static inline uint8_t inb(uint16_t port) {
 }
 static inline void outb(uint16_t port, uint8_t val) {
     asm volatile("outb %b0, %w1" : : "a"(val), "Nd"(port) : "memory");
+}
+static inline uint32_t inl(uint16_t port) {
+    uint32_t ret;
+    asm volatile("inl %w1, %k0"
+                 : "=a"(ret)
+                 : "Nd"(port)
+                 : "memory");
+    return ret;
+}
+static inline void outl(uint16_t port, uint32_t val) {
+    asm volatile("outl %k0, %w1" : : "a"(val), "Nd"(port) : "memory");
 }
 
 static inline void wrmsr(uint64_t msr, uint64_t value) {

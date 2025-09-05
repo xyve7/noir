@@ -32,8 +32,10 @@ extern const char *kernel_build;
 #define MAX(a, b) (a) > (b) ? (a) : (b)
 // Minimum
 #define MIN(a, b) (a) < (b) ? (a) : (b)
-// Round value (n) by factor (f)
-#define ROUND(n, f) (((n) + (f) - 1) / (f)) * (f)
+// Align up (n) by factor (f)
+#define ALIGN_UP(n, f) ((((n) + (f) - 1) / (f)) * (f))
+// Align down (n) by factor (f)
+#define ALIGN_DOWN(n, f) ((n) / (f) * (f))
 // Disable optimization
 #define UNOPTIMIZED __attribute__((optimize("O0")))
 

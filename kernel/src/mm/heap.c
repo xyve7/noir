@@ -68,7 +68,7 @@ void *heap_alloc(size_t size) {
     alloc_header *block = current;
     // Advance the pointer
     size_t total_size = sizeof(alloc_header) + size;
-    size_t advance_bytes = ROUND(total_size, 8);
+    size_t advance_bytes = ALIGN_UP(total_size, 8);
     current += advance_bytes;
 
     // Too much memory allocated

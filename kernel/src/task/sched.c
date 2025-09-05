@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <sys/gdt.h>
 #include <sys/smp.h>
+#include <task/loader.h>
 #include <task/sched.h>
 
 process *process_table[MAX_PROCESSES];
@@ -84,54 +85,6 @@ thread *thread_new(process *parent, uintptr_t entry) {
     enqueue(t);
     return t;
 }
-uintptr_t load_elf(page_table *pt, void *buffer) {
-    // Read ehdr
-    elf64_ehdr *e = buffer;
-
-    if (!elf_is_elf(e)) {
-        PANIC("Invalid ELF Magic");
-    }
-    if (!elf_is_valid(e)) {
-        PANIC("Unsupported ELF");
-    }
-
-    uintptr_t entry = e->entry;
-
-    // Read phdr
-    elf64_phdr *p = buffer + e->phoff;
-
-    for (size_t i = 0; i < e->phnum; i++) {
-        uint64_t flags = 0;
-        if (p[i].type != ELF_PTYPE_LOAD) {
-            continue;
-        }
-
-        // We convert the ELF flags to VMM flags
-        if ((p[i].flags & ELF_PFLAGS_EXEC) == 0) {
-            flags |= VMM_XD;
-        }
-        if (p[i].flags & ELF_PFLAGS_WRITE) {
-            flags |= VMM_WRITE;
-        }
-        flags |= VMM_PRESENT;
-        flags |= VMM_USER;
-
-        // We need to map it to the kernel first
-        // This is so we can actually write to it
-        // Technically its already mapped but, you know what I mean
-
-        // We copy the page
-        void *page = VIRT(pmm_alloc_zeroed(1));
-        memcpy(page, buffer + p[i].offset, p[i].memsz);
-
-        // We map the page
-        page = PHYS(page);
-        void *virt_page = (void *)p[i].vaddr;
-
-        vmm_map(pt, (uintptr_t)page, (uintptr_t)virt_page, flags);
-    }
-    return entry;
-}
 
 process *process_new(process *parent, const char *path) {
     // We create the new page_table and map the elf to it
@@ -146,7 +99,7 @@ process *process_new(process *parent, const char *path) {
     vfs_read(elf, buffer, 0, elf_info.size);
     vfs_close(elf);
 
-    uintptr_t entry = load_elf(&new_process_page_table, buffer);
+    uintptr_t entry = elf_load_exec(&new_process_page_table, buffer);
 
     process *p = heap_alloc(sizeof(process));
     p->parent = parent;

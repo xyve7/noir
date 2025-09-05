@@ -5,7 +5,6 @@
 #include <mm/vmm.h>
 #include <stdint.h>
 
-
 // Macros to help get the different level indexes
 #define PML1(virt) ((virt >> 12) & 0x1ff)
 #define PML2(virt) ((virt >> 21) & 0x1ff)
@@ -38,11 +37,11 @@ void vmm_init() {
     uintptr_t kernel_data_start, kernel_data_end;
 
     kernel_text_start = (uintptr_t)&KERNEL_TEXT_START;
-    kernel_text_end = ROUND((uintptr_t)&KERNEL_TEXT_END, PAGE_SIZE);
+    kernel_text_end = ALIGN_UP((uintptr_t)&KERNEL_TEXT_END, PAGE_SIZE);
     kernel_rodata_start = (uintptr_t)&KERNEL_RODATA_START;
-    kernel_rodata_end = ROUND((uintptr_t)&KERNEL_RODATA_END, PAGE_SIZE);
+    kernel_rodata_end = ALIGN_UP((uintptr_t)&KERNEL_RODATA_END, PAGE_SIZE);
     kernel_data_start = (uintptr_t)&KERNEL_DATA_START;
-    kernel_data_end = ROUND((uintptr_t)&KERNEL_DATA_END, PAGE_SIZE);
+    kernel_data_end = ALIGN_UP((uintptr_t)&KERNEL_DATA_END, PAGE_SIZE);
 
     uintptr_t phys = kexaddr_request.response->physical_base;
     uintptr_t virt = kexaddr_request.response->virtual_base;
