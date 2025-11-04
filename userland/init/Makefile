@@ -2,7 +2,7 @@ CC = gcc
 
 LIBC = ../libc/bin/libc.o
 
-CFLAGS = -Wall -Wextra -Werror -O2 -nostdlib -ffreestanding -no-pie -std=c17 -Isrc/include -I../libc/src/include -m64 -e,_start
+CFLAGS = -Wall -Wextra -Werror -O2 -nostdlib -ffreestanding -fno-stack-protector -no-pie -std=c17 -Isrc/include -I../libc/src/include -m64 -Wl,-e_start
 CFILES = $(shell find src -type f -name '*.c')
 COBJS = $(patsubst src/%,%,$(CFILES:.c=.c.o))
 

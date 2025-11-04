@@ -36,5 +36,6 @@ context_restore:
 	; We put 1 into rax so it jumps back to the IP we saved 
 	; This time, instead of return 0 like we did in context_restore, we return 1 
 	; This is basically like setjmp/longjmp
+	mov rsi, 0
 	mov rax, 1
 	jmp r9

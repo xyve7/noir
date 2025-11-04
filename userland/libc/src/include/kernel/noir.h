@@ -28,7 +28,7 @@ typedef enum : uint64_t {
     BAD_OP,
     // Unsupported filesystem
     BAD_FS
-} error;
+} Error;
 
 typedef struct {
     uint8_t patch, minor, major;
@@ -36,6 +36,9 @@ typedef struct {
     char revision[8];
     char timestamp[128];
     char build[32];
-} noir_version;
+} Version;
+
+typedef uint64_t FD;
+typedef uint64_t PID;
 
 #endif

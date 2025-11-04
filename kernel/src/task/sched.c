@@ -1,3 +1,4 @@
+#include "dev/serial.h"
 #include <cpu/cpu.h>
 #include <elf.h>
 #include <fs/vfs.h>

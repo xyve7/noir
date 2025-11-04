@@ -1,6 +1,3 @@
-#include <sys/irq.h>
-#include <sys/pic.h>
-#include <sys/pit.h>
 #include <cpu/cpu.h>
 #include <kernel.h>
 #include <lib/spinlock.h>
@@ -8,8 +5,11 @@
 #include <mm/pmm.h>
 #include <mm/vmm.h>
 #include <stdint.h>
+#include <sys/irq.h>
 #include <sys/lapic.h>
 #include <sys/madt.h>
+#include <sys/pic.h>
+#include <sys/pit.h>
 
 #define IA32_APIC_BASE 0x1B
 
@@ -90,9 +90,9 @@ void lapic_timer_enable() {
     lapic_write(lapic, TIMER_DIV, 16);
     lapic_write(lapic, TIMER_INITCNT, 0xffffffff);
 
-    asm("sti");
+    int_enable();
     pit_sleep(1);
-    asm("cli");
+    int_disable();
 
     uint32_t ticks = 0xFFFFFFFF - lapic_read(lapic, TIMER_CURCNT);
 
