@@ -1,0 +1,11 @@
+-xc
+-Wall
+-Wextra
+-std=gnu11
+-nostdlib
+-I./kernel/src
+-I./kernel/src/include 
+-I./kernel/src/include/libk
+-I./kernel/limine-protocol/include
+-isystem ./kernel/freestnd-c-hdrs/include
+-DLIMINE_API_REVISION=4
