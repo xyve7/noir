@@ -13,11 +13,19 @@
 aarch64_vector_table:
 // Alignment at 128 is necessary
 .balign 128 
-	b aarch64_sync_entry
-.balign 128
- 	b .
+	b .
 .balign 128
 	b .
 .balign 128
-	b . 
+	b .
+.balign 128
+	b .
 
+.balign 128 
+	b aarch64_sync_entry
+.balign 128
+	b . 
+.balign 128
+	b . 
+.balign 128
+	b . 

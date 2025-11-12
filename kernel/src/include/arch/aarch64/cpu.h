@@ -19,25 +19,10 @@ typedef struct {
     uint64_t x26, x27;
     uint64_t x28, x29;
     uint64_t x30;
+    uint64_t SPSR_EL1;
+    uint64_t ELR_EL1;
+    uint64_t ESR_EL1;
+    uint64_t FAR_EL1;
 } AARCH64State;
-
-static inline uint64_t aarch64_current_el_read() {
-    uint64_t ret;
-    asm volatile("mrs %0, CurrentEL" : "=r"(ret));
-    return ret;
-}
-static inline uint64_t aarch64_sp_el1_read() {
-    uint64_t ret;
-    asm volatile("mrs %0, SP_EL1" : "=r"(ret));
-    return ret;
-}
-static inline uint64_t aarch64_sp_el0_read() {
-    uint64_t ret;
-    asm volatile("mrs %0, SP_EL0" : "=r"(ret));
-    return ret;
-}
-static inline void aarch64_spsel_write(uint64_t value) {
-    asm volatile("msr SPSEL, %0" ::"r"(value) : "memory");
-}
 
 #endif

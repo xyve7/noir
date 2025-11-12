@@ -44,8 +44,17 @@
 
 // All of the different kinds of exceptions 
 aarch64_sync_entry:
-	sub sp, sp, #248 
+	sub sp, sp, #280
 	save_state
+
+	// Push the state onto the stack
+	mrs x0, SPSR_EL1
+	mrs x1, ELR_EL1
+	mrs x2, ESR_EL1
+	mrs x3, FAR_EL1
+
+	stp x0, x1, [sp, #248]
+	stp x2, x3, [sp, #264]
 
 	mov x0, sp
 	
@@ -54,6 +63,6 @@ aarch64_sync_entry:
 	blr x16	
 	
 	restore_state
-	add sp, sp, #248 
+	add sp, sp, #280 
 	eret
 	

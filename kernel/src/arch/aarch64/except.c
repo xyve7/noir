@@ -4,10 +4,12 @@
 #include <stdint.h>
 
 extern uint32_t aarch64_vector_table[];
-
 void aarch64_except_init() {
     asm volatile(
         "msr VBAR_EL1, %0\n"
+        "mov x0, sp\n"
+        "msr SPSel, #1\n"
+        "mov sp, x0\n"
         :
         : "r"((uint64_t)aarch64_vector_table)
         : "memory"

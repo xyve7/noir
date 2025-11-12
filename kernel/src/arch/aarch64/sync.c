@@ -1,8 +1,45 @@
 #include <arch/aarch64/sync.h>
 #include <kernel.h>
+#include <stdint.h>
 
+const char *sync_exception_classes[] = {
+    [0b000000] = "Unknown reason",
+    [0b000001] = "Wrapped WF* instruction execution",
+    [0b000011] = "Trapped MCR or MRC access with coproc=0b1111",
+    [0b000100] = "Trapped MCRR or MRRC access with coproc=0b1111",
+    [0b000101] = "Trapped MCR or MRC access with coproc=0b1110",
+    [0b000110] = "Trapped LDC or STC access",
+    [0b000111] = "Trapped access to SVE, Advanced SIMD or floating point",
+    [0b001010] = "Trapped execution of an LD64B, ST64B, ST64BV, or ST64BV0 instruction",
+    [0b001100] = "Trapped MRRC access with (coproc==0b1110)",
+    [0b001101] = "Branch Target Exception",
+    [0b001110] = "Illegal Execution state",
+    [0b010001] = "SVC instruction execution in AArch32 state",
+    [0b010101] = "SVC instruction execution in AArch64 state",
+    [0b010110] = "HVC instruction execution in AArch64 state",
+    [0b010111] = "SMC instruction execution in AArch64 state",
+    [0b011000] = "Trapped MSR, MRS or System instruction execution in AArch64 state",
+    [0b011001] = "Access to SVE functionality trapped as a result of CPACR_EL1.ZEN, CPTR_EL2.ZEN, CPTR_EL2.TZ, or CPTR_EL3.EZ",
+    [0b011100] = "Exception from a Pointer Authentication instruction authentication failure",
+    [0b100000] = "Instruction Abort from a lower Exception level",
+    [0b100001] = "Instruction Abort taken without a change in Exception level",
+    [0b100010] = "PC alignment fault exception",
+    [0b100100] = "Data Abort from a lower Exception level",
+    [0b100101] = "Data Abort taken without a change in Exception level",
+    [0b100110] = "SP alignment fault exception",
+    [0b101000] = "Trapped floating-point exception taken from AArch32 state",
+    [0b101100] = "Trapped floating-point exception taken from AArch64 state",
+    [0b101111] = "SError interrupt",
+    [0b110000] = "Breakpoint exception from a lower Exception level",
+    [0b110001] = "Breakpoint exception taken without a change in Exception level",
+    [0b110010] = "Software Step exception from a lower Exception level",
+    [0b110011] = "Software Step exception taken without a change in Exception level",
+    [0b110100] = "Watchpoint exception from a lower Exception level",
+    [0b110101] = "Watchpoint exception taken without a change in Exception level",
+    [0b111000] = "BKPT instruction execution in AArch32 state",
+    [0b111100] = "BRK instruction execution in AArch64 state"
+};
 void aarch64_sync_handler(AARCH64State *state) {
-    PANIC(
-        "Exception has occurred!"
-    );
+    uint8_t ec = (state->ESR_EL1 >> 26) & 0x3F;
+    PANIC("Exception! %s", sync_exception_classes[ec]);
 }
