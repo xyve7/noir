@@ -1,5 +1,6 @@
 #include <arch/aarch64/cpu.h>
 #include <arch/aarch64/except.h>
+#include <arch/x86_64/idt.h>
 #include <kprintf.h>
 #include <limine.h>
 #include <stdbool.h>
@@ -35,8 +36,16 @@ void kmain(void) {
     }
 
     terminal_init();
-    aarch64_except_init();
+
+    // All the architecture specific stuff is done here
+#if defined(__aarch64__)
     kprintf("Hello from ARM!\n");
+    aarch64_except_init();
     asm volatile("brk #0");
+#elif defined(__x86_64__)
+    kprintf("Hello from x86_64!\n");
+    x86_64_idt_init();
+    asm volatile("int $1");
+#endif
     hcf();
 }
