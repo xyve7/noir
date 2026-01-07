@@ -13,7 +13,7 @@ void x86_64_idt_init() {
         uint64_t address = (uint64_t)x86_64_isrs[i];
         idt[i] = (IDTEntry){
             .offset1 = (address & 0xFFFF),
-            .ss = 0x28,
+            .ss = 0x08,
             .ist = 0,
             .flags = 0x8E,
             .offset2 = (address >> 16) & 0xFFFF,

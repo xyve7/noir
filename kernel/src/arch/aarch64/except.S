@@ -58,10 +58,8 @@ aarch64_sync_entry:
 
 	mov x0, sp
 	
-	adrp x16, aarch64_sync_handler
-	add x16, x16, :lo12:aarch64_sync_handler
-	blr x16	
-	
+	bl aarch64_sync_handler
+
 	restore_state
 	add sp, sp, #280 
 	eret
