@@ -1,6 +1,10 @@
 # Noir 
 Experimental operating system for learning.
 
+# NOTE
+This branch is abandoned, the information below (except Licensing), is out of date and only refers to the master branch.  
+Switch to the rewrite branch for the progress on the rewrite. 
+
 ## What architectures does it support?
 - [x] x86_64
 
