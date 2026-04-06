@@ -56,30 +56,30 @@ int write_string(void (*write)(char), const char *s) {
     return written;
 }
 // Get the next string argument
-char *next_int(uint8_t len_mod, uint8_t radix, const char *digits, va_list list) {
+char *next_int(uint8_t len_mod, uint8_t radix, const char *digits, va_list *list) {
     // Get the correct argument, according to the length modifier
     switch (len_mod) {
     case LEN_MOD_HH:
-        return ltos((char)va_arg(list, int), radix, digits);
+        return ltos((char)va_arg(*list, int), radix, digits);
     case LEN_MOD_H:
-        return ltos((short)va_arg(list, int), radix, digits);
+        return ltos((short)va_arg(*list, int), radix, digits);
     case LEN_MOD_L:
-        return ltos(va_arg(list, long), radix, digits);
+        return ltos(va_arg(*list, long), radix, digits);
     default:
-        return ltos(va_arg(list, int), radix, digits);
+        return ltos(va_arg(*list, int), radix, digits);
     }
 }
-char *next_uint(uint8_t len_mod, uint8_t radix, const char *digits, va_list list) {
+char *next_uint(uint8_t len_mod, uint8_t radix, const char *digits, va_list *list) {
     // Get the correct argument, according to the length modifier
     switch (len_mod) {
     case LEN_MOD_HH:
-        return ultos((unsigned char)va_arg(list, unsigned int), radix, digits);
+        return ultos((unsigned char)va_arg(*list, unsigned int), radix, digits);
     case LEN_MOD_H:
-        return ultos((unsigned short)va_arg(list, unsigned int), radix, digits);
+        return ultos((unsigned short)va_arg(*list, unsigned int), radix, digits);
     case LEN_MOD_L:
-        return ultos(va_arg(list, unsigned long), radix, digits);
+        return ultos(va_arg(*list, unsigned long), radix, digits);
     default:
-        return ultos(va_arg(list, unsigned int), radix, digits);
+        return ultos(va_arg(*list, unsigned int), radix, digits);
     }
 }
 
@@ -114,22 +114,22 @@ int kvfprintf(void (*write)(char), const char *restrict format, va_list list) {
             switch (*format++) {
             case 'd':
             case 'i':
-                written += write_string(write, next_int(len_mod, 10, digits_low, list));
+                written += write_string(write, next_int(len_mod, 10, digits_low, &list));
                 break;
             case 'u':
-                written += write_string(write, next_uint(len_mod, 10, digits_low, list));
+                written += write_string(write, next_uint(len_mod, 10, digits_low, &list));
                 break;
             case 'o':
-                written += write_string(write, next_uint(len_mod, 8, digits_low, list));
+                written += write_string(write, next_uint(len_mod, 8, digits_low, &list));
                 break;
             case 'x':
-                written += write_string(write, next_uint(len_mod, 16, digits_low, list));
+                written += write_string(write, next_uint(len_mod, 16, digits_low, &list));
                 break;
             case 'X':
-                written += write_string(write, next_uint(len_mod, 16, digits_upper, list));
+                written += write_string(write, next_uint(len_mod, 16, digits_upper, &list));
                 break;
             case 'b':
-                written += write_string(write, next_uint(len_mod, 2, digits_upper, list));
+                written += write_string(write, next_uint(len_mod, 2, digits_upper, &list));
                 break;
             case 'p':
                 written += write_string(write, "0x");
