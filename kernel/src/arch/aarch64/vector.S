@@ -1,5 +1,3 @@
-// External handlers depending on the kind of exception
-
 #include "except.S"
 
 .extern aarch64_sync_entry

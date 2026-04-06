@@ -1,0 +1,3095 @@
+
+kernel/bin-x86_64/kernel:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+<ltos>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x38
+	mov    QWORD PTR [rbp-0x28],rdi
+	mov    DWORD PTR [rbp-0x2c],esi
+	mov    QWORD PTR [rbp-0x38],rdx
+	mov    rax,QWORD PTR [rbp-0x28]
+	shr    rax,0x3f
+	mov    BYTE PTR [rbp-0x9],al
+	mov    QWORD PTR [rbp-0x8],0xffffffff800069e1
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    BYTE PTR [rax],0x0
+	mov    eax,DWORD PTR [rbp-0x2c]
+	movsxd rcx,eax
+	mov    rax,QWORD PTR [rbp-0x28]
+	cqo
+	idiv   rcx
+	mov    QWORD PTR [rbp-0x18],rdx
+	cmp    BYTE PTR [rbp-0x9],0x0
+	je     <ltos+0x4f>
+	mov    rax,QWORD PTR [rbp-0x18]
+	neg    rax
+	jmp    <ltos+0x53>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	sub    QWORD PTR [rbp-0x8],0x1
+	movzx  edx,BYTE PTR [rax]
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    BYTE PTR [rax],dl
+	mov    eax,DWORD PTR [rbp-0x2c]
+	movsxd rsi,eax
+	mov    rax,QWORD PTR [rbp-0x28]
+	cqo
+	idiv   rsi
+	mov    QWORD PTR [rbp-0x28],rax
+	cmp    QWORD PTR [rbp-0x28],0x0
+	jne    <ltos+0x2d>
+	cmp    BYTE PTR [rbp-0x9],0x0
+	je     <ltos+0x94>
+	sub    QWORD PTR [rbp-0x8],0x1
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    BYTE PTR [rax],0x2d
+	mov    rax,QWORD PTR [rbp-0x8]
+	leave
+	ret
+
+<ultos>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x28
+	mov    QWORD PTR [rbp-0x18],rdi
+	mov    DWORD PTR [rbp-0x1c],esi
+	mov    QWORD PTR [rbp-0x28],rdx
+	mov    QWORD PTR [rbp-0x8],0xffffffff80006a41
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    BYTE PTR [rax],0x0
+	mov    eax,DWORD PTR [rbp-0x1c]
+	movsxd rcx,eax
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    edx,0x0
+	div    rcx
+	mov    QWORD PTR [rbp-0x10],rdx
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    rax,QWORD PTR [rbp-0x10]
+	add    rax,rdx
+	sub    QWORD PTR [rbp-0x8],0x1
+	movzx  edx,BYTE PTR [rax]
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    BYTE PTR [rax],dl
+	mov    eax,DWORD PTR [rbp-0x1c]
+	movsxd rsi,eax
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    edx,0x0
+	div    rsi
+	mov    QWORD PTR [rbp-0x18],rax
+	cmp    QWORD PTR [rbp-0x18],0x0
+	jne    <ultos+0x22>
+	mov    rax,QWORD PTR [rbp-0x8]
+	leave
+	ret
+
+<write_string>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x20
+	mov    QWORD PTR [rbp-0x18],rdi
+	mov    QWORD PTR [rbp-0x20],rsi
+	mov    DWORD PTR [rbp-0x4],0x0
+	cmp    QWORD PTR [rbp-0x20],0x0
+	je     <write_string+0x4b>
+	jmp    <write_string+0x3e>
+	mov    rax,QWORD PTR [rbp-0x20]
+	lea    rdx,[rax+0x1]
+	mov    QWORD PTR [rbp-0x20],rdx
+	movzx  eax,BYTE PTR [rax]
+	movsx  eax,al
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edi,eax
+	call   rdx
+	add    DWORD PTR [rbp-0x4],0x1
+	mov    rax,QWORD PTR [rbp-0x20]
+	movzx  eax,BYTE PTR [rax]
+	test   al,al
+	jne    <write_string+0x20>
+	jmp    <write_string+0x5e>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,0xffffffff80004031
+	mov    rdi,rax
+	call   <write_string>
+	mov    eax,DWORD PTR [rbp-0x4]
+	leave
+	ret
+
+<next_int>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x18
+	mov    eax,esi
+	mov    QWORD PTR [rbp-0x10],rdx
+	mov    QWORD PTR [rbp-0x18],rcx
+	mov    edx,edi
+	mov    BYTE PTR [rbp-0x4],dl
+	mov    BYTE PTR [rbp-0x8],al
+	movzx  eax,BYTE PTR [rbp-0x4]
+	cmp    eax,0x3
+	je     <next_int+0xff>
+	cmp    eax,0x3
+	jg     <next_int+0x159>
+	cmp    eax,0x1
+	je     <next_int+0x3f>
+	cmp    eax,0x2
+	je     <next_int+0x9f>
+	jmp    <next_int+0x159>
+	movzx  ecx,BYTE PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <next_int+0x72>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edx,DWORD PTR [rdx]
+	lea    esi,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    DWORD PTR [rdx],esi
+	jmp    <next_int+0x86>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rsi,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    QWORD PTR [rdx+0x8],rsi
+	mov    eax,DWORD PTR [rax]
+	movsx  rax,al
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    esi,ecx
+	mov    rdi,rax
+	call   <ltos>
+	jmp    <next_int+0x1b2>
+	movzx  ecx,BYTE PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <next_int+0xd2>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edx,DWORD PTR [rdx]
+	lea    esi,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    DWORD PTR [rdx],esi
+	jmp    <next_int+0xe6>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rsi,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    QWORD PTR [rdx+0x8],rsi
+	mov    eax,DWORD PTR [rax]
+	movsx  rax,ax
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    esi,ecx
+	mov    rdi,rax
+	call   <ltos>
+	jmp    <next_int+0x1b2>
+	movzx  ecx,BYTE PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <next_int+0x132>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edx,DWORD PTR [rdx]
+	lea    esi,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    DWORD PTR [rdx],esi
+	jmp    <next_int+0x146>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rsi,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    QWORD PTR [rdx+0x8],rsi
+	mov    rax,QWORD PTR [rax]
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    esi,ecx
+	mov    rdi,rax
+	call   <ltos>
+	jmp    <next_int+0x1b2>
+	movzx  ecx,BYTE PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <next_int+0x18c>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edx,DWORD PTR [rdx]
+	lea    esi,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    DWORD PTR [rdx],esi
+	jmp    <next_int+0x1a0>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rsi,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    QWORD PTR [rdx+0x8],rsi
+	mov    eax,DWORD PTR [rax]
+	cdqe
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    esi,ecx
+	mov    rdi,rax
+	call   <ltos>
+	leave
+	ret
+
+<next_uint>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x18
+	mov    eax,esi
+	mov    QWORD PTR [rbp-0x10],rdx
+	mov    QWORD PTR [rbp-0x18],rcx
+	mov    edx,edi
+	mov    BYTE PTR [rbp-0x4],dl
+	mov    BYTE PTR [rbp-0x8],al
+	movzx  eax,BYTE PTR [rbp-0x4]
+	cmp    eax,0x3
+	je     <next_uint+0xfd>
+	cmp    eax,0x3
+	jg     <next_uint+0x157>
+	cmp    eax,0x1
+	je     <next_uint+0x3f>
+	cmp    eax,0x2
+	je     <next_uint+0x9e>
+	jmp    <next_uint+0x157>
+	movzx  ecx,BYTE PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <next_uint+0x72>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edx,DWORD PTR [rdx]
+	lea    esi,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    DWORD PTR [rdx],esi
+	jmp    <next_uint+0x86>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rsi,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    QWORD PTR [rdx+0x8],rsi
+	mov    eax,DWORD PTR [rax]
+	movzx  eax,al
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    esi,ecx
+	mov    rdi,rax
+	call   <ultos>
+	jmp    <next_uint+0x1b0>
+	movzx  ecx,BYTE PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <next_uint+0xd1>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edx,DWORD PTR [rdx]
+	lea    esi,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    DWORD PTR [rdx],esi
+	jmp    <next_uint+0xe5>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rsi,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    QWORD PTR [rdx+0x8],rsi
+	mov    eax,DWORD PTR [rax]
+	movzx  eax,ax
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    esi,ecx
+	mov    rdi,rax
+	call   <ultos>
+	jmp    <next_uint+0x1b0>
+	movzx  ecx,BYTE PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <next_uint+0x130>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edx,DWORD PTR [rdx]
+	lea    esi,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    DWORD PTR [rdx],esi
+	jmp    <next_uint+0x144>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rsi,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    QWORD PTR [rdx+0x8],rsi
+	mov    rax,QWORD PTR [rax]
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    esi,ecx
+	mov    rdi,rax
+	call   <ultos>
+	jmp    <next_uint+0x1b0>
+	movzx  ecx,BYTE PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <next_uint+0x18a>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edx,DWORD PTR [rdx]
+	lea    esi,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    DWORD PTR [rdx],esi
+	jmp    <next_uint+0x19e>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rsi,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    QWORD PTR [rdx+0x8],rsi
+	mov    eax,DWORD PTR [rax]
+	mov    edi,eax
+	mov    rax,QWORD PTR [rbp-0x10]
+	mov    rdx,rax
+	mov    esi,ecx
+	call   <ultos>
+	leave
+	ret
+
+<kvfprintf>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x30
+	mov    QWORD PTR [rbp-0x18],rdi
+	mov    QWORD PTR [rbp-0x20],rsi
+	mov    QWORD PTR [rbp-0x28],rdx
+	mov    DWORD PTR [rbp-0x4],0x0
+	mov    BYTE PTR [rbp-0x5],0x0
+	jmp    <kvfprintf+0x3fd>
+	mov    rax,QWORD PTR [rbp-0x20]
+	movzx  eax,BYTE PTR [rax]
+	cmp    al,0x25
+	jne    <kvfprintf+0x3df>
+	add    QWORD PTR [rbp-0x20],0x1
+	mov    rax,QWORD PTR [rbp-0x20]
+	movzx  eax,BYTE PTR [rax]
+	movsx  eax,al
+	cmp    eax,0x68
+	je     <kvfprintf+0x4e>
+	cmp    eax,0x6c
+	je     <kvfprintf+0x6f>
+	jmp    <kvfprintf+0x79>
+	add    QWORD PTR [rbp-0x20],0x1
+	mov    rax,QWORD PTR [rbp-0x20]
+	movzx  eax,BYTE PTR [rax]
+	cmp    al,0x68
+	jne    <kvfprintf+0x69>
+	mov    BYTE PTR [rbp-0x5],0x1
+	add    QWORD PTR [rbp-0x20],0x1
+	jmp    <kvfprintf+0x79>
+	mov    BYTE PTR [rbp-0x5],0x2
+	jmp    <kvfprintf+0x79>
+	mov    BYTE PTR [rbp-0x5],0x3
+	add    QWORD PTR [rbp-0x20],0x1
+	nop
+	mov    rax,QWORD PTR [rbp-0x20]
+	lea    rdx,[rax+0x1]
+	mov    QWORD PTR [rbp-0x20],rdx
+	movzx  eax,BYTE PTR [rax]
+	movsx  eax,al
+	cmp    eax,0x78
+	je     <kvfprintf+0x1e4>
+	cmp    eax,0x78
+	jg     <kvfprintf+0x3d9>
+	cmp    eax,0x75
+	je     <kvfprintf+0x174>
+	cmp    eax,0x75
+	jg     <kvfprintf+0x3d9>
+	cmp    eax,0x73
+	je     <kvfprintf+0x380>
+	cmp    eax,0x73
+	jg     <kvfprintf+0x3d9>
+	cmp    eax,0x70
+	je     <kvfprintf+0x28c>
+	cmp    eax,0x70
+	jg     <kvfprintf+0x3d9>
+	cmp    eax,0x6f
+	je     <kvfprintf+0x1ac>
+	cmp    eax,0x6f
+	jg     <kvfprintf+0x3d9>
+	cmp    eax,0x69
+	je     <kvfprintf+0x13c>
+	cmp    eax,0x69
+	jg     <kvfprintf+0x3d9>
+	cmp    eax,0x64
+	je     <kvfprintf+0x13c>
+	cmp    eax,0x64
+	jg     <kvfprintf+0x3d9>
+	cmp    eax,0x63
+	je     <kvfprintf+0x32a>
+	cmp    eax,0x63
+	jg     <kvfprintf+0x3d9>
+	cmp    eax,0x62
+	je     <kvfprintf+0x254>
+	cmp    eax,0x62
+	jg     <kvfprintf+0x3d9>
+	cmp    eax,0x25
+	je     <kvfprintf+0x316>
+	cmp    eax,0x58
+	je     <kvfprintf+0x21c>
+	jmp    <kvfprintf+0x3d9>
+	movzx  eax,BYTE PTR [rbp-0x5]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    rcx,rdx
+	mov    rdx,0xffffffff80004000
+	mov    esi,0xa
+	mov    edi,eax
+	call   <next_int>
+	mov    rdx,rax
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <write_string>
+	add    DWORD PTR [rbp-0x4],eax
+	jmp    <kvfprintf+0x3d9>
+	movzx  eax,BYTE PTR [rbp-0x5]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    rcx,rdx
+	mov    rdx,0xffffffff80004000
+	mov    esi,0xa
+	mov    edi,eax
+	call   <next_uint>
+	mov    rdx,rax
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <write_string>
+	add    DWORD PTR [rbp-0x4],eax
+	jmp    <kvfprintf+0x3d9>
+	movzx  eax,BYTE PTR [rbp-0x5]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    rcx,rdx
+	mov    rdx,0xffffffff80004000
+	mov    esi,0x8
+	mov    edi,eax
+	call   <next_uint>
+	mov    rdx,rax
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <write_string>
+	add    DWORD PTR [rbp-0x4],eax
+	jmp    <kvfprintf+0x3d9>
+	movzx  eax,BYTE PTR [rbp-0x5]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    rcx,rdx
+	mov    rdx,0xffffffff80004000
+	mov    esi,0x10
+	mov    edi,eax
+	call   <next_uint>
+	mov    rdx,rax
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <write_string>
+	add    DWORD PTR [rbp-0x4],eax
+	jmp    <kvfprintf+0x3d9>
+	movzx  eax,BYTE PTR [rbp-0x5]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    rcx,rdx
+	mov    rdx,0xffffffff80004020
+	mov    esi,0x10
+	mov    edi,eax
+	call   <next_uint>
+	mov    rdx,rax
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <write_string>
+	add    DWORD PTR [rbp-0x4],eax
+	jmp    <kvfprintf+0x3d9>
+	movzx  eax,BYTE PTR [rbp-0x5]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    rcx,rdx
+	mov    rdx,0xffffffff80004020
+	mov    esi,0x2
+	mov    edi,eax
+	call   <next_uint>
+	mov    rdx,rax
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <write_string>
+	add    DWORD PTR [rbp-0x4],eax
+	jmp    <kvfprintf+0x3d9>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,0xffffffff80004038
+	mov    rdi,rax
+	call   <write_string>
+	add    DWORD PTR [rbp-0x4],eax
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <kvfprintf+0x2d1>
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    edx,DWORD PTR [rdx]
+	lea    ecx,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    DWORD PTR [rdx],ecx
+	jmp    <kvfprintf+0x2e5>
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rcx,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    QWORD PTR [rdx+0x8],rcx
+	mov    rax,QWORD PTR [rax]
+	mov    rdx,0xffffffff80004000
+	mov    esi,0x10
+	mov    rdi,rax
+	call   <ultos>
+	mov    rdx,rax
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <write_string>
+	add    DWORD PTR [rbp-0x4],eax
+	jmp    <kvfprintf+0x3d9>
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    edi,0x25
+	call   rax
+	add    DWORD PTR [rbp-0x4],0x1
+	jmp    <kvfprintf+0x3d9>
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <kvfprintf+0x359>
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    edx,DWORD PTR [rdx]
+	lea    ecx,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    DWORD PTR [rdx],ecx
+	jmp    <kvfprintf+0x36d>
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rcx,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    QWORD PTR [rdx+0x8],rcx
+	mov    eax,DWORD PTR [rax]
+	movsx  eax,al
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edi,eax
+	call   rdx
+	add    DWORD PTR [rbp-0x4],0x1
+	jmp    <kvfprintf+0x3d9>
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    eax,DWORD PTR [rax]
+	cmp    eax,0x2f
+	ja     <kvfprintf+0x3af>
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    rdx,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    eax,DWORD PTR [rax]
+	mov    eax,eax
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    edx,DWORD PTR [rdx]
+	lea    ecx,[rdx+0x8]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    DWORD PTR [rdx],ecx
+	jmp    <kvfprintf+0x3c3>
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    rax,QWORD PTR [rax+0x8]
+	lea    rcx,[rax+0x8]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	mov    QWORD PTR [rdx+0x8],rcx
+	mov    rdx,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <write_string>
+	add    DWORD PTR [rbp-0x4],eax
+	nop
+	mov    BYTE PTR [rbp-0x5],0x0
+	jmp    <kvfprintf+0x3fd>
+	mov    rax,QWORD PTR [rbp-0x20]
+	lea    rdx,[rax+0x1]
+	mov    QWORD PTR [rbp-0x20],rdx
+	movzx  eax,BYTE PTR [rax]
+	movsx  eax,al
+	mov    rdx,QWORD PTR [rbp-0x18]
+	mov    edi,eax
+	call   rdx
+	add    DWORD PTR [rbp-0x4],0x1
+	mov    rax,QWORD PTR [rbp-0x20]
+	movzx  eax,BYTE PTR [rax]
+	test   al,al
+	jne    <kvfprintf+0x24>
+	mov    eax,DWORD PTR [rbp-0x4]
+	leave
+	ret
+
+<kvprintf>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x10
+	mov    QWORD PTR [rbp-0x8],rdi
+	mov    QWORD PTR [rbp-0x10],rsi
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    rsi,rax
+	mov    rdi,0xffffffff8000283f
+	call   <kvfprintf>
+	leave
+	ret
+
+<kprintf>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x60
+	mov    QWORD PTR [rbp-0x58],rdi
+	mov    QWORD PTR [rbp-0x28],rsi
+	mov    QWORD PTR [rbp-0x20],rdx
+	mov    QWORD PTR [rbp-0x18],rcx
+	mov    QWORD PTR [rbp-0x10],r8
+	mov    QWORD PTR [rbp-0x8],r9
+	mov    DWORD PTR [rbp-0x50],0x8
+	lea    rax,[rbp+0x10]
+	mov    QWORD PTR [rbp-0x48],rax
+	lea    rax,[rbp-0x30]
+	mov    QWORD PTR [rbp-0x40],rax
+	lea    rdx,[rbp-0x50]
+	mov    rax,QWORD PTR [rbp-0x58]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <kvprintf>
+	mov    DWORD PTR [rbp-0x34],eax
+	mov    eax,DWORD PTR [rbp-0x34]
+	leave
+	ret
+
+<memset>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x28
+	mov    QWORD PTR [rbp-0x18],rdi
+	mov    DWORD PTR [rbp-0x1c],esi
+	mov    QWORD PTR [rbp-0x28],rdx
+	mov    rax,QWORD PTR [rbp-0x18]
+	mov    QWORD PTR [rbp-0x10],rax
+	mov    QWORD PTR [rbp-0x8],0x0
+	jmp    <memset+0x3a>
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    rax,QWORD PTR [rbp-0x8]
+	add    rax,rdx
+	mov    edx,DWORD PTR [rbp-0x1c]
+	mov    BYTE PTR [rax],dl
+	add    QWORD PTR [rbp-0x8],0x1
+	mov    rax,QWORD PTR [rbp-0x8]
+	cmp    rax,QWORD PTR [rbp-0x28]
+	jb     <memset+0x25>
+	mov    rax,QWORD PTR [rbp-0x18]
+	leave
+	ret
+
+<memmove>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x38
+	mov    QWORD PTR [rbp-0x28],rdi
+	mov    QWORD PTR [rbp-0x30],rsi
+	mov    QWORD PTR [rbp-0x38],rdx
+	mov    rax,QWORD PTR [rbp-0x28]
+	mov    QWORD PTR [rbp-0x18],rax
+	mov    rax,QWORD PTR [rbp-0x30]
+	mov    QWORD PTR [rbp-0x20],rax
+	mov    rax,QWORD PTR [rbp-0x30]
+	mov    rdx,QWORD PTR [rbp-0x28]
+	cmp    rdx,rax
+	jae    <memmove+0x67>
+	mov    QWORD PTR [rbp-0x8],0x0
+	jmp    <memmove+0x5b>
+	mov    rdx,QWORD PTR [rbp-0x20]
+	mov    rax,QWORD PTR [rbp-0x8]
+	add    rax,rdx
+	mov    rcx,QWORD PTR [rbp-0x18]
+	mov    rdx,QWORD PTR [rbp-0x8]
+	add    rdx,rcx
+	movzx  eax,BYTE PTR [rax]
+	mov    BYTE PTR [rdx],al
+	add    QWORD PTR [rbp-0x8],0x1
+	mov    rax,QWORD PTR [rbp-0x8]
+	cmp    rax,QWORD PTR [rbp-0x38]
+	jb     <memmove+0x3b>
+	jmp    <memmove+0xad>
+	mov    rdx,QWORD PTR [rbp-0x30]
+	mov    rax,QWORD PTR [rbp-0x28]
+	cmp    rdx,rax
+	jae    <memmove+0xad>
+	mov    rax,QWORD PTR [rbp-0x38]
+	mov    QWORD PTR [rbp-0x10],rax
+	jmp    <memmove+0xa6>
+	mov    rax,QWORD PTR [rbp-0x10]
+	lea    rdx,[rax-0x1]
+	mov    rax,QWORD PTR [rbp-0x20]
+	add    rax,rdx
+	mov    rdx,QWORD PTR [rbp-0x10]
+	lea    rcx,[rdx-0x1]
+	mov    rdx,QWORD PTR [rbp-0x18]
+	add    rdx,rcx
+	movzx  eax,BYTE PTR [rax]
+	mov    BYTE PTR [rdx],al
+	sub    QWORD PTR [rbp-0x10],0x1
+	cmp    QWORD PTR [rbp-0x10],0x0
+	jne    <memmove+0x7e>
+	mov    rax,QWORD PTR [rbp-0x28]
+	leave
+	ret
+
+<log>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x70
+	mov    DWORD PTR [rbp-0x54],edi
+	mov    QWORD PTR [rbp-0x60],rsi
+	mov    QWORD PTR [rbp-0x68],rdx
+	mov    DWORD PTR [rbp-0x58],ecx
+	mov    QWORD PTR [rbp-0x70],r8
+	mov    QWORD PTR [rbp-0x8],r9
+	mov    DWORD PTR [rbp-0x48],0x28
+	lea    rax,[rbp+0x10]
+	mov    QWORD PTR [rbp-0x40],rax
+	lea    rax,[rbp-0x30]
+	mov    QWORD PTR [rbp-0x38],rax
+	mov    rdi,0xffffffff8000403b
+	mov    eax,0x0
+	call   <kprintf>
+	cmp    DWORD PTR [rbp-0x54],0x3
+	je     <log+0xc8>
+	cmp    DWORD PTR [rbp-0x54],0x3
+	jg     <log+0xda>
+	cmp    DWORD PTR [rbp-0x54],0x2
+	je     <log+0x96>
+	cmp    DWORD PTR [rbp-0x54],0x2
+	jg     <log+0xda>
+	cmp    DWORD PTR [rbp-0x54],0x0
+	je     <log+0x70>
+	cmp    DWORD PTR [rbp-0x54],0x1
+	je     <log+0x83>
+	jmp    <log+0xda>
+	mov    rdi,0xffffffff80004044
+	mov    eax,0x0
+	call   <kprintf>
+	jmp    <log+0xda>
+	mov    rdi,0xffffffff80004055
+	mov    eax,0x0
+	call   <kprintf>
+	jmp    <log+0xda>
+	mov    rdi,0xffffffff80004066
+	mov    eax,0x0
+	call   <kprintf>
+	mov    ecx,DWORD PTR [rbp-0x58]
+	mov    rdx,QWORD PTR [rbp-0x68]
+	mov    rax,QWORD PTR [rbp-0x60]
+	mov    rsi,rax
+	mov    rdi,0xffffffff80004077
+	mov    eax,0x0
+	call   <kprintf>
+	jmp    <log+0xda>
+	mov    rdi,0xffffffff80004082
+	mov    eax,0x0
+	call   <kprintf>
+	nop
+	lea    rdx,[rbp-0x48]
+	mov    rax,QWORD PTR [rbp-0x70]
+	mov    rsi,rdx
+	mov    rdi,rax
+	call   <kvprintf>
+	mov    edi,0xa
+	call   <write_char>
+	nop
+	leave
+	ret
+
+<hcf>:
+	push   rbp
+	mov    rbp,rsp
+	hlt
+	jmp    <hcf+0x4>
+
+<kmain>:
+	push   rbp
+	mov    rbp,rsp
+	mov    rax,QWORD PTR [rip+0xffffffffffffe4c4]        # <limine_base_revision+0x10>
+	test   rax,rax
+	je     <kmain+0x15>
+	call   <hcf>
+	mov    eax,0x0
+	call   <terminal_init>
+	sub    rsp,0x8
+	push   0xffffffff800040af
+	mov    r9,0xffffffff80004093
+	mov    r8d,0x0
+	mov    ecx,0x0
+	mov    edx,0x0
+	mov    rsi,0xffffffff80004097
+	mov    rdi,0xffffffff8000409c
+	mov    eax,0x0
+	call   <kprintf>
+	add    rsp,0x10
+	mov    eax,0x0
+	call   <x86_64_gdt_init>
+	mov    eax,0x0
+	call   <x86_64_idt_init>
+	mov    eax,0x0
+	call   <pfa_init>
+	call   <hcf>
+	nop
+	leave
+	ret
+
+<clear>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x8
+	mov    QWORD PTR [rbp-0x8],rdi
+	mov    rax,QWORD PTR [rip+0x4e53]        # <bitmap>
+	mov    rdx,QWORD PTR [rbp-0x8]
+	shr    rdx,0x3
+	add    rax,rdx
+	movzx  eax,BYTE PTR [rax]
+	mov    esi,eax
+	mov    rax,QWORD PTR [rbp-0x8]
+	and    eax,0x7
+	mov    edx,0x1
+	mov    ecx,eax
+	shl    edx,cl
+	mov    eax,edx
+	not    eax
+	and    esi,eax
+	mov    ecx,esi
+	mov    rax,QWORD PTR [rip+0x4e24]        # <bitmap>
+	mov    rdx,QWORD PTR [rbp-0x8]
+	shr    rdx,0x3
+	add    rax,rdx
+	mov    edx,ecx
+	mov    BYTE PTR [rax],dl
+	nop
+	leave
+	ret
+
+<pfa_init>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x50
+	mov    rax,QWORD PTR [rip+0xffffffffffffe423]        # <memmap_request+0x28>
+	test   rax,rax
+	jne    <pfa_init+0x47>
+	mov    r8,0xffffffff800040b8
+	mov    ecx,0x2e
+	mov    rdx,0xffffffff80004190
+	mov    rsi,0xffffffff800040da
+	mov    edi,0x3
+	mov    eax,0x0
+	call   <log>
+	mov    eax,0x0
+	call   <hcf>
+	mov    rax,QWORD PTR [rip+0xffffffffffffe3e4]        # <memmap_request+0x28>
+	mov    rax,QWORD PTR [rax+0x8]
+	mov    QWORD PTR [rbp-0x30],rax
+	mov    rax,QWORD PTR [rip+0xffffffffffffe3d5]        # <memmap_request+0x28>
+	mov    rax,QWORD PTR [rax+0x10]
+	mov    QWORD PTR [rbp-0x38],rax
+	mov    QWORD PTR [rbp-0x8],0x0
+	mov    rax,QWORD PTR [rbp-0x30]
+	sub    rax,0x1
+	mov    QWORD PTR [rbp-0x10],rax
+	mov    rax,QWORD PTR [rbp-0x10]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rax+0x10]
+	test   rax,rax
+	jne    <pfa_init+0xb4>
+	mov    rax,QWORD PTR [rbp-0x10]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    QWORD PTR [rbp-0x8],rax
+	jmp    <pfa_init+0xc3>
+	cmp    QWORD PTR [rbp-0x10],0x0
+	je     <pfa_init+0xc2>
+	sub    QWORD PTR [rbp-0x10],0x1
+	jmp    <pfa_init+0x79>
+	nop
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    rdx,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rax+0x8]
+	add    rax,rdx
+	mov    QWORD PTR [rip+0x4d3e],rax        # <memory_size>
+	mov    rax,QWORD PTR [rip+0x4d37]        # <memory_size>
+	shr    rax,0xc
+	mov    QWORD PTR [rip+0x4d34],rax        # <total_pages>
+	mov    rax,QWORD PTR [rip+0x4d2d]        # <total_pages>
+	add    rax,0x7
+	shr    rax,0x3
+	mov    QWORD PTR [rip+0x4d26],rax        # <bitmap_size>
+	mov    rax,QWORD PTR [rip+0x4d1f]        # <bitmap_size>
+	add    rax,0xfff
+	and    rax,0xfffffffffffff000
+	mov    QWORD PTR [rbp-0x40],rax
+	mov    QWORD PTR [rbp-0x18],0x0
+	jmp    <pfa_init+0x216>
+	mov    rax,QWORD PTR [rbp-0x18]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rax+0x10]
+	test   rax,rax
+	jne    <pfa_init+0x210>
+	mov    rax,QWORD PTR [rbp-0x18]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rax+0x8]
+	cmp    rax,QWORD PTR [rbp-0x40]
+	jb     <pfa_init+0x210>
+	mov    rax,QWORD PTR [rbp-0x18]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rdx,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rip+0xffffffffffffe2e3]        # <hhdm_request+0x28>
+	mov    rax,QWORD PTR [rax+0x8]
+	add    rax,rdx
+	mov    QWORD PTR [rip+0x4c75],rax        # <bitmap>
+	mov    rax,QWORD PTR [rbp-0x18]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rcx,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rbp-0x18]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rdx,QWORD PTR [rbp-0x40]
+	add    rdx,rcx
+	mov    QWORD PTR [rax],rdx
+	mov    rax,QWORD PTR [rbp-0x18]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rdx,QWORD PTR [rax+0x8]
+	mov    rax,QWORD PTR [rbp-0x18]
+	lea    rcx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rcx
+	mov    rax,QWORD PTR [rax]
+	sub    rdx,QWORD PTR [rbp-0x40]
+	mov    QWORD PTR [rax+0x8],rdx
+	jmp    <pfa_init+0x224>
+	nop
+	add    QWORD PTR [rbp-0x18],0x1
+	mov    rax,QWORD PTR [rbp-0x18]
+	cmp    rax,QWORD PTR [rbp-0x30]
+	jb     <pfa_init+0x128>
+	mov    rax,QWORD PTR [rip+0x4be7]        # <bitmap>
+	test   rax,rax
+	jne    <pfa_init+0x263>
+	mov    r8,0xffffffff800040e8
+	mov    ecx,0x58
+	mov    rdx,0xffffffff80004190
+	mov    rsi,0xffffffff800040da
+	mov    edi,0x3
+	mov    eax,0x0
+	call   <log>
+	mov    eax,0x0
+	call   <hcf>
+	mov    rax,QWORD PTR [rip+0x4ba8]        # <bitmap>
+	mov    rdx,QWORD PTR [rbp-0x40]
+	mov    esi,0xff
+	mov    rdi,rax
+	call   <memset>
+	mov    QWORD PTR [rbp-0x20],0x0
+	jmp    <pfa_init+0x315>
+	mov    rax,QWORD PTR [rbp-0x20]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rax+0x10]
+	test   rax,rax
+	jne    <pfa_init+0x30f>
+	mov    QWORD PTR [rbp-0x28],0x0
+	jmp    <pfa_init+0x2ed>
+	mov    rax,QWORD PTR [rbp-0x20]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rdx,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rbp-0x28]
+	add    rax,rdx
+	mov    QWORD PTR [rbp-0x50],rax
+	mov    rax,QWORD PTR [rbp-0x50]
+	shr    rax,0xc
+	mov    rdi,rax
+	call   <clear>
+	add    QWORD PTR [rbp-0x28],0x1000
+	mov    rax,QWORD PTR [rbp-0x20]
+	lea    rdx,[rax*8+0x0]
+	mov    rax,QWORD PTR [rbp-0x38]
+	add    rax,rdx
+	mov    rax,QWORD PTR [rax]
+	mov    rax,QWORD PTR [rax+0x8]
+	cmp    QWORD PTR [rbp-0x28],rax
+	jb     <pfa_init+0x2b1>
+	jmp    <pfa_init+0x310>
+	nop
+	add    QWORD PTR [rbp-0x20],0x1
+	mov    rax,QWORD PTR [rbp-0x20]
+	cmp    rax,QWORD PTR [rbp-0x30]
+	jb     <pfa_init+0x288>
+	mov    rax,QWORD PTR [rip+0x4af0]        # <memory_size>
+	shr    rax,0x14
+	mov    QWORD PTR [rbp-0x48],rax
+	mov    rax,QWORD PTR [rip+0x4ae1]        # <memory_size>
+	sub    rsp,0x8
+	push   QWORD PTR [rbp-0x48]
+	mov    r9,rax
+	mov    r8,0xffffffff80004110
+	mov    ecx,0x69
+	mov    rdx,0xffffffff80004190
+	mov    rsi,0xffffffff800040da
+	mov    edi,0x0
+	mov    eax,0x0
+	call   <log>
+	add    rsp,0x10
+	mov    rax,QWORD PTR [rip+0x4aab]        # <total_pages>
+	mov    r9,rax
+	mov    r8,0xffffffff8000412f
+	mov    ecx,0x6a
+	mov    rdx,0xffffffff80004190
+	mov    rsi,0xffffffff800040da
+	mov    edi,0x0
+	mov    eax,0x0
+	call   <log>
+	mov    rax,QWORD PTR [rip+0x4a80]        # <bitmap_size>
+	mov    r9,rax
+	mov    r8,0xffffffff80004146
+	mov    ecx,0x6b
+	mov    rdx,0xffffffff80004190
+	mov    rsi,0xffffffff800040da
+	mov    edi,0x0
+	mov    eax,0x0
+	call   <log>
+	mov    rax,QWORD PTR [rbp-0x40]
+	shr    rax,0xc
+	mov    rdx,QWORD PTR [rbp-0x40]
+	sub    rsp,0x8
+	push   rax
+	mov    r9,rdx
+	mov    r8,0xffffffff80004160
+	mov    ecx,0x6c
+	mov    rdx,0xffffffff80004190
+	mov    rsi,0xffffffff800040da
+	mov    edi,0x0
+	mov    eax,0x0
+	call   <log>
+	add    rsp,0x10
+	nop
+	leave
+	ret
+
+<draw_char>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x58
+	mov    QWORD PTR [rbp-0x48],rdi
+	mov    QWORD PTR [rbp-0x50],rsi
+	mov    eax,edx
+	mov    BYTE PTR [rbp-0x54],al
+	movzx  eax,BYTE PTR [rbp-0x54]
+	mov    QWORD PTR [rbp-0x18],rax
+	mov    rax,QWORD PTR [rbp-0x18]
+	shl    rax,0x4
+	add    rax,0xffffffff800041a0
+	mov    QWORD PTR [rbp-0x20],rax
+	mov    rax,QWORD PTR [rip+0x49fa]        # <pitch>
+	shr    rax,0x2
+	mov    QWORD PTR [rbp-0x28],rax
+	mov    rdx,QWORD PTR [rip+0x49d3]        # <framebuffer>
+	mov    rax,QWORD PTR [rbp-0x50]
+	imul   rax,QWORD PTR [rbp-0x28]
+	mov    rcx,rax
+	mov    rax,QWORD PTR [rbp-0x48]
+	add    rax,rcx
+	shl    rax,0x2
+	add    rax,rdx
+	mov    QWORD PTR [rbp-0x8],rax
+	mov    QWORD PTR [rbp-0x10],0x0
+	jmp    <draw_char+0x1fb>
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    QWORD PTR [rbp-0x30],rax
+	mov    rdx,QWORD PTR [rbp-0x20]
+	mov    rax,QWORD PTR [rbp-0x10]
+	add    rax,rdx
+	movzx  eax,BYTE PTR [rax]
+	mov    BYTE PTR [rbp-0x31],al
+	movzx  eax,BYTE PTR [rbp-0x31]
+	shr    al,0x7
+	movzx  eax,al
+	and    eax,0x1
+	test   eax,eax
+	je     <draw_char+0xa2>
+	mov    edx,DWORD PTR [rip+0x3f24]        # <fg>
+	jmp    <draw_char+0xa8>
+	mov    edx,DWORD PTR [rip+0x3f18]        # <bg>
+	mov    rax,QWORD PTR [rbp-0x30]
+	lea    rcx,[rax+0x4]
+	mov    QWORD PTR [rbp-0x30],rcx
+	mov    DWORD PTR [rax],edx
+	movzx  eax,BYTE PTR [rbp-0x31]
+	shr    al,0x6
+	movzx  eax,al
+	and    eax,0x1
+	test   eax,eax
+	je     <draw_char+0xcf>
+	mov    edx,DWORD PTR [rip+0x3ef7]        # <fg>
+	jmp    <draw_char+0xd5>
+	mov    edx,DWORD PTR [rip+0x3eeb]        # <bg>
+	mov    rax,QWORD PTR [rbp-0x30]
+	lea    rcx,[rax+0x4]
+	mov    QWORD PTR [rbp-0x30],rcx
+	mov    DWORD PTR [rax],edx
+	movzx  eax,BYTE PTR [rbp-0x31]
+	shr    al,0x5
+	movzx  eax,al
+	and    eax,0x1
+	test   eax,eax
+	je     <draw_char+0xfc>
+	mov    edx,DWORD PTR [rip+0x3eca]        # <fg>
+	jmp    <draw_char+0x102>
+	mov    edx,DWORD PTR [rip+0x3ebe]        # <bg>
+	mov    rax,QWORD PTR [rbp-0x30]
+	lea    rcx,[rax+0x4]
+	mov    QWORD PTR [rbp-0x30],rcx
+	mov    DWORD PTR [rax],edx
+	movzx  eax,BYTE PTR [rbp-0x31]
+	shr    al,0x4
+	movzx  eax,al
+	and    eax,0x1
+	test   eax,eax
+	je     <draw_char+0x129>
+	mov    edx,DWORD PTR [rip+0x3e9d]        # <fg>
+	jmp    <draw_char+0x12f>
+	mov    edx,DWORD PTR [rip+0x3e91]        # <bg>
+	mov    rax,QWORD PTR [rbp-0x30]
+	lea    rcx,[rax+0x4]
+	mov    QWORD PTR [rbp-0x30],rcx
+	mov    DWORD PTR [rax],edx
+	movzx  eax,BYTE PTR [rbp-0x31]
+	shr    al,0x3
+	movzx  eax,al
+	and    eax,0x1
+	test   eax,eax
+	je     <draw_char+0x156>
+	mov    edx,DWORD PTR [rip+0x3e70]        # <fg>
+	jmp    <draw_char+0x15c>
+	mov    edx,DWORD PTR [rip+0x3e64]        # <bg>
+	mov    rax,QWORD PTR [rbp-0x30]
+	lea    rcx,[rax+0x4]
+	mov    QWORD PTR [rbp-0x30],rcx
+	mov    DWORD PTR [rax],edx
+	movzx  eax,BYTE PTR [rbp-0x31]
+	shr    al,0x2
+	movzx  eax,al
+	and    eax,0x1
+	test   eax,eax
+	je     <draw_char+0x183>
+	mov    edx,DWORD PTR [rip+0x3e43]        # <fg>
+	jmp    <draw_char+0x189>
+	mov    edx,DWORD PTR [rip+0x3e37]        # <bg>
+	mov    rax,QWORD PTR [rbp-0x30]
+	lea    rcx,[rax+0x4]
+	mov    QWORD PTR [rbp-0x30],rcx
+	mov    DWORD PTR [rax],edx
+	movzx  eax,BYTE PTR [rbp-0x31]
+	shr    al,1
+	movzx  eax,al
+	and    eax,0x1
+	test   eax,eax
+	je     <draw_char+0x1af>
+	mov    edx,DWORD PTR [rip+0x3e17]        # <fg>
+	jmp    <draw_char+0x1b5>
+	mov    edx,DWORD PTR [rip+0x3e0b]        # <bg>
+	mov    rax,QWORD PTR [rbp-0x30]
+	lea    rcx,[rax+0x4]
+	mov    QWORD PTR [rbp-0x30],rcx
+	mov    DWORD PTR [rax],edx
+	movzx  eax,BYTE PTR [rbp-0x31]
+	and    eax,0x1
+	test   eax,eax
+	je     <draw_char+0x1d6>
+	mov    edx,DWORD PTR [rip+0x3df0]        # <fg>
+	jmp    <draw_char+0x1dc>
+	mov    edx,DWORD PTR [rip+0x3de4]        # <bg>
+	mov    rax,QWORD PTR [rbp-0x30]
+	lea    rcx,[rax+0x4]
+	mov    QWORD PTR [rbp-0x30],rcx
+	mov    DWORD PTR [rax],edx
+	mov    rax,QWORD PTR [rbp-0x28]
+	shl    rax,0x2
+	add    QWORD PTR [rbp-0x8],rax
+	add    QWORD PTR [rbp-0x10],0x1
+	mov    eax,0x10
+	cmp    QWORD PTR [rbp-0x10],rax
+	jb     <draw_char+0x70>
+	nop
+	nop
+	leave
+	ret
+
+<scroll>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x30
+	mov    rax,QWORD PTR [rip+0x47fb]        # <framebuffer>
+	mov    QWORD PTR [rbp-0x10],rax
+	mov    rax,QWORD PTR [rip+0x4808]        # <pitch>
+	mov    edx,0x10
+	imul   rax,rdx
+	mov    QWORD PTR [rbp-0x18],rax
+	mov    rax,QWORD PTR [rip+0x4804]        # <rows>
+	sub    rax,0x1
+	mov    rdx,rax
+	mov    eax,0x10
+	imul   rdx,rax
+	mov    rax,QWORD PTR [rip+0x47dd]        # <pitch>
+	imul   rax,rdx
+	mov    QWORD PTR [rbp-0x20],rax
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    rax,QWORD PTR [rbp-0x18]
+	lea    rcx,[rdx+rax*1]
+	mov    rdx,QWORD PTR [rbp-0x20]
+	mov    rax,QWORD PTR [rbp-0x10]
+	mov    rsi,rcx
+	mov    rdi,rax
+	call   <memmove>
+	mov    rdx,QWORD PTR [rbp-0x10]
+	mov    rax,QWORD PTR [rbp-0x20]
+	add    rax,rdx
+	mov    QWORD PTR [rbp-0x28],rax
+	mov    rax,QWORD PTR [rbp-0x18]
+	shr    rax,0x2
+	mov    QWORD PTR [rbp-0x30],rax
+	mov    QWORD PTR [rbp-0x8],0x0
+	jmp    <scroll+0xb1>
+	mov    rax,QWORD PTR [rbp-0x8]
+	lea    rdx,[rax*4+0x0]
+	mov    rax,QWORD PTR [rbp-0x28]
+	add    rdx,rax
+	mov    eax,DWORD PTR [rip+0x3d08]        # <bg>
+	mov    DWORD PTR [rdx],eax
+	add    QWORD PTR [rbp-0x8],0x1
+	mov    rax,QWORD PTR [rbp-0x8]
+	cmp    rax,QWORD PTR [rbp-0x30]
+	jb     <scroll+0x91>
+	nop
+	nop
+	leave
+	ret
+
+<get_ansi_arg>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x10
+	mov    rax,QWORD PTR [rip+0x4794]        # <buffer_i>
+	mov    BYTE PTR [rax-0x7fff9550],0x0
+	mov    DWORD PTR [rbp-0x4],0x0
+	mov    QWORD PTR [rbp-0x10],0x0
+	jmp    <get_ansi_arg+0x52>
+	mov    edx,DWORD PTR [rbp-0x4]
+	mov    eax,edx
+	shl    eax,0x2
+	add    eax,edx
+	add    eax,eax
+	mov    edx,eax
+	mov    rax,QWORD PTR [rbp-0x10]
+	add    rax,0xffffffff80006ab0
+	movzx  eax,BYTE PTR [rax]
+	movsx  eax,al
+	sub    eax,0x30
+	add    eax,edx
+	mov    DWORD PTR [rbp-0x4],eax
+	add    QWORD PTR [rbp-0x10],0x1
+	mov    rax,QWORD PTR [rip+0x474a]        # <buffer_i>
+	cmp    QWORD PTR [rbp-0x10],rax
+	jb     <get_ansi_arg+0x27>
+	mov    QWORD PTR [rip+0x4739],0x0        # <buffer_i>
+	mov    eax,DWORD PTR [rbp-0x4]
+	leave
+	ret
+
+<handle_ansi>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x18
+	mov    eax,edi
+	mov    BYTE PTR [rbp-0x14],al
+	movzx  eax,BYTE PTR [rip+0x470a]        # <csi>
+	test   al,al
+	je     <handle_ansi+0x163>
+	movzx  eax,BYTE PTR [rbp-0x14]
+	cmp    eax,0x6d
+	jne    <handle_ansi+0x12d>
+	mov    eax,0x0
+	call   <get_ansi_arg>
+	mov    DWORD PTR [rbp-0x4],eax
+	mov    eax,DWORD PTR [rbp-0x4]
+	movsxd rdx,eax
+	imul   rdx,rdx,0x66666667
+	shr    rdx,0x20
+	mov    ecx,edx
+	sar    ecx,0x2
+	cdq
+	mov    eax,ecx
+	sub    eax,edx
+	mov    DWORD PTR [rbp-0x8],eax
+	mov    edx,DWORD PTR [rbp-0x4]
+	movsxd rax,edx
+	imul   rax,rax,0x66666667
+	shr    rax,0x20
+	mov    ecx,eax
+	sar    ecx,0x2
+	mov    eax,edx
+	sar    eax,0x1f
+	sub    ecx,eax
+	mov    eax,ecx
+	shl    eax,0x2
+	add    eax,ecx
+	add    eax,eax
+	sub    edx,eax
+	mov    DWORD PTR [rbp-0xc],edx
+	cmp    DWORD PTR [rbp-0x8],0xa
+	je     <handle_ansi+0x118>
+	cmp    DWORD PTR [rbp-0x8],0xa
+	jg     <handle_ansi+0x152>
+	cmp    DWORD PTR [rbp-0x8],0x9
+	je     <handle_ansi+0x104>
+	cmp    DWORD PTR [rbp-0x8],0x9
+	jg     <handle_ansi+0x152>
+	cmp    DWORD PTR [rbp-0x8],0x3
+	je     <handle_ansi+0xb4>
+	cmp    DWORD PTR [rbp-0x8],0x4
+	je     <handle_ansi+0xdc>
+	jmp    <handle_ansi+0x152>
+	cmp    DWORD PTR [rbp-0xc],0x9
+	jne    <handle_ansi+0xc8>
+	mov    eax,DWORD PTR [rip+0x3bc0]        # <default_fg>
+	mov    DWORD PTR [rip+0x3bc2],eax        # <fg>
+	jmp    <handle_ansi+0x12b>
+	mov    eax,DWORD PTR [rbp-0xc]
+	cdqe
+	mov    eax,DWORD PTR [rax*4-0x7fff9fe0]
+	mov    DWORD PTR [rip+0x3bae],eax        # <fg>
+	jmp    <handle_ansi+0x12b>
+	cmp    DWORD PTR [rbp-0xc],0x9
+	jne    <handle_ansi+0xf0>
+	mov    eax,DWORD PTR [rip+0x3b94]        # <default_bg>
+	mov    DWORD PTR [rip+0x3b96],eax        # <bg>
+	jmp    <handle_ansi+0x12b>
+	mov    eax,DWORD PTR [rbp-0xc]
+	cdqe
+	mov    eax,DWORD PTR [rax*4-0x7fff9fe0]
+	mov    DWORD PTR [rip+0x3b82],eax        # <bg>
+	jmp    <handle_ansi+0x12b>
+	mov    eax,DWORD PTR [rbp-0xc]
+	cdqe
+	mov    eax,DWORD PTR [rax*4-0x7fff9fc0]
+	mov    DWORD PTR [rip+0x3b72],eax        # <fg>
+	jmp    <handle_ansi+0x12b>
+	mov    eax,DWORD PTR [rbp-0xc]
+	cdqe
+	mov    eax,DWORD PTR [rax*4-0x7fff9fc0]
+	mov    DWORD PTR [rip+0x3b5a],eax        # <bg>
+	nop
+	jmp    <handle_ansi+0x152>
+	mov    rax,QWORD PTR [rip+0x4600]        # <buffer_i>
+	movzx  edx,BYTE PTR [rbp-0x14]
+	mov    BYTE PTR [rax-0x7fff9550],dl
+	mov    rax,QWORD PTR [rip+0x45ef]        # <buffer_i>
+	add    rax,0x1
+	mov    QWORD PTR [rip+0x45e4],rax        # <buffer_i>
+	jmp    <handle_ansi+0x170>
+	nop
+	mov    BYTE PTR [rip+0x45c4],0x0        # <csi>
+	mov    BYTE PTR [rip+0x45bc],0x0        # <ansi>
+	jmp    <handle_ansi+0x170>
+	cmp    BYTE PTR [rbp-0x14],0x5b
+	jne    <handle_ansi+0x170>
+	mov    BYTE PTR [rip+0x45ae],0x1        # <csi>
+	leave
+	ret
+
+<terminal_init>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x10
+	mov    rax,QWORD PTR [rip+0xffffffffffffdbdb]        # <framebuffer_request+0x28>
+	test   rax,rax
+	je     <terminal_init+0x24>
+	mov    rax,QWORD PTR [rip+0xffffffffffffdbcf]        # <framebuffer_request+0x28>
+	mov    rax,QWORD PTR [rax+0x8]
+	test   rax,rax
+	jne    <terminal_init+0x2e>
+	mov    eax,0x0
+	call   <hcf>
+	mov    rax,QWORD PTR [rip+0xffffffffffffdbb5]        # <framebuffer_request+0x28>
+	mov    rax,QWORD PTR [rax+0x10]
+	mov    rax,QWORD PTR [rax]
+	mov    QWORD PTR [rbp-0x8],rax
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rax]
+	mov    QWORD PTR [rip+0x451c],rax        # <framebuffer>
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rax+0x8]
+	mov    QWORD PTR [rip+0x4515],rax        # <width>
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rax+0x10]
+	mov    QWORD PTR [rip+0x450e],rax        # <height>
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rax+0x18]
+	mov    QWORD PTR [rip+0x4507],rax        # <pitch>
+	mov    rax,QWORD PTR [rip+0x44f0]        # <width>
+	mov    ecx,0x8
+	mov    edx,0x0
+	div    rcx
+	mov    QWORD PTR [rip+0x44f4],rax        # <cols>
+	mov    rax,QWORD PTR [rip+0x44dd]        # <height>
+	mov    esi,0x10
+	mov    edx,0x0
+	div    rsi
+	mov    QWORD PTR [rip+0x44e1],rax        # <rows>
+	mov    QWORD PTR [rip+0x44de],0x0        # <col>
+	mov    QWORD PTR [rip+0x44db],0x0        # <row>
+	mov    r8,0xffffffff800051a0
+	mov    ecx,0xd0
+	mov    rdx,0xffffffff800051d0
+	mov    rsi,0xffffffff800051b5
+	mov    edi,0x0
+	mov    eax,0x0
+	call   <log>
+	nop
+	leave
+	ret
+
+<terminal_write>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x10
+	mov    eax,edi
+	mov    BYTE PTR [rbp-0x4],al
+	movzx  eax,BYTE PTR [rip+0x44a4]        # <ansi>
+	test   al,al
+	je     <terminal_write+0x28>
+	movzx  eax,BYTE PTR [rbp-0x4]
+	mov    edi,eax
+	call   <handle_ansi>
+	jmp    <terminal_write+0x1da>
+	movzx  eax,BYTE PTR [rbp-0x4]
+	cmp    eax,0x1b
+	je     <terminal_write+0x5b>
+	cmp    eax,0x1b
+	jg     <terminal_write+0x18d>
+	cmp    eax,0xa
+	je     <terminal_write+0x67>
+	cmp    eax,0xa
+	jg     <terminal_write+0x18d>
+	cmp    eax,0x8
+	je     <terminal_write+0xf8>
+	cmp    eax,0x9
+	je     <terminal_write+0xab>
+	jmp    <terminal_write+0x18d>
+	mov    BYTE PTR [rip+0x4456],0x1        # <ansi>
+	jmp    <terminal_write+0x1da>
+	mov    rax,QWORD PTR [rip+0x4439]        # <col>
+	test   rax,rax
+	jne    <terminal_write+0x82>
+	movzx  eax,BYTE PTR [rip+0x443d]        # <wrapped>
+	test   al,al
+	jne    <terminal_write+0x1d6>
+	mov    QWORD PTR [rip+0x441a],0x0        # <col>
+	mov    rax,QWORD PTR [rip+0x441b]        # <row>
+	add    rax,0x1
+	mov    QWORD PTR [rip+0x4410],rax        # <row>
+	mov    BYTE PTR [rip+0x4411],0x0        # <wrapped>
+	jmp    <terminal_write+0x1da>
+	mov    rax,QWORD PTR [rip+0x43f5]        # <col>
+	mov    rdx,rax
+	mov    rax,QWORD PTR [rip+0x3953]        # <tab_size>
+	add    rax,rdx
+	mov    QWORD PTR [rip+0x43e1],rax        # <col>
+	mov    rax,QWORD PTR [rip+0x43da]        # <col>
+	mov    rsi,rax
+	mov    rax,QWORD PTR [rip+0x43d0]        # <col>
+	mov    rcx,QWORD PTR [rip+0x3931]        # <tab_size>
+	mov    edx,0x0
+	div    rcx
+	mov    rax,rsi
+	sub    rax,rdx
+	mov    QWORD PTR [rip+0x43b4],rax        # <col>
+	jmp    <terminal_write+0x1da>
+	mov    rax,QWORD PTR [rip+0x43a8]        # <col>
+	test   rax,rax
+	jne    <terminal_write+0x114>
+	mov    rax,QWORD PTR [rip+0x43a4]        # <row>
+	test   rax,rax
+	je     <terminal_write+0x1d9>
+	mov    rax,QWORD PTR [rip+0x438c]        # <col>
+	test   rax,rax
+	jne    <terminal_write+0x140>
+	mov    rax,QWORD PTR [rip+0x4370]        # <cols>
+	mov    QWORD PTR [rip+0x4379],rax        # <col>
+	mov    rax,QWORD PTR [rip+0x437a]        # <row>
+	sub    rax,0x1
+	mov    QWORD PTR [rip+0x436f],rax        # <row>
+	mov    rax,QWORD PTR [rip+0x4360]        # <col>
+	sub    rax,0x1
+	mov    QWORD PTR [rip+0x4355],rax        # <col>
+	mov    rax,QWORD PTR [rip+0x4356]        # <row>
+	mov    rdx,rax
+	mov    eax,0x10
+	mov    rcx,rdx
+	imul   rcx,rax
+	mov    rax,QWORD PTR [rip+0x4338]        # <col>
+	mov    rdx,rax
+	mov    eax,0x8
+	imul   rax,rdx
+	mov    edx,0x0
+	mov    rsi,rcx
+	mov    rdi,rax
+	call   <draw_char>
+	jmp    <terminal_write+0x1da>
+	movzx  edx,BYTE PTR [rbp-0x4]
+	mov    rax,QWORD PTR [rip+0x4317]        # <row>
+	mov    rcx,rax
+	mov    eax,0x10
+	imul   rcx,rax
+	mov    rax,QWORD PTR [rip+0x42fc]        # <col>
+	mov    rsi,rax
+	mov    eax,0x8
+	imul   rax,rsi
+	mov    rsi,rcx
+	mov    rdi,rax
+	call   <draw_char>
+	mov    rax,QWORD PTR [rip+0x42de]        # <col>
+	add    rax,0x1
+	mov    QWORD PTR [rip+0x42d3],rax        # <col>
+	jmp    <terminal_write+0x1da>
+	nop
+	jmp    <terminal_write+0x1da>
+	nop
+	mov    rdx,QWORD PTR [rip+0x42c6]        # <col>
+	mov    rax,QWORD PTR [rip+0x42af]        # <cols>
+	cmp    rdx,rax
+	jne    <terminal_write+0x211>
+	mov    QWORD PTR [rip+0x42af],0x0        # <col>
+	mov    rax,QWORD PTR [rip+0x42b0]        # <row>
+	add    rax,0x1
+	mov    QWORD PTR [rip+0x42a5],rax        # <row>
+	mov    BYTE PTR [rip+0x42a6],0x1        # <wrapped>
+	mov    rdx,QWORD PTR [rip+0x4297]        # <row>
+	mov    rax,QWORD PTR [rip+0x4280]        # <rows>
+	cmp    rdx,rax
+	jne    <terminal_write+0x24b>
+	mov    QWORD PTR [rip+0x4278],0x0        # <col>
+	mov    rax,QWORD PTR [rip+0x4279]        # <row>
+	sub    rax,0x1
+	mov    QWORD PTR [rip+0x426e],rax        # <row>
+	mov    eax,0x0
+	call   <scroll>
+	nop
+	leave
+	ret
+
+<write_char>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x10
+	mov    eax,edi
+	mov    BYTE PTR [rbp-0x4],al
+	movzx  eax,BYTE PTR [rbp-0x4]
+	movzx  eax,al
+	mov    edi,eax
+	call   <terminal_write>
+	nop
+	leave
+	ret
+
+<x86_64_except_handler>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x10
+	mov    QWORD PTR [rbp-0x8],rdi
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rax+0x78]
+	mov    rax,QWORD PTR [rax*8-0x7fff9fa0]
+	mov    r9,rax
+	mov    r8,0xffffffff800053c6
+	mov    ecx,0x29
+	mov    rdx,0xffffffff800053f0
+	mov    rsi,0xffffffff800053d4
+	mov    edi,0x3
+	mov    eax,0x0
+	call   <log>
+	mov    eax,0x0
+	call   <hcf>
+	nop
+	leave
+	ret
+
+<x86_64_gdt_init>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x10
+	mov    WORD PTR [rbp-0xa],0x27
+	mov    rax,0xffffffff80006160
+	mov    QWORD PTR [rbp-0x8],rax
+	lgdt   [rbp-0xa]
+	mov    r8,0xffffffff80005406
+	mov    ecx,0x16
+	mov    rdx,0xffffffff80005430
+	mov    rsi,0xffffffff80005416
+	mov    edi,0x0
+	mov    eax,0x0
+	call   <log>
+	nop
+	leave
+	ret
+
+<x86_64_idt_init>:
+	push   rbp
+	mov    rbp,rsp
+	sub    rsp,0x20
+	mov    QWORD PTR [rbp-0x8],0x0
+	jmp    <x86_64_idt_init+0xbf>
+	mov    rax,QWORD PTR [rbp-0x8]
+	mov    rax,QWORD PTR [rax*8-0x7fff9e78]
+	mov    QWORD PTR [rbp-0x10],rax
+	mov    rax,QWORD PTR [rbp-0x10]
+	mov    esi,eax
+	mov    rax,QWORD PTR [rbp-0x10]
+	shr    rax,0x10
+	mov    ecx,eax
+	mov    rax,QWORD PTR [rbp-0x10]
+	shr    rax,0x20
+	mov    edx,eax
+	mov    rax,QWORD PTR [rbp-0x8]
+	shl    rax,0x4
+	add    rax,0xffffffff80006ad0
+	mov    WORD PTR [rax],si
+	mov    rax,QWORD PTR [rbp-0x8]
+	shl    rax,0x4
+	add    rax,0xffffffff80006ad2
+	mov    WORD PTR [rax],0x8
+	mov    rax,QWORD PTR [rbp-0x8]
+	shl    rax,0x4
+	add    rax,0xffffffff80006ad4
+	mov    BYTE PTR [rax],0x0
+	mov    rax,QWORD PTR [rbp-0x8]
+	shl    rax,0x4
+	add    rax,0xffffffff80006ad5
+	mov    BYTE PTR [rax],0x8e
+	mov    rax,QWORD PTR [rbp-0x8]
+	shl    rax,0x4
+	add    rax,0xffffffff80006ad6
+	mov    WORD PTR [rax],cx
+	mov    rax,QWORD PTR [rbp-0x8]
+	shl    rax,0x4
+	add    rax,0xffffffff80006ad8
+	mov    DWORD PTR [rax],edx
+	mov    rax,QWORD PTR [rbp-0x8]
+	shl    rax,0x4
+	add    rax,0xffffffff80006adc
+	mov    DWORD PTR [rax],0x0
+	add    QWORD PTR [rbp-0x8],0x1
+	cmp    QWORD PTR [rbp-0x8],0xff
+	jbe    <x86_64_idt_init+0x15>
+	mov    WORD PTR [rbp-0x1a],0xfff
+	mov    rax,0xffffffff80006ad0
+	mov    QWORD PTR [rbp-0x18],rax
+	lidt   [rbp-0x1a]
+	mov    r8,0xffffffff80005440
+	mov    ecx,0x20
+	mov    rdx,0xffffffff80005470
+	mov    rsi,0xffffffff80005457
+	mov    edi,0x0
+	mov    eax,0x0
+	call   <log>
+	nop
+	leave
+	ret
+
+<x86_64_isr0>:
+	push   0x0
+	push   0x0
+	jmp    <x86_64_except_common>
+
+<x86_64_isr1>:
+	push   0x0
+	push   0x1
+	jmp    <x86_64_except_common>
+
+<x86_64_isr2>:
+	push   0x0
+	push   0x2
+	jmp    <x86_64_except_common>
+
+<x86_64_isr3>:
+	push   0x0
+	push   0x3
+	jmp    <x86_64_except_common>
+
+<x86_64_isr4>:
+	push   0x0
+	push   0x4
+	jmp    <x86_64_except_common>
+
+<x86_64_isr5>:
+	push   0x0
+	push   0x5
+	jmp    <x86_64_except_common>
+
+<x86_64_isr6>:
+	push   0x0
+	push   0x6
+	jmp    <x86_64_except_common>
+
+<x86_64_isr7>:
+	push   0x0
+	push   0x7
+	jmp    <x86_64_except_common>
+
+<x86_64_isr8>:
+	push   0x8
+	jmp    <x86_64_except_common>
+
+<x86_64_isr9>:
+	push   0x0
+	push   0x9
+	jmp    <x86_64_except_common>
+
+<x86_64_isr10>:
+	push   0xa
+	jmp    <x86_64_except_common>
+
+<x86_64_isr11>:
+	push   0xb
+	jmp    <x86_64_except_common>
+
+<x86_64_isr12>:
+	push   0xc
+	jmp    <x86_64_except_common>
+
+<x86_64_isr13>:
+	push   0xd
+	jmp    <x86_64_except_common>
+
+<x86_64_isr14>:
+	push   0xe
+	jmp    <x86_64_except_common>
+
+<x86_64_isr15>:
+	push   0x0
+	push   0xf
+	jmp    <x86_64_except_common>
+
+<x86_64_isr16>:
+	push   0x0
+	push   0x10
+	jmp    <x86_64_except_common>
+
+<x86_64_isr17>:
+	push   0x11
+	jmp    <x86_64_except_common>
+
+<x86_64_isr18>:
+	push   0x0
+	push   0x12
+	jmp    <x86_64_except_common>
+
+<x86_64_isr19>:
+	push   0x0
+	push   0x13
+	jmp    <x86_64_except_common>
+
+<x86_64_isr20>:
+	push   0x0
+	push   0x14
+	jmp    <x86_64_except_common>
+
+<x86_64_isr21>:
+	push   0x15
+	jmp    <x86_64_except_common>
+
+<x86_64_isr22>:
+	push   0x0
+	push   0x16
+	jmp    <x86_64_except_common>
+
+<x86_64_isr23>:
+	push   0x0
+	push   0x17
+	jmp    <x86_64_except_common>
+
+<x86_64_isr24>:
+	push   0x0
+	push   0x18
+	jmp    <x86_64_except_common>
+
+<x86_64_isr25>:
+	push   0x0
+	push   0x19
+	jmp    <x86_64_except_common>
+
+<x86_64_isr26>:
+	push   0x0
+	push   0x1a
+	jmp    <x86_64_except_common>
+
+<x86_64_isr27>:
+	push   0x0
+	push   0x1b
+	jmp    <x86_64_except_common>
+
+<x86_64_isr28>:
+	push   0x0
+	push   0x1c
+	jmp    <x86_64_except_common>
+
+<x86_64_isr29>:
+	push   0x1d
+	jmp    <x86_64_except_common>
+
+<x86_64_isr30>:
+	push   0x1e
+	jmp    <x86_64_except_common>
+
+<x86_64_isr31>:
+	push   0x0
+	push   0x1f
+	jmp    <x86_64_except_common>
+
+<x86_64_isr32>:
+	push   0x0
+	push   0x20
+	jmp    <x86_64_except_common>
+
+<x86_64_isr33>:
+	push   0x0
+	push   0x21
+	jmp    <x86_64_except_common>
+
+<x86_64_isr34>:
+	push   0x0
+	push   0x22
+	jmp    <x86_64_except_common>
+
+<x86_64_isr35>:
+	push   0x0
+	push   0x23
+	jmp    <x86_64_except_common>
+
+<x86_64_isr36>:
+	push   0x0
+	push   0x24
+	jmp    <x86_64_except_common>
+
+<x86_64_isr37>:
+	push   0x0
+	push   0x25
+	jmp    <x86_64_except_common>
+
+<x86_64_isr38>:
+	push   0x0
+	push   0x26
+	jmp    <x86_64_except_common>
+
+<x86_64_isr39>:
+	push   0x0
+	push   0x27
+	jmp    <x86_64_except_common>
+
+<x86_64_isr40>:
+	push   0x0
+	push   0x28
+	jmp    <x86_64_except_common>
+
+<x86_64_isr41>:
+	push   0x0
+	push   0x29
+	jmp    <x86_64_except_common>
+
+<x86_64_isr42>:
+	push   0x0
+	push   0x2a
+	jmp    <x86_64_except_common>
+
+<x86_64_isr43>:
+	push   0x0
+	push   0x2b
+	jmp    <x86_64_except_common>
+
+<x86_64_isr44>:
+	push   0x0
+	push   0x2c
+	jmp    <x86_64_except_common>
+
+<x86_64_isr45>:
+	push   0x0
+	push   0x2d
+	jmp    <x86_64_except_common>
+
+<x86_64_isr46>:
+	push   0x0
+	push   0x2e
+	jmp    <x86_64_except_common>
+
+<x86_64_isr47>:
+	push   0x0
+	push   0x2f
+	jmp    <x86_64_except_common>
+
+<x86_64_isr48>:
+	push   0x0
+	push   0x30
+	jmp    <x86_64_except_common>
+
+<x86_64_isr49>:
+	push   0x0
+	push   0x31
+	jmp    <x86_64_except_common>
+
+<x86_64_isr50>:
+	push   0x0
+	push   0x32
+	jmp    <x86_64_except_common>
+
+<x86_64_isr51>:
+	push   0x0
+	push   0x33
+	jmp    <x86_64_except_common>
+
+<x86_64_isr52>:
+	push   0x0
+	push   0x34
+	jmp    <x86_64_except_common>
+
+<x86_64_isr53>:
+	push   0x0
+	push   0x35
+	jmp    <x86_64_except_common>
+
+<x86_64_isr54>:
+	push   0x0
+	push   0x36
+	jmp    <x86_64_except_common>
+
+<x86_64_isr55>:
+	push   0x0
+	push   0x37
+	jmp    <x86_64_except_common>
+
+<x86_64_isr56>:
+	push   0x0
+	push   0x38
+	jmp    <x86_64_except_common>
+
+<x86_64_isr57>:
+	push   0x0
+	push   0x39
+	jmp    <x86_64_except_common>
+
+<x86_64_isr58>:
+	push   0x0
+	push   0x3a
+	jmp    <x86_64_except_common>
+
+<x86_64_isr59>:
+	push   0x0
+	push   0x3b
+	jmp    <x86_64_except_common>
+
+<x86_64_isr60>:
+	push   0x0
+	push   0x3c
+	jmp    <x86_64_except_common>
+
+<x86_64_isr61>:
+	push   0x0
+	push   0x3d
+	jmp    <x86_64_except_common>
+
+<x86_64_isr62>:
+	push   0x0
+	push   0x3e
+	jmp    <x86_64_except_common>
+
+<x86_64_isr63>:
+	push   0x0
+	push   0x3f
+	jmp    <x86_64_except_common>
+
+<x86_64_isr64>:
+	push   0x0
+	push   0x40
+	jmp    <x86_64_except_common>
+
+<x86_64_isr65>:
+	push   0x0
+	push   0x41
+	jmp    <x86_64_except_common>
+
+<x86_64_isr66>:
+	push   0x0
+	push   0x42
+	jmp    <x86_64_except_common>
+
+<x86_64_isr67>:
+	push   0x0
+	push   0x43
+	jmp    <x86_64_except_common>
+
+<x86_64_isr68>:
+	push   0x0
+	push   0x44
+	jmp    <x86_64_except_common>
+
+<x86_64_isr69>:
+	push   0x0
+	push   0x45
+	jmp    <x86_64_except_common>
+
+<x86_64_isr70>:
+	push   0x0
+	push   0x46
+	jmp    <x86_64_except_common>
+
+<x86_64_isr71>:
+	push   0x0
+	push   0x47
+	jmp    <x86_64_except_common>
+
+<x86_64_isr72>:
+	push   0x0
+	push   0x48
+	jmp    <x86_64_except_common>
+
+<x86_64_isr73>:
+	push   0x0
+	push   0x49
+	jmp    <x86_64_except_common>
+
+<x86_64_isr74>:
+	push   0x0
+	push   0x4a
+	jmp    <x86_64_except_common>
+
+<x86_64_isr75>:
+	push   0x0
+	push   0x4b
+	jmp    <x86_64_except_common>
+
+<x86_64_isr76>:
+	push   0x0
+	push   0x4c
+	jmp    <x86_64_except_common>
+
+<x86_64_isr77>:
+	push   0x0
+	push   0x4d
+	jmp    <x86_64_except_common>
+
+<x86_64_isr78>:
+	push   0x0
+	push   0x4e
+	jmp    <x86_64_except_common>
+
+<x86_64_isr79>:
+	push   0x0
+	push   0x4f
+	jmp    <x86_64_except_common>
+
+<x86_64_isr80>:
+	push   0x0
+	push   0x50
+	jmp    <x86_64_except_common>
+
+<x86_64_isr81>:
+	push   0x0
+	push   0x51
+	jmp    <x86_64_except_common>
+
+<x86_64_isr82>:
+	push   0x0
+	push   0x52
+	jmp    <x86_64_except_common>
+
+<x86_64_isr83>:
+	push   0x0
+	push   0x53
+	jmp    <x86_64_except_common>
+
+<x86_64_isr84>:
+	push   0x0
+	push   0x54
+	jmp    <x86_64_except_common>
+
+<x86_64_isr85>:
+	push   0x0
+	push   0x55
+	jmp    <x86_64_except_common>
+
+<x86_64_isr86>:
+	push   0x0
+	push   0x56
+	jmp    <x86_64_except_common>
+
+<x86_64_isr87>:
+	push   0x0
+	push   0x57
+	jmp    <x86_64_except_common>
+
+<x86_64_isr88>:
+	push   0x0
+	push   0x58
+	jmp    <x86_64_except_common>
+
+<x86_64_isr89>:
+	push   0x0
+	push   0x59
+	jmp    <x86_64_except_common>
+
+<x86_64_isr90>:
+	push   0x0
+	push   0x5a
+	jmp    <x86_64_except_common>
+
+<x86_64_isr91>:
+	push   0x0
+	push   0x5b
+	jmp    <x86_64_except_common>
+
+<x86_64_isr92>:
+	push   0x0
+	push   0x5c
+	jmp    <x86_64_except_common>
+
+<x86_64_isr93>:
+	push   0x0
+	push   0x5d
+	jmp    <x86_64_except_common>
+
+<x86_64_isr94>:
+	push   0x0
+	push   0x5e
+	jmp    <x86_64_except_common>
+
+<x86_64_isr95>:
+	push   0x0
+	push   0x5f
+	jmp    <x86_64_except_common>
+
+<x86_64_isr96>:
+	push   0x0
+	push   0x60
+	jmp    <x86_64_except_common>
+
+<x86_64_isr97>:
+	push   0x0
+	push   0x61
+	jmp    <x86_64_except_common>
+
+<x86_64_isr98>:
+	push   0x0
+	push   0x62
+	jmp    <x86_64_except_common>
+
+<x86_64_isr99>:
+	push   0x0
+	push   0x63
+	jmp    <x86_64_except_common>
+
+<x86_64_isr100>:
+	push   0x0
+	push   0x64
+	jmp    <x86_64_except_common>
+
+<x86_64_isr101>:
+	push   0x0
+	push   0x65
+	jmp    <x86_64_except_common>
+
+<x86_64_isr102>:
+	push   0x0
+	push   0x66
+	jmp    <x86_64_except_common>
+
+<x86_64_isr103>:
+	push   0x0
+	push   0x67
+	jmp    <x86_64_except_common>
+
+<x86_64_isr104>:
+	push   0x0
+	push   0x68
+	jmp    <x86_64_except_common>
+
+<x86_64_isr105>:
+	push   0x0
+	push   0x69
+	jmp    <x86_64_except_common>
+
+<x86_64_isr106>:
+	push   0x0
+	push   0x6a
+	jmp    <x86_64_except_common>
+
+<x86_64_isr107>:
+	push   0x0
+	push   0x6b
+	jmp    <x86_64_except_common>
+
+<x86_64_isr108>:
+	push   0x0
+	push   0x6c
+	jmp    <x86_64_except_common>
+
+<x86_64_isr109>:
+	push   0x0
+	push   0x6d
+	jmp    <x86_64_except_common>
+
+<x86_64_isr110>:
+	push   0x0
+	push   0x6e
+	jmp    <x86_64_except_common>
+
+<x86_64_isr111>:
+	push   0x0
+	push   0x6f
+	jmp    <x86_64_except_common>
+
+<x86_64_isr112>:
+	push   0x0
+	push   0x70
+	jmp    <x86_64_except_common>
+
+<x86_64_isr113>:
+	push   0x0
+	push   0x71
+	jmp    <x86_64_except_common>
+
+<x86_64_isr114>:
+	push   0x0
+	push   0x72
+	jmp    <x86_64_except_common>
+
+<x86_64_isr115>:
+	push   0x0
+	push   0x73
+	jmp    <x86_64_except_common>
+
+<x86_64_isr116>:
+	push   0x0
+	push   0x74
+	jmp    <x86_64_except_common>
+
+<x86_64_isr117>:
+	push   0x0
+	push   0x75
+	jmp    <x86_64_except_common>
+
+<x86_64_isr118>:
+	push   0x0
+	push   0x76
+	jmp    <x86_64_except_common>
+
+<x86_64_isr119>:
+	push   0x0
+	push   0x77
+	jmp    <x86_64_except_common>
+
+<x86_64_isr120>:
+	push   0x0
+	push   0x78
+	jmp    <x86_64_except_common>
+
+<x86_64_isr121>:
+	push   0x0
+	push   0x79
+	jmp    <x86_64_except_common>
+
+<x86_64_isr122>:
+	push   0x0
+	push   0x7a
+	jmp    <x86_64_except_common>
+
+<x86_64_isr123>:
+	push   0x0
+	push   0x7b
+	jmp    <x86_64_except_common>
+
+<x86_64_isr124>:
+	push   0x0
+	push   0x7c
+	jmp    <x86_64_except_common>
+
+<x86_64_isr125>:
+	push   0x0
+	push   0x7d
+	jmp    <x86_64_except_common>
+
+<x86_64_isr126>:
+	push   0x0
+	push   0x7e
+	jmp    <x86_64_except_common>
+
+<x86_64_isr127>:
+	push   0x0
+	push   0x7f
+	jmp    <x86_64_except_common>
+
+<x86_64_isr128>:
+	push   0x0
+	push   0x80
+	jmp    <x86_64_except_common>
+
+<x86_64_isr129>:
+	push   0x0
+	push   0x81
+	jmp    <x86_64_except_common>
+
+<x86_64_isr130>:
+	push   0x0
+	push   0x82
+	jmp    <x86_64_except_common>
+
+<x86_64_isr131>:
+	push   0x0
+	push   0x83
+	jmp    <x86_64_except_common>
+
+<x86_64_isr132>:
+	push   0x0
+	push   0x84
+	jmp    <x86_64_except_common>
+
+<x86_64_isr133>:
+	push   0x0
+	push   0x85
+	jmp    <x86_64_except_common>
+
+<x86_64_isr134>:
+	push   0x0
+	push   0x86
+	jmp    <x86_64_except_common>
+
+<x86_64_isr135>:
+	push   0x0
+	push   0x87
+	jmp    <x86_64_except_common>
+
+<x86_64_isr136>:
+	push   0x0
+	push   0x88
+	jmp    <x86_64_except_common>
+
+<x86_64_isr137>:
+	push   0x0
+	push   0x89
+	jmp    <x86_64_except_common>
+
+<x86_64_isr138>:
+	push   0x0
+	push   0x8a
+	jmp    <x86_64_except_common>
+
+<x86_64_isr139>:
+	push   0x0
+	push   0x8b
+	jmp    <x86_64_except_common>
+
+<x86_64_isr140>:
+	push   0x0
+	push   0x8c
+	jmp    <x86_64_except_common>
+
+<x86_64_isr141>:
+	push   0x0
+	push   0x8d
+	jmp    <x86_64_except_common>
+
+<x86_64_isr142>:
+	push   0x0
+	push   0x8e
+	jmp    <x86_64_except_common>
+
+<x86_64_isr143>:
+	push   0x0
+	push   0x8f
+	jmp    <x86_64_except_common>
+
+<x86_64_isr144>:
+	push   0x0
+	push   0x90
+	jmp    <x86_64_except_common>
+
+<x86_64_isr145>:
+	push   0x0
+	push   0x91
+	jmp    <x86_64_except_common>
+
+<x86_64_isr146>:
+	push   0x0
+	push   0x92
+	jmp    <x86_64_except_common>
+
+<x86_64_isr147>:
+	push   0x0
+	push   0x93
+	jmp    <x86_64_except_common>
+
+<x86_64_isr148>:
+	push   0x0
+	push   0x94
+	jmp    <x86_64_except_common>
+
+<x86_64_isr149>:
+	push   0x0
+	push   0x95
+	jmp    <x86_64_except_common>
+
+<x86_64_isr150>:
+	push   0x0
+	push   0x96
+	jmp    <x86_64_except_common>
+
+<x86_64_isr151>:
+	push   0x0
+	push   0x97
+	jmp    <x86_64_except_common>
+
+<x86_64_isr152>:
+	push   0x0
+	push   0x98
+	jmp    <x86_64_except_common>
+
+<x86_64_isr153>:
+	push   0x0
+	push   0x99
+	jmp    <x86_64_except_common>
+
+<x86_64_isr154>:
+	push   0x0
+	push   0x9a
+	jmp    <x86_64_except_common>
+
+<x86_64_isr155>:
+	push   0x0
+	push   0x9b
+	jmp    <x86_64_except_common>
+
+<x86_64_isr156>:
+	push   0x0
+	push   0x9c
+	jmp    <x86_64_except_common>
+
+<x86_64_isr157>:
+	push   0x0
+	push   0x9d
+	jmp    <x86_64_except_common>
+
+<x86_64_isr158>:
+	push   0x0
+	push   0x9e
+	jmp    <x86_64_except_common>
+
+<x86_64_isr159>:
+	push   0x0
+	push   0x9f
+	jmp    <x86_64_except_common>
+
+<x86_64_isr160>:
+	push   0x0
+	push   0xa0
+	jmp    <x86_64_except_common>
+
+<x86_64_isr161>:
+	push   0x0
+	push   0xa1
+	jmp    <x86_64_except_common>
+
+<x86_64_isr162>:
+	push   0x0
+	push   0xa2
+	jmp    <x86_64_except_common>
+
+<x86_64_isr163>:
+	push   0x0
+	push   0xa3
+	jmp    <x86_64_except_common>
+
+<x86_64_isr164>:
+	push   0x0
+	push   0xa4
+	jmp    <x86_64_except_common>
+
+<x86_64_isr165>:
+	push   0x0
+	push   0xa5
+	jmp    <x86_64_except_common>
+
+<x86_64_isr166>:
+	push   0x0
+	push   0xa6
+	jmp    <x86_64_except_common>
+
+<x86_64_isr167>:
+	push   0x0
+	push   0xa7
+	jmp    <x86_64_except_common>
+
+<x86_64_isr168>:
+	push   0x0
+	push   0xa8
+	jmp    <x86_64_except_common>
+
+<x86_64_isr169>:
+	push   0x0
+	push   0xa9
+	jmp    <x86_64_except_common>
+
+<x86_64_isr170>:
+	push   0x0
+	push   0xaa
+	jmp    <x86_64_except_common>
+
+<x86_64_isr171>:
+	push   0x0
+	push   0xab
+	jmp    <x86_64_except_common>
+
+<x86_64_isr172>:
+	push   0x0
+	push   0xac
+	jmp    <x86_64_except_common>
+
+<x86_64_isr173>:
+	push   0x0
+	push   0xad
+	jmp    <x86_64_except_common>
+
+<x86_64_isr174>:
+	push   0x0
+	push   0xae
+	jmp    <x86_64_except_common>
+
+<x86_64_isr175>:
+	push   0x0
+	push   0xaf
+	jmp    <x86_64_except_common>
+
+<x86_64_isr176>:
+	push   0x0
+	push   0xb0
+	jmp    <x86_64_except_common>
+
+<x86_64_isr177>:
+	push   0x0
+	push   0xb1
+	jmp    <x86_64_except_common>
+
+<x86_64_isr178>:
+	push   0x0
+	push   0xb2
+	jmp    <x86_64_except_common>
+
+<x86_64_isr179>:
+	push   0x0
+	push   0xb3
+	jmp    <x86_64_except_common>
+
+<x86_64_isr180>:
+	push   0x0
+	push   0xb4
+	jmp    <x86_64_except_common>
+
+<x86_64_isr181>:
+	push   0x0
+	push   0xb5
+	jmp    <x86_64_except_common>
+
+<x86_64_isr182>:
+	push   0x0
+	push   0xb6
+	jmp    <x86_64_except_common>
+
+<x86_64_isr183>:
+	push   0x0
+	push   0xb7
+	jmp    <x86_64_except_common>
+
+<x86_64_isr184>:
+	push   0x0
+	push   0xb8
+	jmp    <x86_64_except_common>
+
+<x86_64_isr185>:
+	push   0x0
+	push   0xb9
+	jmp    <x86_64_except_common>
+
+<x86_64_isr186>:
+	push   0x0
+	push   0xba
+	jmp    <x86_64_except_common>
+
+<x86_64_isr187>:
+	push   0x0
+	push   0xbb
+	jmp    <x86_64_except_common>
+
+<x86_64_isr188>:
+	push   0x0
+	push   0xbc
+	jmp    <x86_64_except_common>
+
+<x86_64_isr189>:
+	push   0x0
+	push   0xbd
+	jmp    <x86_64_except_common>
+
+<x86_64_isr190>:
+	push   0x0
+	push   0xbe
+	jmp    <x86_64_except_common>
+
+<x86_64_isr191>:
+	push   0x0
+	push   0xbf
+	jmp    <x86_64_except_common>
+
+<x86_64_isr192>:
+	push   0x0
+	push   0xc0
+	jmp    <x86_64_except_common>
+
+<x86_64_isr193>:
+	push   0x0
+	push   0xc1
+	jmp    <x86_64_except_common>
+
+<x86_64_isr194>:
+	push   0x0
+	push   0xc2
+	jmp    <x86_64_except_common>
+
+<x86_64_isr195>:
+	push   0x0
+	push   0xc3
+	jmp    <x86_64_except_common>
+
+<x86_64_isr196>:
+	push   0x0
+	push   0xc4
+	jmp    <x86_64_except_common>
+
+<x86_64_isr197>:
+	push   0x0
+	push   0xc5
+	jmp    <x86_64_except_common>
+
+<x86_64_isr198>:
+	push   0x0
+	push   0xc6
+	jmp    <x86_64_except_common>
+
+<x86_64_isr199>:
+	push   0x0
+	push   0xc7
+	jmp    <x86_64_except_common>
+
+<x86_64_isr200>:
+	push   0x0
+	push   0xc8
+	jmp    <x86_64_except_common>
+
+<x86_64_isr201>:
+	push   0x0
+	push   0xc9
+	jmp    <x86_64_except_common>
+
+<x86_64_isr202>:
+	push   0x0
+	push   0xca
+	jmp    <x86_64_except_common>
+
+<x86_64_isr203>:
+	push   0x0
+	push   0xcb
+	jmp    <x86_64_except_common>
+
+<x86_64_isr204>:
+	push   0x0
+	push   0xcc
+	jmp    <x86_64_except_common>
+
+<x86_64_isr205>:
+	push   0x0
+	push   0xcd
+	jmp    <x86_64_except_common>
+
+<x86_64_isr206>:
+	push   0x0
+	push   0xce
+	jmp    <x86_64_except_common>
+
+<x86_64_isr207>:
+	push   0x0
+	push   0xcf
+	jmp    <x86_64_except_common>
+
+<x86_64_isr208>:
+	push   0x0
+	push   0xd0
+	jmp    <x86_64_except_common>
+
+<x86_64_isr209>:
+	push   0x0
+	push   0xd1
+	jmp    <x86_64_except_common>
+
+<x86_64_isr210>:
+	push   0x0
+	push   0xd2
+	jmp    <x86_64_except_common>
+
+<x86_64_isr211>:
+	push   0x0
+	push   0xd3
+	jmp    <x86_64_except_common>
+
+<x86_64_isr212>:
+	push   0x0
+	push   0xd4
+	jmp    <x86_64_except_common>
+
+<x86_64_isr213>:
+	push   0x0
+	push   0xd5
+	jmp    <x86_64_except_common>
+
+<x86_64_isr214>:
+	push   0x0
+	push   0xd6
+	jmp    <x86_64_except_common>
+
+<x86_64_isr215>:
+	push   0x0
+	push   0xd7
+	jmp    <x86_64_except_common>
+
+<x86_64_isr216>:
+	push   0x0
+	push   0xd8
+	jmp    <x86_64_except_common>
+
+<x86_64_isr217>:
+	push   0x0
+	push   0xd9
+	jmp    <x86_64_except_common>
+
+<x86_64_isr218>:
+	push   0x0
+	push   0xda
+	jmp    <x86_64_except_common>
+
+<x86_64_isr219>:
+	push   0x0
+	push   0xdb
+	jmp    <x86_64_except_common>
+
+<x86_64_isr220>:
+	push   0x0
+	push   0xdc
+	jmp    <x86_64_except_common>
+
+<x86_64_isr221>:
+	push   0x0
+	push   0xdd
+	jmp    <x86_64_except_common>
+
+<x86_64_isr222>:
+	push   0x0
+	push   0xde
+	jmp    <x86_64_except_common>
+
+<x86_64_isr223>:
+	push   0x0
+	push   0xdf
+	jmp    <x86_64_except_common>
+
+<x86_64_isr224>:
+	push   0x0
+	push   0xe0
+	jmp    <x86_64_except_common>
+
+<x86_64_isr225>:
+	push   0x0
+	push   0xe1
+	jmp    <x86_64_except_common>
+
+<x86_64_isr226>:
+	push   0x0
+	push   0xe2
+	jmp    <x86_64_except_common>
+
+<x86_64_isr227>:
+	push   0x0
+	push   0xe3
+	jmp    <x86_64_except_common>
+
+<x86_64_isr228>:
+	push   0x0
+	push   0xe4
+	jmp    <x86_64_except_common>
+
+<x86_64_isr229>:
+	push   0x0
+	push   0xe5
+	jmp    <x86_64_except_common>
+
+<x86_64_isr230>:
+	push   0x0
+	push   0xe6
+	jmp    <x86_64_except_common>
+
+<x86_64_isr231>:
+	push   0x0
+	push   0xe7
+	jmp    <x86_64_except_common>
+
+<x86_64_isr232>:
+	push   0x0
+	push   0xe8
+	jmp    <x86_64_except_common>
+
+<x86_64_isr233>:
+	push   0x0
+	push   0xe9
+	jmp    <x86_64_except_common>
+
+<x86_64_isr234>:
+	push   0x0
+	push   0xea
+	jmp    <x86_64_except_common>
+
+<x86_64_isr235>:
+	push   0x0
+	push   0xeb
+	jmp    <x86_64_except_common>
+
+<x86_64_isr236>:
+	push   0x0
+	push   0xec
+	jmp    <x86_64_except_common>
+
+<x86_64_isr237>:
+	push   0x0
+	push   0xed
+	jmp    <x86_64_except_common>
+
+<x86_64_isr238>:
+	push   0x0
+	push   0xee
+	jmp    <x86_64_except_common>
+
+<x86_64_isr239>:
+	push   0x0
+	push   0xef
+	jmp    <x86_64_except_common>
+
+<x86_64_isr240>:
+	push   0x0
+	push   0xf0
+	jmp    <x86_64_except_common>
+
+<x86_64_isr241>:
+	push   0x0
+	push   0xf1
+	jmp    <x86_64_except_common>
+
+<x86_64_isr242>:
+	push   0x0
+	push   0xf2
+	jmp    <x86_64_except_common>
+
+<x86_64_isr243>:
+	push   0x0
+	push   0xf3
+	jmp    <x86_64_except_common>
+
+<x86_64_isr244>:
+	push   0x0
+	push   0xf4
+	jmp    <x86_64_except_common>
+
+<x86_64_isr245>:
+	push   0x0
+	push   0xf5
+	jmp    <x86_64_except_common>
+
+<x86_64_isr246>:
+	push   0x0
+	push   0xf6
+	jmp    <x86_64_except_common>
+
+<x86_64_isr247>:
+	push   0x0
+	push   0xf7
+	jmp    <x86_64_except_common>
+
+<x86_64_isr248>:
+	push   0x0
+	push   0xf8
+	jmp    <x86_64_except_common>
+
+<x86_64_isr249>:
+	push   0x0
+	push   0xf9
+	jmp    <x86_64_except_common>
+
+<x86_64_isr250>:
+	push   0x0
+	push   0xfa
+	jmp    <x86_64_except_common>
+
+<x86_64_isr251>:
+	push   0x0
+	push   0xfb
+	jmp    <x86_64_except_common>
+
+<x86_64_isr252>:
+	push   0x0
+	push   0xfc
+	jmp    <x86_64_except_common>
+
+<x86_64_isr253>:
+	push   0x0
+	push   0xfd
+	jmp    <x86_64_except_common>
+
+<x86_64_isr254>:
+	push   0x0
+	push   0xfe
+	jmp    <x86_64_except_common>
+
+<x86_64_isr255>:
+	push   0x0
+	push   0xff
+	jmp    <x86_64_except_common>
+
+<x86_64_except_common>:
+	push   rax
+	push   rbx
+	push   rcx
+	push   rdx
+	push   rsi
+	push   rdi
+	push   rbp
+	push   r8
+	push   r9
+	push   r10
+	push   r11
+	push   r12
+	push   r13
+	push   r14
+	push   r15
+	mov    rdi,rsp
+	call   <x86_64_except_handler>
+	push   r15
+	push   r14
+	push   r13
+	push   r12
+	push   r11
+	push   r10
+	push   r9
+	push   r8
+	push   rbp
+	push   rdi
+	push   rsi
+	push   rdx
+	push   rcx
+	push   rbx
+	push   rax
+	add    rsp,0x10
+	iretq

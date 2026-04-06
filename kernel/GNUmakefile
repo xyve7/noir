@@ -5,6 +5,9 @@
 # Change as needed.
 override OUTPUT := kernel
 
+# Build from git hash 
+BUILD := $(shell git rev-parse --short HEAD)
+
 # Target architecture to build for. Default to x86_64.
 ARCH := x86_64
 
@@ -42,7 +45,7 @@ ifeq ($(TOOLCHAIN),llvm)
 endif
 
 # User controllable C flags.
-CFLAGS := -g -pipe -I src/include -I src/include/libk
+CFLAGS := -g -pipe -I src/include -I src/include/libk -D BUILD=\"$(BUILD)\"
 
 # User controllable C preprocessor flags. We set none by default.
 CPPFLAGS :=
@@ -219,7 +222,7 @@ clean:
 # Remove everything built and generated including downloaded dependencies.
 .PHONY: distclean
 distclean:
-	rm -rf bin-* obj-* .deps-obtained freestnd-c-hdrs cc-runtime limine-protocol
+	rm -rf bin-* obj-* .deps-obtained .cache compile_commands.json freestnd-c-hdrs cc-runtime limine-protocol
 
 # Install the final built executable to its final on-root location.
 .PHONY: install

@@ -25,4 +25,11 @@ typedef struct {
     uint64_t FAR_EL1;
 } AARCH64State;
 
+// What the last 4 values mean:
+// SPSR_EL1: The contents of PSTATE before the exception was taken 
+// ELR_EL1: The preferred exception return address 
+// ESR_EL1: The cause for the exception (sync exceptions)
+// FAR_EL1: MMU related exceptions, essential the fault address
+// Source: https://developer.arm.com/documentation/102412/0103/Handling-exceptions/Taking-an-exception?lang=en
+
 #endif

@@ -5,7 +5,7 @@
 ARCH := x86_64
 
 # Default user QEMU flags. These are appended to the QEMU command calls.
-QEMUFLAGS := -m 2G -s -S -d int
+QEMUFLAGS := -m 2G -s -S
 
 override IMAGE_NAME := template-$(ARCH)
 
@@ -52,7 +52,7 @@ run-aarch64: edk2-ovmf $(IMAGE_NAME).iso
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
-		-device usb-mouse \
+		-device usb-tablet \
 		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf/ovmf-code-$(ARCH).fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
@@ -65,7 +65,7 @@ run-hdd-aarch64: edk2-ovmf $(IMAGE_NAME).hdd
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
-		-device usb-mouse \
+		-device usb-tablet \
 		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf/ovmf-code-$(ARCH).fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
@@ -78,7 +78,7 @@ run-riscv64: edk2-ovmf $(IMAGE_NAME).iso
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
-		-device usb-mouse \
+		-device usb-tablet \
 		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf/ovmf-code-$(ARCH).fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
@@ -91,7 +91,7 @@ run-hdd-riscv64: edk2-ovmf $(IMAGE_NAME).hdd
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
-		-device usb-mouse \
+		-device usb-tablet \
 		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf/ovmf-code-$(ARCH).fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
@@ -104,7 +104,7 @@ run-loongarch64: edk2-ovmf $(IMAGE_NAME).iso
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
-		-device usb-mouse \
+		-device usb-tablet \
 		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf/ovmf-code-$(ARCH).fd,readonly=on \
 		-cdrom $(IMAGE_NAME).iso \
 		$(QEMUFLAGS)
@@ -117,7 +117,7 @@ run-hdd-loongarch64: edk2-ovmf $(IMAGE_NAME).hdd
 		-device ramfb \
 		-device qemu-xhci \
 		-device usb-kbd \
-		-device usb-mouse \
+		-device usb-tablet \
 		-drive if=pflash,unit=0,format=raw,file=edk2-ovmf/ovmf-code-$(ARCH).fd,readonly=on \
 		-hda $(IMAGE_NAME).hdd \
 		$(QEMUFLAGS)
@@ -143,7 +143,7 @@ edk2-ovmf:
 
 limine/limine:
 	rm -rf limine
-	git clone https://codeberg.org/Limine/Limine.git limine --branch=v10.x-binary --depth=1
+	git clone https://codeberg.org/Limine/Limine.git limine --branch=v11.x-binary --depth=1
 	$(MAKE) -C limine \
 		CC="$(HOST_CC)" \
 		CFLAGS="$(HOST_CFLAGS)" \
@@ -241,5 +241,4 @@ clean:
 .PHONY: distclean
 distclean:
 	$(MAKE) -C kernel distclean
-	rm -rf iso_root *.iso *.hdd kernel-deps limine edk2-ovmf
-
+	rm -rf iso_root *.iso *.hdd limine edk2-ovmf

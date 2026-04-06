@@ -1,0 +1,2822 @@
+
+kernel/bin-aarch64/kernel:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+<ltos>:
+	sub	sp, sp, #0x40
+	str	x0, [sp, #24]
+	str	w1, [sp, #20]
+	str	x2, [sp, #8]
+	ldr	x0, [sp, #24]
+	lsr	x0, x0, #63
+	strb	w0, [sp, #55]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x281
+	str	x0, [sp, #56]
+	ldr	x0, [sp, #56]
+	strb	wzr, [x0]
+	ldrsw	x1, [sp, #20]
+	ldr	x0, [sp, #24]
+	sdiv	x2, x0, x1
+	mul	x1, x2, x1
+	sub	x0, x0, x1
+	str	x0, [sp, #40]
+	ldrb	w0, [sp, #55]
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<ltos+0x64>  // b.none
+	ldr	x0, [sp, #40]
+	neg	x0, x0
+	b	<ltos+0x68>
+	ldr	x0, [sp, #40]
+	ldr	x1, [sp, #8]
+	add	x0, x1, x0
+	ldr	x1, [sp, #56]
+	sub	x1, x1, #0x1
+	str	x1, [sp, #56]
+	ldrb	w1, [x0]
+	ldr	x0, [sp, #56]
+	strb	w1, [x0]
+	ldrsw	x0, [sp, #20]
+	ldr	x1, [sp, #24]
+	sdiv	x0, x1, x0
+	str	x0, [sp, #24]
+	ldr	x0, [sp, #24]
+	cmp	x0, #0x0
+	b.ne	<ltos+0x30>  // b.any
+	ldrb	w0, [sp, #55]
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<ltos+0xcc>  // b.none
+	ldr	x0, [sp, #56]
+	sub	x0, x0, #0x1
+	str	x0, [sp, #56]
+	ldr	x0, [sp, #56]
+	mov	w1, #0x2d                  	// #45
+	strb	w1, [x0]
+	ldr	x0, [sp, #56]
+	add	sp, sp, #0x40
+	ret
+
+<ultos>:
+	sub	sp, sp, #0x30
+	str	x0, [sp, #24]
+	str	w1, [sp, #20]
+	str	x2, [sp, #8]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2c9
+	str	x0, [sp, #40]
+	ldr	x0, [sp, #40]
+	strb	wzr, [x0]
+	ldrsw	x1, [sp, #20]
+	ldr	x0, [sp, #24]
+	udiv	x2, x0, x1
+	mul	x1, x2, x1
+	sub	x0, x0, x1
+	str	x0, [sp, #32]
+	ldr	x1, [sp, #8]
+	ldr	x0, [sp, #32]
+	add	x0, x1, x0
+	ldr	x1, [sp, #40]
+	sub	x1, x1, #0x1
+	str	x1, [sp, #40]
+	ldrb	w1, [x0]
+	ldr	x0, [sp, #40]
+	strb	w1, [x0]
+	ldrsw	x0, [sp, #20]
+	ldr	x1, [sp, #24]
+	udiv	x0, x1, x0
+	str	x0, [sp, #24]
+	ldr	x0, [sp, #24]
+	cmp	x0, #0x0
+	b.ne	<ultos+0x24>  // b.any
+	ldr	x0, [sp, #40]
+	add	sp, sp, #0x30
+	ret
+
+<write_string>:
+	stp	x29, x30, [sp, #-48]!
+	mov	x29, sp
+	str	x0, [sp, #24]
+	str	x1, [sp, #16]
+	str	wzr, [sp, #44]
+	ldr	x0, [sp, #16]
+	cmp	x0, #0x0
+	b.eq	<write_string+0x5c>  // b.none
+	b	<write_string+0x48>
+	ldr	x0, [sp, #16]
+	add	x1, x0, #0x1
+	str	x1, [sp, #16]
+	ldrb	w0, [x0]
+	ldr	x1, [sp, #24]
+	blr	x1
+	ldr	w0, [sp, #44]
+	add	w0, w0, #0x1
+	str	w0, [sp, #44]
+	ldr	x0, [sp, #16]
+	ldrb	w0, [x0]
+	cmp	w0, #0x0
+	b.ne	<write_string+0x24>  // b.any
+	b	<write_string+0x6c>
+	adrp	x0, <digits_low>
+	add	x1, x0, #0x30
+	ldr	x0, [sp, #24]
+	bl	<write_string>
+	ldr	w0, [sp, #44]
+	ldp	x29, x30, [sp], #48
+	ret
+
+<next_int>:
+	stp	x29, x30, [sp, #-48]!
+	mov	x29, sp
+	str	x19, [sp, #16]
+	strb	w0, [sp, #47]
+	strb	w1, [sp, #46]
+	str	x2, [sp, #32]
+	mov	x19, x3
+	ldrb	w0, [sp, #47]
+	cmp	w0, #0x3
+	b.eq	<next_int+0x11c>  // b.none
+	cmp	w0, #0x3
+	b.gt	<next_int+0x180>
+	cmp	w0, #0x1
+	b.eq	<next_int+0x44>  // b.none
+	cmp	w0, #0x2
+	b.eq	<next_int+0xb0>  // b.none
+	b	<next_int+0x180>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<next_int+0x64>  // b.tstop
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_int+0x94>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<next_int+0x88>
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_int+0x94>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	w0, [x0]
+	and	w0, w0, #0xff
+	and	x0, x0, #0xff
+	ldrb	w1, [sp, #46]
+	ldr	x2, [sp, #32]
+	bl	<ltos>
+	b	<next_int+0x1e4>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<next_int+0xd0>  // b.tstop
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_int+0x100>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<next_int+0xf4>
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_int+0x100>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	w0, [x0]
+	sxth	w0, w0
+	sxth	x0, w0
+	ldrb	w1, [sp, #46]
+	ldr	x2, [sp, #32]
+	bl	<ltos>
+	b	<next_int+0x1e4>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<next_int+0x13c>  // b.tstop
+	add	x1, x0, #0xf
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_int+0x16c>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<next_int+0x160>
+	add	x1, x0, #0xf
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_int+0x16c>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	x0, [x0]
+	ldrb	w1, [sp, #46]
+	ldr	x2, [sp, #32]
+	bl	<ltos>
+	b	<next_int+0x1e4>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<next_int+0x1a0>  // b.tstop
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_int+0x1d0>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<next_int+0x1c4>
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_int+0x1d0>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	w0, [x0]
+	sxtw	x0, w0
+	ldrb	w1, [sp, #46]
+	ldr	x2, [sp, #32]
+	bl	<ltos>
+	ldr	x19, [sp, #16]
+	ldp	x29, x30, [sp], #48
+	ret
+
+<next_uint>:
+	stp	x29, x30, [sp, #-48]!
+	mov	x29, sp
+	str	x19, [sp, #16]
+	strb	w0, [sp, #47]
+	strb	w1, [sp, #46]
+	str	x2, [sp, #32]
+	mov	x19, x3
+	ldrb	w0, [sp, #47]
+	cmp	w0, #0x3
+	b.eq	<next_uint+0x11c>  // b.none
+	cmp	w0, #0x3
+	b.gt	<next_uint+0x180>
+	cmp	w0, #0x1
+	b.eq	<next_uint+0x44>  // b.none
+	cmp	w0, #0x2
+	b.eq	<next_uint+0xb0>  // b.none
+	b	<next_uint+0x180>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<next_uint+0x64>  // b.tstop
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_uint+0x94>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<next_uint+0x88>
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_uint+0x94>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	w0, [x0]
+	and	w0, w0, #0xff
+	and	x0, x0, #0xff
+	ldrb	w1, [sp, #46]
+	ldr	x2, [sp, #32]
+	bl	<ultos>
+	b	<next_uint+0x1e4>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<next_uint+0xd0>  // b.tstop
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_uint+0x100>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<next_uint+0xf4>
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_uint+0x100>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	w0, [x0]
+	and	w0, w0, #0xffff
+	and	x0, x0, #0xffff
+	ldrb	w1, [sp, #46]
+	ldr	x2, [sp, #32]
+	bl	<ultos>
+	b	<next_uint+0x1e4>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<next_uint+0x13c>  // b.tstop
+	add	x1, x0, #0xf
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_uint+0x16c>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<next_uint+0x160>
+	add	x1, x0, #0xf
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_uint+0x16c>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	x0, [x0]
+	ldrb	w1, [sp, #46]
+	ldr	x2, [sp, #32]
+	bl	<ultos>
+	b	<next_uint+0x1e4>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<next_uint+0x1a0>  // b.tstop
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_uint+0x1d0>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<next_uint+0x1c4>
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<next_uint+0x1d0>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	w0, [x0]
+	mov	w0, w0
+	ldrb	w1, [sp, #46]
+	ldr	x2, [sp, #32]
+	bl	<ultos>
+	ldr	x19, [sp, #16]
+	ldp	x29, x30, [sp], #48
+	ret
+
+<kvfprintf>:
+	stp	x29, x30, [sp, #-96]!
+	mov	x29, sp
+	str	x19, [sp, #16]
+	str	x0, [sp, #72]
+	str	x1, [sp, #64]
+	mov	x19, x2
+	str	wzr, [sp, #92]
+	strb	wzr, [sp, #91]
+	b	<kvfprintf+0x534>
+	ldr	x0, [sp, #64]
+	ldrb	w0, [x0]
+	cmp	w0, #0x25
+	b.ne	<kvfprintf+0x510>  // b.any
+	ldr	x0, [sp, #64]
+	add	x0, x0, #0x1
+	str	x0, [sp, #64]
+	ldr	x0, [sp, #64]
+	ldrb	w0, [x0]
+	cmp	w0, #0x68
+	b.eq	<kvfprintf+0x5c>  // b.none
+	cmp	w0, #0x6c
+	b.eq	<kvfprintf+0x9c>  // b.none
+	b	<kvfprintf+0xb4>
+	ldr	x0, [sp, #64]
+	add	x0, x0, #0x1
+	str	x0, [sp, #64]
+	ldr	x0, [sp, #64]
+	ldrb	w0, [x0]
+	cmp	w0, #0x68
+	b.ne	<kvfprintf+0x90>  // b.any
+	mov	w0, #0x1                   	// #1
+	strb	w0, [sp, #91]
+	ldr	x0, [sp, #64]
+	add	x0, x0, #0x1
+	str	x0, [sp, #64]
+	b	<kvfprintf+0xb4>
+	mov	w0, #0x2                   	// #2
+	strb	w0, [sp, #91]
+	b	<kvfprintf+0xb4>
+	mov	w0, #0x3                   	// #3
+	strb	w0, [sp, #91]
+	ldr	x0, [sp, #64]
+	add	x0, x0, #0x1
+	str	x0, [sp, #64]
+	nop
+	ldr	x0, [sp, #64]
+	add	x1, x0, #0x1
+	str	x1, [sp, #64]
+	ldrb	w0, [x0]
+	cmp	w0, #0x78
+	b.eq	<kvfprintf+0x264>  // b.none
+	cmp	w0, #0x78
+	b.gt	<kvfprintf+0x508>
+	cmp	w0, #0x75
+	b.eq	<kvfprintf+0x1bc>  // b.none
+	cmp	w0, #0x75
+	b.gt	<kvfprintf+0x508>
+	cmp	w0, #0x73
+	b.eq	<kvfprintf+0x494>  // b.none
+	cmp	w0, #0x73
+	b.gt	<kvfprintf+0x508>
+	cmp	w0, #0x70
+	b.eq	<kvfprintf+0x360>  // b.none
+	cmp	w0, #0x70
+	b.gt	<kvfprintf+0x508>
+	cmp	w0, #0x6f
+	b.eq	<kvfprintf+0x210>  // b.none
+	cmp	w0, #0x6f
+	b.gt	<kvfprintf+0x508>
+	cmp	w0, #0x69
+	b.eq	<kvfprintf+0x168>  // b.none
+	cmp	w0, #0x69
+	b.gt	<kvfprintf+0x508>
+	cmp	w0, #0x64
+	b.eq	<kvfprintf+0x168>  // b.none
+	cmp	w0, #0x64
+	b.gt	<kvfprintf+0x508>
+	cmp	w0, #0x63
+	b.eq	<kvfprintf+0x424>  // b.none
+	cmp	w0, #0x63
+	b.gt	<kvfprintf+0x508>
+	cmp	w0, #0x62
+	b.eq	<kvfprintf+0x30c>  // b.none
+	cmp	w0, #0x62
+	b.gt	<kvfprintf+0x508>
+	cmp	w0, #0x25
+	b.eq	<kvfprintf+0x408>  // b.none
+	cmp	w0, #0x58
+	b.eq	<kvfprintf+0x2b8>  // b.none
+	b	<kvfprintf+0x508>
+	add	x4, sp, #0x20
+	mov	x0, x19
+	ldp	x2, x3, [x0]
+	ldp	x0, x1, [x0, #16]
+	stp	x2, x3, [x4]
+	stp	x0, x1, [x4, #16]
+	add	x0, sp, #0x20
+	mov	x3, x0
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x0
+	mov	w1, #0xa                   	// #10
+	ldrb	w0, [sp, #91]
+	bl	<next_int>
+	mov	x1, x0
+	ldr	x0, [sp, #72]
+	bl	<write_string>
+	mov	w1, w0
+	ldr	w0, [sp, #92]
+	add	w0, w0, w1
+	str	w0, [sp, #92]
+	b	<kvfprintf+0x508>
+	add	x4, sp, #0x20
+	mov	x0, x19
+	ldp	x2, x3, [x0]
+	ldp	x0, x1, [x0, #16]
+	stp	x2, x3, [x4]
+	stp	x0, x1, [x4, #16]
+	add	x0, sp, #0x20
+	mov	x3, x0
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x0
+	mov	w1, #0xa                   	// #10
+	ldrb	w0, [sp, #91]
+	bl	<next_uint>
+	mov	x1, x0
+	ldr	x0, [sp, #72]
+	bl	<write_string>
+	mov	w1, w0
+	ldr	w0, [sp, #92]
+	add	w0, w0, w1
+	str	w0, [sp, #92]
+	b	<kvfprintf+0x508>
+	add	x4, sp, #0x20
+	mov	x0, x19
+	ldp	x2, x3, [x0]
+	ldp	x0, x1, [x0, #16]
+	stp	x2, x3, [x4]
+	stp	x0, x1, [x4, #16]
+	add	x0, sp, #0x20
+	mov	x3, x0
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x0
+	mov	w1, #0x8                   	// #8
+	ldrb	w0, [sp, #91]
+	bl	<next_uint>
+	mov	x1, x0
+	ldr	x0, [sp, #72]
+	bl	<write_string>
+	mov	w1, w0
+	ldr	w0, [sp, #92]
+	add	w0, w0, w1
+	str	w0, [sp, #92]
+	b	<kvfprintf+0x508>
+	add	x4, sp, #0x20
+	mov	x0, x19
+	ldp	x2, x3, [x0]
+	ldp	x0, x1, [x0, #16]
+	stp	x2, x3, [x4]
+	stp	x0, x1, [x4, #16]
+	add	x0, sp, #0x20
+	mov	x3, x0
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x0
+	mov	w1, #0x10                  	// #16
+	ldrb	w0, [sp, #91]
+	bl	<next_uint>
+	mov	x1, x0
+	ldr	x0, [sp, #72]
+	bl	<write_string>
+	mov	w1, w0
+	ldr	w0, [sp, #92]
+	add	w0, w0, w1
+	str	w0, [sp, #92]
+	b	<kvfprintf+0x508>
+	add	x4, sp, #0x20
+	mov	x0, x19
+	ldp	x2, x3, [x0]
+	ldp	x0, x1, [x0, #16]
+	stp	x2, x3, [x4]
+	stp	x0, x1, [x4, #16]
+	add	x0, sp, #0x20
+	mov	x3, x0
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x18
+	mov	w1, #0x10                  	// #16
+	ldrb	w0, [sp, #91]
+	bl	<next_uint>
+	mov	x1, x0
+	ldr	x0, [sp, #72]
+	bl	<write_string>
+	mov	w1, w0
+	ldr	w0, [sp, #92]
+	add	w0, w0, w1
+	str	w0, [sp, #92]
+	b	<kvfprintf+0x508>
+	add	x4, sp, #0x20
+	mov	x0, x19
+	ldp	x2, x3, [x0]
+	ldp	x0, x1, [x0, #16]
+	stp	x2, x3, [x4]
+	stp	x0, x1, [x4, #16]
+	add	x0, sp, #0x20
+	mov	x3, x0
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x18
+	mov	w1, #0x2                   	// #2
+	ldrb	w0, [sp, #91]
+	bl	<next_uint>
+	mov	x1, x0
+	ldr	x0, [sp, #72]
+	bl	<write_string>
+	mov	w1, w0
+	ldr	w0, [sp, #92]
+	add	w0, w0, w1
+	str	w0, [sp, #92]
+	b	<kvfprintf+0x508>
+	adrp	x0, <digits_low>
+	add	x1, x0, #0x38
+	ldr	x0, [sp, #72]
+	bl	<write_string>
+	mov	w1, w0
+	ldr	w0, [sp, #92]
+	add	w0, w0, w1
+	str	w0, [sp, #92]
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<kvfprintf+0x3a0>  // b.tstop
+	add	x1, x0, #0xf
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<kvfprintf+0x3d0>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<kvfprintf+0x3c4>
+	add	x1, x0, #0xf
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<kvfprintf+0x3d0>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	x3, [x0]
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x0
+	mov	w1, #0x10                  	// #16
+	mov	x0, x3
+	bl	<ultos>
+	mov	x1, x0
+	ldr	x0, [sp, #72]
+	bl	<write_string>
+	mov	w1, w0
+	ldr	w0, [sp, #92]
+	add	w0, w0, w1
+	str	w0, [sp, #92]
+	b	<kvfprintf+0x508>
+	ldr	x1, [sp, #72]
+	mov	w0, #0x25                  	// #37
+	blr	x1
+	ldr	w0, [sp, #92]
+	add	w0, w0, #0x1
+	str	w0, [sp, #92]
+	b	<kvfprintf+0x508>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<kvfprintf+0x444>  // b.tstop
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<kvfprintf+0x474>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<kvfprintf+0x468>
+	add	x1, x0, #0xb
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<kvfprintf+0x474>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	w0, [x0]
+	and	w0, w0, #0xff
+	ldr	x1, [sp, #72]
+	blr	x1
+	ldr	w0, [sp, #92]
+	add	w0, w0, #0x1
+	str	w0, [sp, #92]
+	b	<kvfprintf+0x508>
+	ldr	w1, [x19, #24]
+	ldr	x0, [x19]
+	cmp	w1, #0x0
+	b.lt	<kvfprintf+0x4b4>  // b.tstop
+	add	x1, x0, #0xf
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<kvfprintf+0x4e4>
+	add	w2, w1, #0x8
+	str	w2, [x19, #24]
+	ldr	w2, [x19, #24]
+	cmp	w2, #0x0
+	b.le	<kvfprintf+0x4d8>
+	add	x1, x0, #0xf
+	and	x1, x1, #0xfffffffffffffff8
+	str	x1, [x19]
+	b	<kvfprintf+0x4e4>
+	ldr	x2, [x19, #8]
+	sxtw	x0, w1
+	add	x0, x2, x0
+	ldr	x0, [x0]
+	mov	x1, x0
+	ldr	x0, [sp, #72]
+	bl	<write_string>
+	mov	w1, w0
+	ldr	w0, [sp, #92]
+	add	w0, w0, w1
+	str	w0, [sp, #92]
+	nop
+	strb	wzr, [sp, #91]
+	b	<kvfprintf+0x534>
+	ldr	x0, [sp, #64]
+	add	x1, x0, #0x1
+	str	x1, [sp, #64]
+	ldrb	w0, [x0]
+	ldr	x1, [sp, #72]
+	blr	x1
+	ldr	w0, [sp, #92]
+	add	w0, w0, #0x1
+	str	w0, [sp, #92]
+	ldr	x0, [sp, #64]
+	ldrb	w0, [x0]
+	cmp	w0, #0x0
+	b.ne	<kvfprintf+0x24>  // b.any
+	ldr	w0, [sp, #92]
+	ldr	x19, [sp, #16]
+	ldp	x29, x30, [sp], #96
+	ret
+
+<kvprintf>:
+	stp	x29, x30, [sp, #-80]!
+	mov	x29, sp
+	str	x19, [sp, #16]
+	str	x0, [sp, #72]
+	mov	x19, x1
+	add	x4, sp, #0x20
+	mov	x0, x19
+	ldp	x2, x3, [x0]
+	ldp	x0, x1, [x0, #16]
+	stp	x2, x3, [x4]
+	stp	x0, x1, [x4, #16]
+	add	x0, sp, #0x20
+	mov	x2, x0
+	ldr	x1, [sp, #72]
+	adrp	x0, <pfa_init+0xbc>
+	add	x0, x0, #0xecc
+	bl	<kvfprintf>
+	ldr	x19, [sp, #16]
+	ldp	x29, x30, [sp], #80
+	ret
+
+<kprintf>:
+	stp	x29, x30, [sp, #-176]!
+	mov	x29, sp
+	str	x0, [sp, #56]
+	str	x1, [sp, #120]
+	str	x2, [sp, #128]
+	str	x3, [sp, #136]
+	str	x4, [sp, #144]
+	str	x5, [sp, #152]
+	str	x6, [sp, #160]
+	str	x7, [sp, #168]
+	add	x0, sp, #0xb0
+	str	x0, [sp, #72]
+	add	x0, sp, #0xb0
+	str	x0, [sp, #80]
+	add	x0, sp, #0x70
+	str	x0, [sp, #88]
+	mov	w0, #0xffffffc8            	// #-56
+	str	w0, [sp, #96]
+	str	wzr, [sp, #100]
+	add	x4, sp, #0x10
+	add	x0, sp, #0x48
+	ldp	x2, x3, [x0]
+	ldp	x0, x1, [x0, #16]
+	stp	x2, x3, [x4]
+	stp	x0, x1, [x4, #16]
+	add	x0, sp, #0x10
+	mov	x1, x0
+	ldr	x0, [sp, #56]
+	bl	<kvprintf>
+	str	w0, [sp, #108]
+	ldr	w0, [sp, #108]
+	ldp	x29, x30, [sp], #176
+	ret
+
+<memset>:
+	sub	sp, sp, #0x30
+	str	x0, [sp, #24]
+	str	w1, [sp, #20]
+	str	x2, [sp, #8]
+	ldr	x0, [sp, #24]
+	str	x0, [sp, #32]
+	str	xzr, [sp, #40]
+	b	<memset+0x44>
+	ldr	x1, [sp, #32]
+	ldr	x0, [sp, #40]
+	add	x0, x1, x0
+	ldr	w1, [sp, #20]
+	and	w1, w1, #0xff
+	strb	w1, [x0]
+	ldr	x0, [sp, #40]
+	add	x0, x0, #0x1
+	str	x0, [sp, #40]
+	ldr	x1, [sp, #40]
+	ldr	x0, [sp, #8]
+	cmp	x1, x0
+	b.cc	<memset+0x20>  // b.lo, b.ul, b.last
+	ldr	x0, [sp, #24]
+	add	sp, sp, #0x30
+	ret
+
+<memmove>:
+	sub	sp, sp, #0x40
+	str	x0, [sp, #24]
+	str	x1, [sp, #16]
+	str	x2, [sp, #8]
+	ldr	x0, [sp, #24]
+	str	x0, [sp, #40]
+	ldr	x0, [sp, #16]
+	str	x0, [sp, #32]
+	ldr	x1, [sp, #16]
+	ldr	x0, [sp, #24]
+	cmp	x1, x0
+	b.ls	<memmove+0x78>  // b.plast
+	str	xzr, [sp, #56]
+	b	<memmove+0x64>
+	ldr	x1, [sp, #32]
+	ldr	x0, [sp, #56]
+	add	x1, x1, x0
+	ldr	x2, [sp, #40]
+	ldr	x0, [sp, #56]
+	add	x0, x2, x0
+	ldrb	w1, [x1]
+	strb	w1, [x0]
+	ldr	x0, [sp, #56]
+	add	x0, x0, #0x1
+	str	x0, [sp, #56]
+	ldr	x1, [sp, #56]
+	ldr	x0, [sp, #8]
+	cmp	x1, x0
+	b.cc	<memmove+0x38>  // b.lo, b.ul, b.last
+	b	<memmove+0xd4>
+	ldr	x1, [sp, #16]
+	ldr	x0, [sp, #24]
+	cmp	x1, x0
+	b.cs	<memmove+0xd4>  // b.hs, b.nlast
+	ldr	x0, [sp, #8]
+	str	x0, [sp, #48]
+	b	<memmove+0xc8>
+	ldr	x0, [sp, #48]
+	sub	x0, x0, #0x1
+	ldr	x1, [sp, #32]
+	add	x1, x1, x0
+	ldr	x0, [sp, #48]
+	sub	x0, x0, #0x1
+	ldr	x2, [sp, #40]
+	add	x0, x2, x0
+	ldrb	w1, [x1]
+	strb	w1, [x0]
+	ldr	x0, [sp, #48]
+	sub	x0, x0, #0x1
+	str	x0, [sp, #48]
+	ldr	x0, [sp, #48]
+	cmp	x0, #0x0
+	b.ne	<memmove+0x94>  // b.any
+	ldr	x0, [sp, #24]
+	add	sp, sp, #0x40
+	ret
+
+<log>:
+	stp	x29, x30, [sp, #-144]!
+	mov	x29, sp
+	str	w0, [sp, #76]
+	str	x1, [sp, #64]
+	str	x2, [sp, #56]
+	str	w3, [sp, #72]
+	str	x4, [sp, #48]
+	str	x5, [sp, #120]
+	str	x6, [sp, #128]
+	str	x7, [sp, #136]
+	add	x0, sp, #0x90
+	str	x0, [sp, #80]
+	add	x0, sp, #0x90
+	str	x0, [sp, #88]
+	add	x0, sp, #0x70
+	str	x0, [sp, #96]
+	mov	w0, #0xffffffe8            	// #-24
+	str	w0, [sp, #104]
+	str	wzr, [sp, #108]
+	adrp	x0, <digits_low>
+	add	x0, x0, #0x40
+	bl	<kprintf>
+	ldr	w0, [sp, #76]
+	cmp	w0, #0x3
+	b.eq	<log+0xec>  // b.none
+	ldr	w0, [sp, #76]
+	cmp	w0, #0x3
+	b.gt	<log+0xfc>
+	ldr	w0, [sp, #76]
+	cmp	w0, #0x2
+	b.eq	<log+0xc4>  // b.none
+	ldr	w0, [sp, #76]
+	cmp	w0, #0x2
+	b.gt	<log+0xfc>
+	ldr	w0, [sp, #76]
+	cmp	w0, #0x0
+	b.eq	<log+0xa4>  // b.none
+	ldr	w0, [sp, #76]
+	cmp	w0, #0x1
+	b.eq	<log+0xb4>  // b.none
+	b	<log+0xfc>
+	adrp	x0, <digits_low>
+	add	x0, x0, #0x50
+	bl	<kprintf>
+	b	<log+0xfc>
+	adrp	x0, <digits_low>
+	add	x0, x0, #0x68
+	bl	<kprintf>
+	b	<log+0xfc>
+	adrp	x0, <digits_low>
+	add	x0, x0, #0x80
+	bl	<kprintf>
+	ldr	w3, [sp, #72]
+	ldr	x2, [sp, #56]
+	ldr	x1, [sp, #64]
+	adrp	x0, <digits_low>
+	add	x0, x0, #0x98
+	bl	<kprintf>
+	b	<log+0xfc>
+	adrp	x0, <digits_low>
+	add	x0, x0, #0xa8
+	bl	<kprintf>
+	nop
+	add	x4, sp, #0x10
+	add	x0, sp, #0x50
+	ldp	x2, x3, [x0]
+	ldp	x0, x1, [x0, #16]
+	stp	x2, x3, [x4]
+	stp	x0, x1, [x4, #16]
+	add	x0, sp, #0x10
+	mov	x1, x0
+	ldr	x0, [sp, #48]
+	bl	<kvprintf>
+	mov	w0, #0xa                   	// #10
+	bl	<write_char>
+	nop
+	ldp	x29, x30, [sp], #144
+	ret
+
+<hcf>:
+	wfi
+	b	<hcf>
+
+<kmain>:
+	stp	x29, x30, [sp, #-16]!
+	mov	x29, sp
+	adrp	x0, <limine_requests_start_marker>
+	add	x0, x0, #0x20
+	ldr	x0, [x0, #16]
+	cmp	x0, #0x0
+	b.eq	<kmain+0x20>  // b.none
+	bl	<hcf>
+	bl	<terminal_init>
+	adrp	x0, <digits_low>
+	add	x6, x0, #0xc0
+	adrp	x0, <digits_low>
+	add	x5, x0, #0xc8
+	mov	w4, #0x0                   	// #0
+	mov	w3, #0x0                   	// #0
+	mov	w2, #0x0                   	// #0
+	adrp	x0, <digits_low>
+	add	x1, x0, #0xd0
+	adrp	x0, <digits_low>
+	add	x0, x0, #0xd8
+	bl	<kprintf>
+	bl	<aarch64_except_init>
+	bl	<pfa_init>
+	bl	<hcf>
+	nop
+	ldp	x29, x30, [sp], #16
+	ret
+
+<clear>:
+	sub	sp, sp, #0x10
+	str	x0, [sp, #8]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2d0
+	ldr	x1, [x0]
+	ldr	x0, [sp, #8]
+	lsr	x0, x0, #3
+	add	x0, x1, x0
+	ldrb	w0, [x0]
+	sxtb	w1, w0
+	ldr	x0, [sp, #8]
+	and	w0, w0, #0x7
+	mov	w2, #0x1                   	// #1
+	lsl	w0, w2, w0
+	sxtb	w0, w0
+	mvn	w0, w0
+	sxtb	w0, w0
+	and	w0, w1, w0
+	sxtb	w2, w0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2d0
+	ldr	x1, [x0]
+	ldr	x0, [sp, #8]
+	lsr	x0, x0, #3
+	add	x0, x1, x0
+	and	w1, w2, #0xff
+	strb	w1, [x0]
+	nop
+	add	sp, sp, #0x10
+	ret
+
+<pfa_init>:
+	stp	x29, x30, [sp, #-96]!
+	mov	x29, sp
+	adrp	x0, <limine_requests_start_marker>
+	add	x0, x0, #0x38
+	ldr	x0, [x0, #40]
+	cmp	x0, #0x0
+	b.ne	<pfa_init+0x44>  // b.any
+	adrp	x0, <digits_low>
+	add	x4, x0, #0xf0
+	mov	w3, #0x2e                  	// #46
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x1d0
+	adrp	x0, <digits_low>
+	add	x1, x0, #0x118
+	mov	w0, #0x3                   	// #3
+	bl	<log>
+	bl	<hcf>
+	adrp	x0, <limine_requests_start_marker>
+	add	x0, x0, #0x38
+	ldr	x0, [x0, #40]
+	ldr	x0, [x0, #8]
+	str	x0, [sp, #48]
+	adrp	x0, <limine_requests_start_marker>
+	add	x0, x0, #0x38
+	ldr	x0, [x0, #40]
+	ldr	x0, [x0, #16]
+	str	x0, [sp, #40]
+	str	xzr, [sp, #88]
+	ldr	x0, [sp, #48]
+	sub	x0, x0, #0x1
+	str	x0, [sp, #80]
+	ldr	x0, [sp, #80]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x0, [x0, #16]
+	cmp	x0, #0x0
+	b.ne	<pfa_init+0xb8>  // b.any
+	ldr	x0, [sp, #80]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	str	x0, [sp, #88]
+	b	<pfa_init+0xd8>
+	ldr	x0, [sp, #80]
+	cmp	x0, #0x0
+	b.eq	<pfa_init+0xd4>  // b.none
+	ldr	x0, [sp, #80]
+	sub	x0, x0, #0x1
+	str	x0, [sp, #80]
+	b	<pfa_init+0x7c>
+	nop
+	ldr	x0, [sp, #88]
+	ldr	x1, [x0]
+	ldr	x0, [sp, #88]
+	ldr	x0, [x0, #8]
+	add	x1, x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2d8
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2d8
+	ldr	x0, [x0]
+	lsr	x1, x0, #12
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2e0
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2e0
+	ldr	x0, [x0]
+	add	x0, x0, #0x7
+	lsr	x1, x0, #3
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2e8
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2e8
+	ldr	x0, [x0]
+	add	x0, x0, #0xfff
+	and	x0, x0, #0xfffffffffffff000
+	str	x0, [sp, #32]
+	str	xzr, [sp, #72]
+	b	<pfa_init+0x258>
+	ldr	x0, [sp, #72]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x0, [x0, #16]
+	cmp	x0, #0x0
+	b.ne	<pfa_init+0x248>  // b.any
+	ldr	x0, [sp, #72]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x0, [x0, #8]
+	ldr	x1, [sp, #32]
+	cmp	x1, x0
+	b.hi	<pfa_init+0x248>  // b.pmore
+	ldr	x0, [sp, #72]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x1, [x0]
+	adrp	x0, <limine_requests_start_marker>
+	add	x0, x0, #0x68
+	ldr	x0, [x0, #40]
+	ldr	x0, [x0, #8]
+	add	x0, x1, x0
+	mov	x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2d0
+	str	x1, [x0]
+	ldr	x0, [sp, #72]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x2, [x0]
+	ldr	x0, [sp, #72]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x1, [sp, #32]
+	add	x1, x2, x1
+	str	x1, [x0]
+	ldr	x0, [sp, #72]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x2, [x0, #8]
+	ldr	x0, [sp, #72]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x1, [sp, #32]
+	sub	x1, x2, x1
+	str	x1, [x0, #8]
+	b	<pfa_init+0x268>
+	nop
+	ldr	x0, [sp, #72]
+	add	x0, x0, #0x1
+	str	x0, [sp, #72]
+	ldr	x1, [sp, #72]
+	ldr	x0, [sp, #48]
+	cmp	x1, x0
+	b.cc	<pfa_init+0x154>  // b.lo, b.ul, b.last
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2d0
+	ldr	x0, [x0]
+	cmp	x0, #0x0
+	b.ne	<pfa_init+0x2a4>  // b.any
+	adrp	x0, <digits_low>
+	add	x4, x0, #0x128
+	mov	w3, #0x58                  	// #88
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x1d0
+	adrp	x0, <digits_low>
+	add	x1, x0, #0x118
+	mov	w0, #0x3                   	// #3
+	bl	<log>
+	bl	<hcf>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2d0
+	ldr	x0, [x0]
+	ldr	x2, [sp, #32]
+	mov	w1, #0xff                  	// #255
+	bl	<memset>
+	str	xzr, [sp, #64]
+	b	<pfa_init+0x360>
+	ldr	x0, [sp, #64]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x0, [x0, #16]
+	cmp	x0, #0x0
+	b.ne	<pfa_init+0x350>  // b.any
+	str	xzr, [sp, #56]
+	b	<pfa_init+0x328>
+	ldr	x0, [sp, #64]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x0, [x0]
+	ldr	x1, [sp, #56]
+	add	x0, x1, x0
+	str	x0, [sp, #16]
+	ldr	x0, [sp, #16]
+	lsr	x0, x0, #12
+	bl	<clear>
+	ldr	x0, [sp, #56]
+	add	x0, x0, #0x1, lsl #12
+	str	x0, [sp, #56]
+	ldr	x0, [sp, #64]
+	lsl	x0, x0, #3
+	ldr	x1, [sp, #40]
+	add	x0, x1, x0
+	ldr	x0, [x0]
+	ldr	x0, [x0, #8]
+	ldr	x1, [sp, #56]
+	cmp	x1, x0
+	b.cc	<pfa_init+0x2ec>  // b.lo, b.ul, b.last
+	b	<pfa_init+0x354>
+	nop
+	ldr	x0, [sp, #64]
+	add	x0, x0, #0x1
+	str	x0, [sp, #64]
+	ldr	x1, [sp, #64]
+	ldr	x0, [sp, #48]
+	cmp	x1, x0
+	b.cc	<pfa_init+0x2c4>  // b.lo, b.ul, b.last
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2d8
+	ldr	x0, [x0]
+	lsr	x0, x0, #20
+	str	x0, [sp, #24]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2d8
+	ldr	x0, [x0]
+	ldr	x6, [sp, #24]
+	mov	x5, x0
+	adrp	x0, <digits_low>
+	add	x4, x0, #0x150
+	mov	w3, #0x69                  	// #105
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x1d0
+	adrp	x0, <digits_low>
+	add	x1, x0, #0x118
+	mov	w0, #0x0                   	// #0
+	bl	<log>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2e0
+	ldr	x0, [x0]
+	mov	x5, x0
+	adrp	x0, <digits_low>
+	add	x4, x0, #0x170
+	mov	w3, #0x6a                  	// #106
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x1d0
+	adrp	x0, <digits_low>
+	add	x1, x0, #0x118
+	mov	w0, #0x0                   	// #0
+	bl	<log>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2e8
+	ldr	x0, [x0]
+	mov	x5, x0
+	adrp	x0, <digits_low>
+	add	x4, x0, #0x188
+	mov	w3, #0x6b                  	// #107
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x1d0
+	adrp	x0, <digits_low>
+	add	x1, x0, #0x118
+	mov	w0, #0x0                   	// #0
+	bl	<log>
+	ldr	x0, [sp, #32]
+	lsr	x0, x0, #12
+	mov	x6, x0
+	ldr	x5, [sp, #32]
+	adrp	x0, <digits_low>
+	add	x4, x0, #0x1a0
+	mov	w3, #0x6c                  	// #108
+	adrp	x0, <digits_low>
+	add	x2, x0, #0x1d0
+	adrp	x0, <digits_low>
+	add	x1, x0, #0x118
+	mov	w0, #0x0                   	// #0
+	bl	<log>
+	nop
+	ldp	x29, x30, [sp], #96
+	ret
+
+<draw_char>:
+	sub	sp, sp, #0x60
+	str	x0, [sp, #24]
+	str	x1, [sp, #16]
+	strb	w2, [sp, #15]
+	ldrb	w0, [sp, #15]
+	str	x0, [sp, #72]
+	ldr	x0, [sp, #72]
+	lsl	x1, x0, #4
+	adrp	x0, <digits_low>
+	add	x0, x0, #0x1e0
+	add	x0, x1, x0
+	str	x0, [sp, #64]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x308
+	ldr	x0, [x0]
+	lsr	x0, x0, #2
+	str	x0, [sp, #56]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2f0
+	ldr	x1, [x0]
+	ldr	x2, [sp, #16]
+	ldr	x0, [sp, #56]
+	mul	x2, x2, x0
+	ldr	x0, [sp, #24]
+	add	x0, x2, x0
+	lsl	x0, x0, #2
+	add	x0, x1, x0
+	str	x0, [sp, #88]
+	str	xzr, [sp, #80]
+	b	<draw_char+0x2cc>
+	ldr	x0, [sp, #88]
+	str	x0, [sp, #48]
+	ldr	x1, [sp, #64]
+	ldr	x0, [sp, #80]
+	add	x0, x1, x0
+	ldrb	w0, [x0]
+	strb	w0, [sp, #47]
+	ldrb	w0, [sp, #47]
+	lsr	w0, w0, #7
+	and	w0, w0, #0xff
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<draw_char+0xbc>  // b.none
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	ldr	w1, [x0]
+	b	<draw_char+0xc8>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	ldr	w1, [x0]
+	ldr	x0, [sp, #48]
+	add	x2, x0, #0x4
+	str	x2, [sp, #48]
+	str	w1, [x0]
+	ldrb	w0, [sp, #47]
+	lsr	w0, w0, #6
+	and	w0, w0, #0xff
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<draw_char+0x100>  // b.none
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	ldr	w1, [x0]
+	b	<draw_char+0x10c>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	ldr	w1, [x0]
+	ldr	x0, [sp, #48]
+	add	x2, x0, #0x4
+	str	x2, [sp, #48]
+	str	w1, [x0]
+	ldrb	w0, [sp, #47]
+	lsr	w0, w0, #5
+	and	w0, w0, #0xff
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<draw_char+0x144>  // b.none
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	ldr	w1, [x0]
+	b	<draw_char+0x150>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	ldr	w1, [x0]
+	ldr	x0, [sp, #48]
+	add	x2, x0, #0x4
+	str	x2, [sp, #48]
+	str	w1, [x0]
+	ldrb	w0, [sp, #47]
+	lsr	w0, w0, #4
+	and	w0, w0, #0xff
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<draw_char+0x188>  // b.none
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	ldr	w1, [x0]
+	b	<draw_char+0x194>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	ldr	w1, [x0]
+	ldr	x0, [sp, #48]
+	add	x2, x0, #0x4
+	str	x2, [sp, #48]
+	str	w1, [x0]
+	ldrb	w0, [sp, #47]
+	lsr	w0, w0, #3
+	and	w0, w0, #0xff
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<draw_char+0x1cc>  // b.none
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	ldr	w1, [x0]
+	b	<draw_char+0x1d8>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	ldr	w1, [x0]
+	ldr	x0, [sp, #48]
+	add	x2, x0, #0x4
+	str	x2, [sp, #48]
+	str	w1, [x0]
+	ldrb	w0, [sp, #47]
+	lsr	w0, w0, #2
+	and	w0, w0, #0xff
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<draw_char+0x210>  // b.none
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	ldr	w1, [x0]
+	b	<draw_char+0x21c>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	ldr	w1, [x0]
+	ldr	x0, [sp, #48]
+	add	x2, x0, #0x4
+	str	x2, [sp, #48]
+	str	w1, [x0]
+	ldrb	w0, [sp, #47]
+	lsr	w0, w0, #1
+	and	w0, w0, #0xff
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<draw_char+0x254>  // b.none
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	ldr	w1, [x0]
+	b	<draw_char+0x260>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	ldr	w1, [x0]
+	ldr	x0, [sp, #48]
+	add	x2, x0, #0x4
+	str	x2, [sp, #48]
+	str	w1, [x0]
+	ldrb	w0, [sp, #47]
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<draw_char+0x290>  // b.none
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	ldr	w1, [x0]
+	b	<draw_char+0x29c>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	ldr	w1, [x0]
+	ldr	x0, [sp, #48]
+	add	x2, x0, #0x4
+	str	x2, [sp, #48]
+	str	w1, [x0]
+	ldr	x0, [sp, #56]
+	lsl	x0, x0, #2
+	ldr	x1, [sp, #88]
+	add	x0, x1, x0
+	str	x0, [sp, #88]
+	ldr	x0, [sp, #80]
+	add	x0, x0, #0x1
+	str	x0, [sp, #80]
+	mov	x0, #0x10                  	// #16
+	ldr	x1, [sp, #80]
+	cmp	x1, x0
+	b.cc	<draw_char+0x78>  // b.lo, b.ul, b.last
+	nop
+	nop
+	add	sp, sp, #0x60
+	ret
+
+<scroll>:
+	stp	x29, x30, [sp, #-64]!
+	mov	x29, sp
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2f0
+	ldr	x0, [x0]
+	str	x0, [sp, #48]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x308
+	ldr	x1, [x0]
+	mov	x0, #0x10                  	// #16
+	mul	x0, x1, x0
+	str	x0, [sp, #40]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x318
+	ldr	x0, [x0]
+	sub	x0, x0, #0x1
+	mov	x1, x0
+	mov	x0, #0x10                  	// #16
+	mul	x1, x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x308
+	ldr	x0, [x0]
+	mul	x0, x1, x0
+	str	x0, [sp, #32]
+	ldr	x1, [sp, #48]
+	ldr	x0, [sp, #40]
+	add	x0, x1, x0
+	ldr	x2, [sp, #32]
+	mov	x1, x0
+	ldr	x0, [sp, #48]
+	bl	<memmove>
+	ldr	x1, [sp, #48]
+	ldr	x0, [sp, #32]
+	add	x0, x1, x0
+	str	x0, [sp, #24]
+	ldr	x0, [sp, #40]
+	lsr	x0, x0, #2
+	str	x0, [sp, #16]
+	str	xzr, [sp, #56]
+	b	<scroll+0xcc>
+	ldr	x0, [sp, #56]
+	lsl	x0, x0, #2
+	ldr	x1, [sp, #24]
+	add	x0, x1, x0
+	adrp	x1, <tab_size>
+	add	x1, x1, #0x10
+	ldr	w1, [x1]
+	str	w1, [x0]
+	ldr	x0, [sp, #56]
+	add	x0, x0, #0x1
+	str	x0, [sp, #56]
+	ldr	x1, [sp, #56]
+	ldr	x0, [sp, #16]
+	cmp	x1, x0
+	b.cc	<scroll+0xa0>  // b.lo, b.ul, b.last
+	nop
+	nop
+	ldp	x29, x30, [sp], #64
+	ret
+
+<get_ansi_arg>:
+	sub	sp, sp, #0x10
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x348
+	ldr	x0, [x0]
+	adrp	x1, <tab_size>
+	add	x1, x1, #0x338
+	strb	wzr, [x1, x0]
+	str	wzr, [sp, #12]
+	str	xzr, [sp]
+	b	<get_ansi_arg+0x6c>
+	ldr	w1, [sp, #12]
+	mov	w0, w1
+	lsl	w0, w0, #2
+	add	w0, w0, w1
+	lsl	w0, w0, #1
+	mov	w2, w0
+	adrp	x0, <tab_size>
+	add	x1, x0, #0x338
+	ldr	x0, [sp]
+	add	x0, x1, x0
+	ldrb	w0, [x0]
+	sub	w0, w0, #0x30
+	add	w0, w2, w0
+	str	w0, [sp, #12]
+	ldr	x0, [sp]
+	add	x0, x0, #0x1
+	str	x0, [sp]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x348
+	ldr	x0, [x0]
+	ldr	x1, [sp]
+	cmp	x1, x0
+	b.cc	<get_ansi_arg+0x28>  // b.lo, b.ul, b.last
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x348
+	str	xzr, [x0]
+	ldr	w0, [sp, #12]
+	add	sp, sp, #0x10
+	ret
+
+<handle_ansi>:
+	stp	x29, x30, [sp, #-48]!
+	mov	x29, sp
+	strb	w0, [sp, #31]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x332
+	ldrb	w0, [x0]
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<handle_ansi+0x210>  // b.none
+	ldrb	w0, [sp, #31]
+	cmp	w0, #0x6d
+	b.ne	<handle_ansi+0x1b4>  // b.any
+	bl	<get_ansi_arg>
+	str	w0, [sp, #44]
+	ldr	w0, [sp, #44]
+	mov	w1, #0x6667                	// #26215
+	movk	w1, #0x6666, lsl #16
+	smull	x1, w0, w1
+	lsr	x1, x1, #32
+	asr	w1, w1, #2
+	asr	w0, w0, #31
+	sub	w0, w1, w0
+	str	w0, [sp, #40]
+	ldr	w1, [sp, #44]
+	mov	w0, #0x6667                	// #26215
+	movk	w0, #0x6666, lsl #16
+	smull	x0, w1, w0
+	lsr	x0, x0, #32
+	asr	w2, w0, #2
+	asr	w0, w1, #31
+	sub	w2, w2, w0
+	mov	w0, w2
+	lsl	w0, w0, #2
+	add	w0, w0, w2
+	lsl	w0, w0, #1
+	sub	w0, w1, w0
+	str	w0, [sp, #36]
+	ldr	w0, [sp, #40]
+	cmp	w0, #0xa
+	b.eq	<handle_ansi+0x190>  // b.none
+	ldr	w0, [sp, #40]
+	cmp	w0, #0xa
+	b.gt	<handle_ansi+0x1f0>
+	ldr	w0, [sp, #40]
+	cmp	w0, #0x9
+	b.eq	<handle_ansi+0x170>  // b.none
+	ldr	w0, [sp, #40]
+	cmp	w0, #0x9
+	b.gt	<handle_ansi+0x1f0>
+	ldr	w0, [sp, #40]
+	cmp	w0, #0x3
+	b.eq	<handle_ansi+0xe0>  // b.none
+	ldr	w0, [sp, #40]
+	cmp	w0, #0x4
+	b.eq	<handle_ansi+0x128>  // b.none
+	b	<handle_ansi+0x1f0>
+	ldr	w0, [sp, #36]
+	cmp	w0, #0x9
+	b.ne	<handle_ansi+0x108>  // b.any
+	adrp	x0, <tab_size>
+	add	x0, x0, #0xc
+	ldr	w1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	str	w1, [x0]
+	b	<handle_ansi+0x1b0>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x18
+	ldrsw	x1, [sp, #36]
+	ldr	w1, [x0, x1, lsl #2]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	str	w1, [x0]
+	b	<handle_ansi+0x1b0>
+	ldr	w0, [sp, #36]
+	cmp	w0, #0x9
+	b.ne	<handle_ansi+0x150>  // b.any
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x8
+	ldr	w1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	str	w1, [x0]
+	b	<handle_ansi+0x1b0>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x18
+	ldrsw	x1, [sp, #36]
+	ldr	w1, [x0, x1, lsl #2]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	str	w1, [x0]
+	b	<handle_ansi+0x1b0>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x38
+	ldrsw	x1, [sp, #36]
+	ldr	w1, [x0, x1, lsl #2]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x14
+	str	w1, [x0]
+	b	<handle_ansi+0x1b0>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x38
+	ldrsw	x1, [sp, #36]
+	ldr	w1, [x0, x1, lsl #2]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x10
+	str	w1, [x0]
+	nop
+	b	<handle_ansi+0x1f0>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x348
+	ldr	x0, [x0]
+	adrp	x1, <tab_size>
+	add	x1, x1, #0x338
+	ldrb	w2, [sp, #31]
+	strb	w2, [x1, x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x348
+	ldr	x0, [x0]
+	add	x1, x0, #0x1
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x348
+	str	x1, [x0]
+	b	<handle_ansi+0x22c>
+	nop
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x332
+	strb	wzr, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x331
+	strb	wzr, [x0]
+	b	<handle_ansi+0x22c>
+	ldrb	w0, [sp, #31]
+	cmp	w0, #0x5b
+	b.ne	<handle_ansi+0x22c>  // b.any
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x332
+	mov	w1, #0x1                   	// #1
+	strb	w1, [x0]
+	ldp	x29, x30, [sp], #48
+	ret
+
+<terminal_init>:
+	stp	x29, x30, [sp, #-32]!
+	mov	x29, sp
+	adrp	x0, <limine_requests_start_marker>
+	add	x0, x0, #0x98
+	ldr	x0, [x0, #40]
+	cmp	x0, #0x0
+	b.eq	<terminal_init+0x34>  // b.none
+	adrp	x0, <limine_requests_start_marker>
+	add	x0, x0, #0x98
+	ldr	x0, [x0, #40]
+	ldr	x0, [x0, #8]
+	cmp	x0, #0x0
+	b.ne	<terminal_init+0x38>  // b.any
+	bl	<hcf>
+	adrp	x0, <limine_requests_start_marker>
+	add	x0, x0, #0x98
+	ldr	x0, [x0, #40]
+	ldr	x0, [x0, #16]
+	ldr	x0, [x0]
+	str	x0, [sp, #24]
+	ldr	x0, [sp, #24]
+	ldr	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2f0
+	str	x1, [x0]
+	ldr	x0, [sp, #24]
+	ldr	x1, [x0, #8]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2f8
+	str	x1, [x0]
+	ldr	x0, [sp, #24]
+	ldr	x1, [x0, #16]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x300
+	str	x1, [x0]
+	ldr	x0, [sp, #24]
+	ldr	x1, [x0, #24]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x308
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x2f8
+	ldr	x1, [x0]
+	mov	x0, #0x8                   	// #8
+	udiv	x0, x1, x0
+	mov	x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x310
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x300
+	ldr	x1, [x0]
+	mov	x0, #0x10                  	// #16
+	udiv	x0, x1, x0
+	mov	x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x318
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	str	xzr, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	str	xzr, [x0]
+	adrp	x0, <INTELV8+0xe20>
+	add	x4, x0, #0x1e0
+	mov	w3, #0xd0                  	// #208
+	adrp	x0, <INTELV8+0xe20>
+	add	x2, x0, #0x210
+	adrp	x0, <INTELV8+0xe20>
+	add	x1, x0, #0x1f8
+	mov	w0, #0x0                   	// #0
+	bl	<log>
+	nop
+	ldp	x29, x30, [sp], #32
+	ret
+
+<terminal_write>:
+	stp	x29, x30, [sp, #-32]!
+	mov	x29, sp
+	strb	w0, [sp, #31]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x331
+	ldrb	w0, [x0]
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.eq	<terminal_write+0x30>  // b.none
+	ldrb	w0, [sp, #31]
+	bl	<handle_ansi>
+	b	<terminal_write+0x29c>
+	ldrb	w0, [sp, #31]
+	cmp	w0, #0x1b
+	b.eq	<terminal_write+0x68>  // b.none
+	cmp	w0, #0x1b
+	b.gt	<terminal_write+0x230>
+	cmp	w0, #0xa
+	b.eq	<terminal_write+0x7c>  // b.none
+	cmp	w0, #0xa
+	b.gt	<terminal_write+0x230>
+	cmp	w0, #0x8
+	b.eq	<terminal_write+0x160>  // b.none
+	cmp	w0, #0x9
+	b.eq	<terminal_write+0xe0>  // b.none
+	b	<terminal_write+0x230>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x331
+	mov	w1, #0x1                   	// #1
+	strb	w1, [x0]
+	b	<terminal_write+0x29c>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	cmp	x0, #0x0
+	b.ne	<terminal_write+0xa8>  // b.any
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x330
+	ldrb	w0, [x0]
+	and	w0, w0, #0x1
+	cmp	w0, #0x0
+	b.ne	<terminal_write+0x290>  // b.any
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	str	xzr, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	ldr	x0, [x0]
+	add	x1, x0, #0x1
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x330
+	strb	wzr, [x0]
+	b	<terminal_write+0x29c>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	mov	x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x0
+	ldr	x0, [x0]
+	add	x0, x1, x0
+	mov	x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	mov	x3, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	mov	x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x0
+	ldr	x0, [x0]
+	udiv	x2, x1, x0
+	mul	x0, x2, x0
+	sub	x0, x1, x0
+	sub	x0, x3, x0
+	mov	x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	str	x1, [x0]
+	b	<terminal_write+0x29c>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	cmp	x0, #0x0
+	b.ne	<terminal_write+0x188>  // b.any
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	ldr	x0, [x0]
+	cmp	x0, #0x0
+	b.eq	<terminal_write+0x298>  // b.none
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	cmp	x0, #0x0
+	b.ne	<terminal_write+0x1d0>  // b.any
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x310
+	ldr	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	ldr	x0, [x0]
+	sub	x1, x0, #0x1
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	sub	x1, x0, #0x1
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	mov	x1, x0
+	mov	x0, #0x8                   	// #8
+	mul	x3, x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	ldr	x0, [x0]
+	mov	x1, x0
+	mov	x0, #0x10                  	// #16
+	mul	x0, x1, x0
+	mov	w2, #0x0                   	// #0
+	mov	x1, x0
+	mov	x0, x3
+	bl	<draw_char>
+	b	<terminal_write+0x29c>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	mov	x1, x0
+	mov	x0, #0x8                   	// #8
+	mul	x3, x1, x0
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	ldr	x0, [x0]
+	mov	x1, x0
+	mov	x0, #0x10                  	// #16
+	mul	x0, x1, x0
+	ldrb	w2, [sp, #31]
+	mov	x1, x0
+	mov	x0, x3
+	bl	<draw_char>
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x0, [x0]
+	add	x1, x0, #0x1
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	str	x1, [x0]
+	b	<terminal_write+0x29c>
+	nop
+	b	<terminal_write+0x29c>
+	nop
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	ldr	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x310
+	ldr	x0, [x0]
+	cmp	x1, x0
+	b.ne	<terminal_write+0x2f4>  // b.any
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	str	xzr, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	ldr	x0, [x0]
+	add	x1, x0, #0x1
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	str	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x330
+	mov	w1, #0x1                   	// #1
+	strb	w1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	ldr	x1, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x318
+	ldr	x0, [x0]
+	cmp	x1, x0
+	b.ne	<terminal_write+0x340>  // b.any
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x320
+	str	xzr, [x0]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	ldr	x0, [x0]
+	sub	x1, x0, #0x1
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x328
+	str	x1, [x0]
+	bl	<scroll>
+	nop
+	ldp	x29, x30, [sp], #32
+	ret
+
+<write_char>:
+	stp	x29, x30, [sp, #-32]!
+	mov	x29, sp
+	strb	w0, [sp, #31]
+	ldrb	w0, [sp, #31]
+	bl	<terminal_write>
+	nop
+	ldp	x29, x30, [sp], #32
+	ret
+
+<aarch64_except_init>:
+	stp	x29, x30, [sp, #-16]!
+	mov	x29, sp
+	adrp	x0, <aarch64_sync_entry>
+	add	x0, x0, #0x800
+	msr	vbar_el1, x0
+	mov	x0, sp
+	msr	spsel, #0x1
+	mov	sp, x0
+	adrp	x0, <INTELV8+0xe20>
+	add	x4, x0, #0x220
+	mov	w3, #0x19                  	// #25
+	adrp	x0, <INTELV8+0xe20>
+	add	x2, x0, #0x258
+	adrp	x0, <INTELV8+0xe20>
+	add	x1, x0, #0x238
+	mov	w0, #0x0                   	// #0
+	bl	<log>
+	nop
+	ldp	x29, x30, [sp], #16
+	ret
+
+<aarch64_sync_handler>:
+	stp	x29, x30, [sp, #-48]!
+	mov	x29, sp
+	str	x0, [sp, #24]
+	ldr	x0, [sp, #24]
+	ldr	x0, [x0, #264]
+	lsr	x0, x0, #26
+	and	w0, w0, #0xff
+	and	w0, w0, #0x3f
+	strb	w0, [sp, #47]
+	ldrb	w1, [sp, #47]
+	adrp	x0, <tab_size>
+	add	x0, x0, #0x58
+	sxtw	x1, w1
+	ldr	x0, [x0, x1, lsl #3]
+	mov	x5, x0
+	adrp	x0, <INTELV8+0xe20>
+	add	x4, x0, #0x978
+	mov	w3, #0x2c                  	// #44
+	adrp	x0, <INTELV8+0xe20>
+	add	x2, x0, #0x9a0
+	adrp	x0, <INTELV8+0xe20>
+	add	x1, x0, #0x988
+	mov	w0, #0x3                   	// #3
+	bl	<log>
+	bl	<hcf>
+	nop
+	ldp	x29, x30, [sp], #48
+	ret
+	...
+
+<aarch64_sync_entry>:
+	sub	sp, sp, #0x118
+	stp	x0, x1, [sp]
+	stp	x2, x3, [sp, #16]
+	stp	x4, x5, [sp, #32]
+	stp	x6, x7, [sp, #48]
+	stp	x8, x9, [sp, #64]
+	stp	x10, x11, [sp, #80]
+	stp	x12, x13, [sp, #96]
+	stp	x14, x15, [sp, #112]
+	stp	x16, x17, [sp, #128]
+	stp	x18, x19, [sp, #144]
+	stp	x20, x21, [sp, #160]
+	stp	x22, x23, [sp, #176]
+	stp	x24, x25, [sp, #192]
+	stp	x26, x27, [sp, #208]
+	stp	x28, x29, [sp, #224]
+	str	x30, [sp, #240]
+	mrs	x0, spsr_el1
+	mrs	x1, elr_el1
+	mrs	x2, esr_el1
+	mrs	x3, far_el1
+	stp	x0, x1, [sp, #248]
+	stp	x2, x3, [sp, #264]
+	mov	x0, sp
+	bl	<aarch64_sync_handler>
+	ldp	x0, x1, [sp]
+	ldp	x2, x3, [sp, #16]
+	ldp	x4, x5, [sp, #32]
+	ldp	x6, x7, [sp, #48]
+	ldp	x8, x9, [sp, #64]
+	ldp	x10, x11, [sp, #80]
+	ldp	x12, x13, [sp, #96]
+	ldp	x14, x15, [sp, #112]
+	ldp	x16, x17, [sp, #128]
+	ldp	x18, x19, [sp, #144]
+	ldp	x20, x21, [sp, #160]
+	ldp	x22, x23, [sp, #176]
+	ldp	x24, x25, [sp, #192]
+	ldp	x26, x27, [sp, #208]
+	ldp	x28, x29, [sp, #224]
+	ldr	x30, [sp, #240]
+	add	sp, sp, #0x118
+	eret
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+
+<aarch64_vector_table>:
+	b	<aarch64_vector_table>
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	b	<aarch64_vector_table+0x80>
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	b	<aarch64_vector_table+0x100>
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	b	<aarch64_vector_table+0x180>
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	b	<aarch64_sync_entry>
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	b	<aarch64_vector_table+0x280>
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	b	<aarch64_vector_table+0x300>
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	b	<aarch64_vector_table+0x380>

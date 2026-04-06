@@ -1,7 +1,7 @@
 .intel_syntax noprefix
 .section .text 
 
-// This is a beauty in NASM, but this mess in GNU
+// This is a beauty in NASM, but a mess in GNU
 
 .macro generate_stub i 
 .if (\i == 8 || (\i > 9 && \i < 15) || \i == 17 || \i == 21 || \i == 29 || \i == 30)

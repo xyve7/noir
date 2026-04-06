@@ -26,7 +26,19 @@
 // Disable optimization
 #define UNOPTIMIZED __attribute__((optimize("O0")))
 
+// Kernel Information 
+#define NAME "noir"
+#define VERSION_MAJOR 1 
+#define VERSION_MINOR 2 
+#define VERSION_PATCH 3 
+#define PRERELEASE_LABEL "dev"
+// This is defined at compile time
+#ifndef BUILD 
+	#define BUILD "0000000"
+#endif
+
 void log(int kind, const char *file, const char *func, uint32_t line, const char *restrict format, ...);
 void hcf();
 
 #endif
+

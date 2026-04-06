@@ -8,3 +8,5 @@
 -I./kernel/src/include/libk
 -I./kernel/limine-protocol/include
 -isystem ./kernel/freestnd-c-hdrs/include
+-Wno-attribute-section-invalid-for-target
+--target=aarch64-elf
