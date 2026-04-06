@@ -1,6 +1,4 @@
-#include <kernel.h>
 #include <kprintf.h>
-#include <limine.h>
 #include <stddef.h>
 #include <mm/pfa.h>
 #include <stdint.h>
@@ -78,7 +76,7 @@ void pfa_init() {
 		if (entries[i]->type != LIMINE_MEMMAP_USABLE || entries[i]->length < bitmap_size_aligned) {
 			continue;
 		}
-		bitmap = (void*)(entries[i]->base + hhdm_request.response->offset);
+		bitmap = (void*)VIRT(entries[i]->base);
 
 		entries[i]->base += bitmap_size_aligned;
 		entries[i]->length -= bitmap_size_aligned;
@@ -100,16 +98,41 @@ void pfa_init() {
 			clear(base / PAGE_SIZE);
 		}
 	}
-
-	size_t temp = memory_size / (1024 * 1024);
-	LOG_INFO("Memory Size: %lu bytes, %lu GB", memory_size, temp);
-	LOG_INFO("Total Pages: %lu pages", total_pages);
-	LOG_INFO("Bitmap Size: %lu bytes", bitmap_size);
-	LOG_INFO("Bitmap Size Aligned: %lu bytes, %lu pages", bitmap_size_aligned, bitmap_size_aligned / 4096);
+	LOG_INFO("PFA Initialized");
 }
 void *pfa_get_pages(size_t page_count) {
-
+	for (size_t i = 0; i < total_pages; i++) {
+		if (get(i)) {
+			continue;
+		}
+		// We hit a free page, make sure the number of consecutive pages 
+		// is the same as page_count
+		size_t cons = 1;
+		for (size_t j = 1; j < page_count; j++) {
+			if (!get(i + j)) {
+				cons++;
+			}
+		}
+		// No allocation found, continue
+		if (cons != page_count) {
+			continue;
+		}
+		
+		void *base = (void*)(i * PAGE_SIZE);
+		for (size_t j = 0; j < page_count; j++) {
+			set(i + j);
+		}
+		return base;
+	}
+	PANIC("Out of memory");
+	UNREACHABLE();
 }
 void pfa_free_pages(void *first_page, size_t page_count) {
-
+	if ((uint64_t)first_page >= hhdm_request.response->offset) {
+		PANIC("Attempting to free virtual address, use PHYS()");
+	}
+	size_t i = (size_t)first_page / PAGE_SIZE;
+	for (size_t j = 0; j < page_count; j++) {
+		clear(i + j);
+	}
 }
